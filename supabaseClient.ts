@@ -1,24 +1,31 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { User } from './types.ts';
 
-declare global {
-  var __supabase_url: string;
-  var __supabase_anon_key: string;
-}
+// Use environment variables directly - no global variables
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'YOUR_SUPABASE_URL';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY';
 
-const supabaseUrl = typeof __supabase_url !== 'undefined' ? __supabase_url : import.meta.env.VITE_SUPABASE_URL || 'YOUR_SUPABASE_URL';
-const supabaseAnonKey = typeof __supabase_anon_key !== 'undefined' ? __supabase_anon_key : import.meta.env.VITE_SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY';
+// Debug logging
+console.log('🔍 Supabase Configuration Check:');
+console.log('URL:', supabaseUrl);
+console.log('Key exists:', !!supabaseAnonKey);
+console.log('Key length:', supabaseAnonKey?.length);
+console.log('import.meta.env.VITE_SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL);
+console.log('import.meta.env.VITE_SUPABASE_ANON_KEY exists:', !!import.meta.env.VITE_SUPABASE_ANON_KEY);
 
 let supabaseInstance: SupabaseClient | null = null;
 
 if (supabaseUrl && supabaseAnonKey && supabaseUrl !== 'YOUR_SUPABASE_URL' && supabaseAnonKey !== 'YOUR_SUPABASE_ANON_KEY') {
     try {
         supabaseInstance = createClient(supabaseUrl, supabaseAnonKey);
+        console.log('✅ Supabase client initialized successfully!');
     } catch (e) {
-        console.error("Failed to initialize Supabase client:", e);
+        console.error("❌ Failed to initialize Supabase client:", e);
     }
 } else {
-    console.warn('Supabase is not configured. Falling back to mock auth.');
+    console.warn('⚠️ Supabase is not configured. Falling back to mock auth.');
+    console.warn('Reason - URL valid:', supabaseUrl !== 'YOUR_SUPABASE_URL');
+    console.warn('Reason - Key valid:', supabaseAnonKey !== 'YOUR_SUPABASE_ANON_KEY');
 }
 
 export const supabase = supabaseInstance;
