@@ -44,6 +44,7 @@ import TimeTrackingScreen from './components/screens/modules/TimeTrackingScreen.
 import ProjectOperationsScreen from './components/screens/modules/ProjectOperationsScreen.tsx';
 import FinancialManagementScreen from './components/screens/modules/FinancialManagementScreen.tsx';
 import BusinessDevelopmentScreen from './components/screens/modules/BusinessDevelopmentScreen.tsx';
+import AIAgentsMarketplaceScreen from './components/screens/modules/AIAgentsMarketplaceScreen.tsx';
 import PlaceholderToolScreen from './components/screens/tools/PlaceholderToolScreen.tsx';
 
 
@@ -85,6 +86,7 @@ const SCREEN_COMPONENTS: { [key in Screen]: React.FC<any> } = {
     'project-operations': ProjectOperationsScreen,
     'financial-management': FinancialManagementScreen,
     'business-development': BusinessDevelopmentScreen,
+    'ai-agents-marketplace': AIAgentsMarketplaceScreen,
     // Tools
     'placeholder-tool': PlaceholderToolScreen,
 };
@@ -95,12 +97,21 @@ const App: React.FC = () => {
     const [navigationStack, setNavigationStack] = useState<NavigationItem[]>([]);
     const [allProjects, setAllProjects] = useState<Project[]>([]);
 
+    // Debug environment on app start
+    console.log('🔧 App Environment Check:', {
+        hasSupabase: !!supabase,
+        supabaseUrl: import.meta.env.VITE_SUPABASE_URL,
+        hasSupabaseKey: !!import.meta.env.VITE_SUPABASE_ANON_KEY,
+        origin: window.location.origin,
+        hash: window.location.hash
+    });
+
     const [isAISuggestionModalOpen, setIsAISuggestionModalOpen] = useState(false);
     const [isAISuggestionLoading, setIsAISuggestionLoading] = useState(false);
     const [aiSuggestion, setAiSuggestion] = useState<AISuggestion | null>(null);
-    
+
     const [isProjectSelectorOpen, setIsProjectSelectorOpen] = useState(false);
-    const [projectSelectorCallback, setProjectSelectorCallback] = useState<(projectId: string) => void>(() => () => {});
+    const [projectSelectorCallback, setProjectSelectorCallback] = useState<(projectId: string) => void>(() => () => { });
     const [projectSelectorTitle, setProjectSelectorTitle] = useState('');
 
     const { can } = usePermissions(currentUser!);
@@ -126,11 +137,69 @@ const App: React.FC = () => {
         const checkSession = async () => {
             console.log('🔍 Checking initial session...');
             try {
+                // Check if we have OAuth tokens in the URL hash
+                const hash = window.location.hash;
+                if (hash && hash.includes('access_token')) {
+                    console.log('🔗 OAuth tokens detected in URL hash, processing manually...');
+                    console.log('🔍 Full hash:', hash);
+
+                    // Extract tokens from URL hash - handle format like #dashboard#access_token=...
+                    // Split by # and find the part with access_token
+                    const hashParts = hash.split('#');
+                    let tokenPart = '';
+                    for (const part of hashParts) {
+                        if (part.includes('access_token')) {
+                            tokenPart = part;
+                            break;
+                        }
+                    }
+
+                    console.log('🔍 Token part:', tokenPart);
+
+                    if (tokenPart) {
+                        const params = new URLSearchParams(tokenPart);
+                        const accessToken = params.get('access_token');
+                        const refreshToken = params.get('refresh_token');
+
+                        console.log('🔍 Extracted tokens:', {
+                            hasAccessToken: !!accessToken,
+                            hasRefreshToken: !!refreshToken
+                        });
+
+                        if (accessToken && refreshToken) {
+                            console.log('🔑 Setting session with extracted tokens');
+
+                            // Set the session manually
+                            const { data, error } = await supabase.auth.setSession({
+                                access_token: accessToken,
+                                refresh_token: refreshToken
+                            });
+
+                            if (error) {
+                                console.error('❌ Error setting session:', error);
+                            } else {
+                                console.log('✅ Session set successfully:', !!data.session);
+                                if (data.session) {
+                                    console.log('👤 Session user:', data.session.user.email);
+                                }
+                            }
+                        }
+                    }
+
+                    // Clean up OAuth tokens from URL
+                    console.log('🧹 Cleaning up OAuth tokens from URL');
+                    window.history.replaceState(null, '', window.location.pathname);
+                }
+
                 const profile = await getMyProfile();
                 console.log('📋 Profile result:', profile);
                 setCurrentUser(profile);
                 if (profile) {
                     console.log('✅ User logged in:', profile.email);
+                    // Navigate to dashboard if user is already logged in
+                    if (navigationStack.length === 0) {
+                        setNavigationStack([{ screen: 'global-dashboard', params: {}, project: undefined }]);
+                    }
                     window.dispatchEvent(new CustomEvent('userLoggedIn'));
                 } else {
                     console.log('❌ No profile found');
@@ -147,19 +216,74 @@ const App: React.FC = () => {
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             console.log('🔄 Auth state changed:', event, 'Has session:', !!session);
-            try {
-                const profile = await getMyProfile();
-                console.log('📋 Profile after auth change:', profile);
-                setCurrentUser(profile);
-                if (profile) {
-                    console.log('✅ User logged in via auth change:', profile.email);
-                    window.dispatchEvent(new CustomEvent('userLoggedIn'));
-                } else {
-                    console.log('❌ No profile after auth change');
-                    window.dispatchEvent(new CustomEvent('userLoggedOut'));
+
+            if (event === 'SIGNED_IN') {
+                console.log('🎉 User signed in - checking/creating profile');
+                try {
+                    let profile = await getMyProfile();
+                    console.log('📋 Profile after sign in:', profile);
+
+                    // If no profile exists, create one for the new user
+                    if (!profile && session?.user) {
+                        console.log('🆕 No profile found, creating new profile for user:', session.user.email);
+
+                        const newProfile = {
+                            id: session.user.id,
+                            email: session.user.email,
+                            name: session.user.user_metadata?.full_name ||
+                                session.user.user_metadata?.name ||
+                                session.user.email?.split('@')[0] || 'User',
+                            role: 'project_manager',
+                            created_at: new Date().toISOString(),
+                            updated_at: new Date().toISOString()
+                        };
+
+                        const { data: createdProfile, error: createError } = await supabase
+                            .from('profiles')
+                            .insert([newProfile])
+                            .select()
+                            .single();
+
+                        if (createError) {
+                            console.error('❌ Error creating profile:', createError);
+                        } else {
+                            console.log('✅ Profile created successfully:', createdProfile);
+                            profile = createdProfile;
+                        }
+                    }
+
+                    setCurrentUser(profile);
+                    if (profile) {
+                        console.log('✅ User logged in via auth change:', profile.email);
+                        // Navigate to dashboard after successful login
+                        setNavigationStack([{ screen: 'global-dashboard', params: {}, project: undefined }]);
+                        window.dispatchEvent(new CustomEvent('userLoggedIn'));
+                    }
+                } catch (error) {
+                    console.error('❌ Error in sign in auth state change:', error);
                 }
-            } catch (error) {
-                console.error('❌ Error in auth state change:', error);
+            } else if (event === 'SIGNED_OUT') {
+                console.log('👋 User signed out - clearing navigation');
+                setCurrentUser(null);
+                setNavigationStack([]);
+                window.dispatchEvent(new CustomEvent('userLoggedOut'));
+            } else {
+                // Handle other auth events (TOKEN_REFRESHED, etc.)
+                try {
+                    const profile = await getMyProfile();
+                    console.log('📋 Profile after auth change:', profile);
+                    setCurrentUser(profile);
+                    if (profile) {
+                        console.log('✅ User session maintained:', profile.email);
+                        window.dispatchEvent(new CustomEvent('userLoggedIn'));
+                    } else {
+                        console.log('❌ No profile after auth change');
+                        setNavigationStack([]);
+                        window.dispatchEvent(new CustomEvent('userLoggedOut'));
+                    }
+                } catch (error) {
+                    console.error('❌ Error in auth state change:', error);
+                }
             }
         });
 
@@ -170,23 +294,51 @@ const App: React.FC = () => {
         };
     }, []);
 
+    // Handle URL hash for OAuth redirects
+    useEffect(() => {
+        const handleHashChange = () => {
+            const hash = window.location.hash;
+            if (hash === '#dashboard' && currentUser) {
+                console.log('🔗 OAuth redirect detected - navigating to dashboard');
+                setNavigationStack([{ screen: 'global-dashboard', params: {}, project: undefined }]);
+                // Clean up the hash
+                window.history.replaceState(null, '', window.location.pathname);
+            }
+        };
+
+        // Check on mount
+        handleHashChange();
+
+        // Listen for hash changes
+        window.addEventListener('hashchange', handleHashChange);
+
+        return () => {
+            window.removeEventListener('hashchange', handleHashChange);
+        };
+    }, [currentUser]);
+
 
     useEffect(() => {
         if (currentUser) {
+            console.log('👤 User set - loading projects and ensuring dashboard navigation');
             const loadProjects = async () => {
                 const projects = await api.fetchAllProjects(currentUser);
                 setAllProjects(projects);
             };
             loadProjects();
+
+            // Ensure user is navigated to dashboard if no navigation exists
             if (navigationStack.length === 0) {
-              navigateToModule('global-dashboard');
+                console.log('🏠 No navigation stack - navigating to dashboard');
+                setNavigationStack([{ screen: 'global-dashboard', params: {}, project: undefined }]);
             }
         } else {
+            console.log('❌ No user - clearing navigation and projects');
             setNavigationStack([]);
             setAllProjects([]);
         }
     }, [currentUser]);
-    
+
     useEffect(() => {
         const handleLogoutTrigger = () => {
             handleLogout();
@@ -196,23 +348,31 @@ const App: React.FC = () => {
     }, []);
 
     const handleLoginSuccess = (user: User) => {
+        console.log('🎉 Login success handler called for user:', user.email);
         // This is primarily for the mock auth flow.
         // In the Supabase flow, onAuthStateChange is the source of truth,
         // so we only manually set the user if Supabase is not configured.
         if (!supabase) {
+            console.log('📱 Mock auth - setting user and navigating to dashboard');
             setCurrentUser(user);
+            // Navigate to dashboard for mock auth
+            setNavigationStack([{ screen: 'global-dashboard', params: {}, project: undefined }]);
             window.dispatchEvent(new CustomEvent('userLoggedIn'));
+        } else {
+            console.log('🔄 Supabase auth - navigation will be handled by onAuthStateChange');
         }
     };
 
     const handleLogout = async () => {
+        console.log('👋 Logout handler called');
         if (supabase) {
+            console.log('🔄 Supabase logout - signing out');
             await supabase.auth.signOut();
-        }
-        setCurrentUser(null);
-        // userLoggedOut event is handled by onAuthStateChange if supabase is active,
-        // but needs to be fired manually for the mock flow.
-        if (!supabase) {
+            // Navigation clearing will be handled by onAuthStateChange SIGNED_OUT event
+        } else {
+            console.log('📱 Mock logout - clearing user and navigation');
+            setCurrentUser(null);
+            setNavigationStack([]);
             window.dispatchEvent(new CustomEvent('userLoggedOut'));
         }
     };
@@ -225,7 +385,7 @@ const App: React.FC = () => {
     const navigateToModule = useCallback((screen: Screen, params: any = {}) => {
         setNavigationStack([{ screen, params, project: undefined }]);
     }, []);
-    
+
     const goBack = useCallback(() => {
         if (navigationStack.length > 1) {
             setNavigationStack(prev => prev.slice(0, -1));
@@ -244,17 +404,18 @@ const App: React.FC = () => {
     }, [currentUser, navigationStack, navigateToModule]);
 
     const selectProject = useCallback(async (projectId: string) => {
-        const project = await api.fetchProjectById(projectId);
+        if (!currentUser) return;
+        const project = await api.fetchProjectById(projectId, currentUser);
         if (project) {
             setNavigationStack([{ screen: 'project-home', project }]);
         }
-    }, []);
-    
+    }, [currentUser]);
+
     const handleDeepLink = useCallback(async (projectId: string | null, screen: Screen, params: any) => {
         if (projectId && currentUser) {
-            const project = allProjects.find(p => p.id === projectId) || await api.fetchProjectById(projectId);
+            const project = allProjects.find(p => p.id === projectId) || await api.fetchProjectById(projectId, currentUser);
             if (project) {
-                 setNavigationStack([
+                setNavigationStack([
                     { screen: 'project-home', project },
                     { screen, params, project }
                 ]);
@@ -272,13 +433,13 @@ const App: React.FC = () => {
         });
         setIsProjectSelectorOpen(true);
     }, []);
-    
-     const handleQuickAction = (action: Screen) => {
+
+    const handleQuickAction = (action: Screen) => {
         openProjectSelector(`Select a project for the new ${action.split('-')[1]}`, (projectId) => {
             handleDeepLink(projectId, action, {});
         });
     };
-    
+
     const handleSuggestAction = async () => {
         if (!currentUser) return;
         setIsAISuggestionModalOpen(true);
@@ -288,7 +449,7 @@ const App: React.FC = () => {
         setAiSuggestion(suggestion);
         setIsAISuggestionLoading(false);
     };
-    
+
     const handleAISuggestionAction = (link: NotificationLink) => {
         if (link.projectId) {
             handleDeepLink(link.projectId, link.screen, link.params);
@@ -308,22 +469,27 @@ const App: React.FC = () => {
         );
     }
 
+    console.log('🎨 Rendering App - currentUser:', currentUser ? currentUser.email : 'null');
+
     if (!currentUser) {
+        console.log('❌ No currentUser - showing login screen');
         return (
             <div className="bg-slate-100 min-h-screen flex items-center justify-center">
                 <AuthScreen onLoginSuccess={handleLoginSuccess} />
             </div>
         );
     }
-    
+
+    console.log('✅ currentUser exists - showing dashboard');
+
     const currentNavItem = navigationStack[navigationStack.length - 1];
     if (!currentNavItem) {
         return <div className="p-8">Loading...</div>;
     }
-    
+
     const { screen, params, project } = currentNavItem;
     const ScreenComponent = SCREEN_COMPONENTS[screen] || PlaceholderToolScreen;
-    
+
     const getSidebarProject = () => {
         if (project) {
             return project;
@@ -340,7 +506,7 @@ const App: React.FC = () => {
         <div className="bg-slate-50">
             <AppLayout
                 sidebar={
-                    <Sidebar 
+                    <Sidebar
                         project={getSidebarProject()}
                         navigateTo={navigateTo}
                         navigateToModule={navigateToModule}
@@ -349,15 +515,15 @@ const App: React.FC = () => {
                         onLogout={handleLogout}
                     />
                 }
-                 floatingMenu={<FloatingMenu 
-                    currentUser={currentUser} 
-                    navigateToModule={navigateToModule} 
+                floatingMenu={<FloatingMenu
+                    currentUser={currentUser}
+                    navigateToModule={navigateToModule}
                     openProjectSelector={openProjectSelector}
                     onDeepLink={handleDeepLink}
-                 />}
+                />}
             >
                 <div className="p-8">
-                     <ScreenComponent
+                    <ScreenComponent
                         currentUser={currentUser}
                         selectProject={selectProject}
                         navigateTo={navigateTo}

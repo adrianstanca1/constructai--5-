@@ -99,6 +99,7 @@ export type Screen =
     | 'project-operations'
     | 'financial-management'
     | 'business-development'
+    | 'ai-agents-marketplace'
     // Tool screens
     | 'placeholder-tool';
 
@@ -317,4 +318,59 @@ export interface TimeEntry {
     userId: string;
     startTime: string;
     endTime: string | null;
+}
+
+// AI Agents and Multi-Tenant Types
+export interface AIAgent {
+    id: string;
+    name: string;
+    description: string;
+    category: 'safety' | 'quality' | 'productivity' | 'compliance' | 'analytics' | 'documentation' | 'communication' | 'planning';
+    priceMonthly: number;
+    priceYearly: number;
+    features: string[];
+    capabilities: string[];
+    iconUrl?: string;
+    bannerUrl?: string;
+    isActive: boolean;
+    isFeatured: boolean;
+    minPlan: 'basic' | 'professional' | 'enterprise';
+}
+
+export interface CompanySubscription {
+    id: string;
+    companyId: string;
+    agentId: string;
+    status: 'active' | 'paused' | 'cancelled' | 'expired';
+    billingCycle: 'monthly' | 'yearly';
+    pricePaid: number;
+    startedAt: string;
+    expiresAt?: string;
+    autoRenew: boolean;
+    agent?: AIAgent;
+}
+
+export interface AgentUsageLog {
+    id: string;
+    companyId: string;
+    agentId: string;
+    userId: string;
+    projectId?: string;
+    action: string;
+    inputData?: any;
+    outputData?: any;
+    tokensUsed: number;
+    processingTimeMs: number;
+    success: boolean;
+    errorMessage?: string;
+    createdAt: string;
+}
+
+// Multi-tenant context interface
+export interface TenantContext {
+    user: User;
+    company: Company;
+    subscriptions: CompanySubscription[];
+    availableAgents: AIAgent[];
+    hasAgentAccess: (agentId: string) => boolean;
 }

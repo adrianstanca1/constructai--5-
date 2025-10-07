@@ -135,33 +135,342 @@ export const fetchCompanies = async (currentUser: User): Promise<Company[]> => {
 
 // --- Projects ---
 export const fetchAllProjects = async (currentUser: User): Promise<Project[]> => {
-    await delay(LATENCY);
-    if (currentUser.role === 'super_admin') {
-        return db.getProjects();
+    console.log('🏗️ Fetching projects for user:', currentUser.email, 'Company:', currentUser.companyId);
+
+    if (supabase) {
+        try {
+            const { data: projects, error } = await supabase
+                .from('projects')
+                .select(`
+                    id,
+                    name,
+                    description,
+                    status,
+                    start_date,
+                    end_date,
+                    budget,
+                    spent,
+                    location,
+                    company_id,
+                    project_manager_id,
+                    created_at,
+                    updated_at
+                `)
+                .eq('company_id', currentUser.companyId);
+
+            if (error) {
+                console.error('❌ Error fetching projects:', error);
+                throw error;
+            }
+
+            console.log('✅ Fetched projects:', projects?.length || 0);
+            return projects?.map(p => ({
+                id: p.id,
+                name: p.name,
+                description: p.description || '',
+                status: p.status,
+                startDate: p.start_date,
+                endDate: p.end_date,
+                budget: p.budget,
+                spent: p.spent || 0,
+                location: p.location || '',
+                companyId: p.company_id,
+                projectManagerId: p.project_manager_id,
+                createdAt: p.created_at,
+                updatedAt: p.updated_at
+            })) || [];
+        } catch (error) {
+            console.error('❌ Error in fetchAllProjects:', error);
+            return [];
+        }
+    } else {
+        // Mock implementation with multi-tenant filtering
+        await delay(LATENCY);
+        if (currentUser.role === 'super_admin') {
+            return db.getProjects();
+        }
+        return db.getProjects().filter(p => p.companyId === currentUser.companyId);
     }
-    return db.getProjects().filter(p => p.companyId === currentUser.companyId);
 };
 
-export const fetchProjectById = async (id: string): Promise<Project | null> => {
-    await delay(LATENCY);
-    return db.findProject(id);
+export const fetchProjectById = async (id: string, currentUser?: User): Promise<Project | null> => {
+    console.log('🏗️ Fetching project by ID:', id, 'for user:', currentUser?.email);
+
+    if (supabase && currentUser) {
+        try {
+            const { data: project, error } = await supabase
+                .from('projects')
+                .select(`
+                    id,
+                    name,
+                    description,
+                    status,
+                    start_date,
+                    end_date,
+                    budget,
+                    spent,
+                    location,
+                    company_id,
+                    project_manager_id,
+                    created_at,
+                    updated_at
+                `)
+                .eq('id', id)
+                .eq('company_id', currentUser.companyId) // Multi-tenant security
+                .single();
+
+            if (error) {
+                console.error('❌ Error fetching project:', error);
+                return null;
+            }
+
+            if (!project) {
+                console.log('❌ Project not found or access denied');
+                return null;
+            }
+
+            console.log('✅ Fetched project:', project.name);
+            return {
+                id: project.id,
+                name: project.name,
+                description: project.description || '',
+                status: project.status,
+                startDate: project.start_date,
+                endDate: project.end_date,
+                budget: project.budget,
+                spent: project.spent || 0,
+                location: project.location || '',
+                companyId: project.company_id,
+                projectManagerId: project.project_manager_id,
+                createdAt: project.created_at,
+                updatedAt: project.updated_at
+            };
+        } catch (error) {
+            console.error('❌ Error in fetchProjectById:', error);
+            return null;
+        }
+    } else {
+        // Mock implementation with multi-tenant check
+        await delay(LATENCY);
+        const project = db.findProject(id);
+
+        // Multi-tenant security check for mock data
+        if (project && currentUser && project.companyId !== currentUser.companyId && currentUser.role !== 'super_admin') {
+            console.log('❌ Access denied to project from different company');
+            return null;
+        }
+
+        return project;
+    }
 };
 
 // --- Tasks ---
 export const fetchTasksForProject = async (projectId: string, currentUser: User): Promise<Task[]> => {
-    await delay(LATENCY);
-    checkPermissions(currentUser, 'read', 'task');
-    return db.getTasks().filter(t => t.projectId === projectId);
+    console.log('📋 Fetching tasks for project:', projectId, 'user:', currentUser.email);
+
+    if (supabase) {
+        try {
+            // First verify the user has access to this project (multi-tenant check)
+            const project = await fetchProjectById(projectId, currentUser);
+            if (!project) {
+                console.log('❌ Access denied to project tasks');
+                return [];
+            }
+
+            const { data: tasks, error } = await supabase
+                .from('tasks')
+                .select(`
+                    id,
+                    title,
+                    description,
+                    status,
+                    priority,
+                    assigned_to,
+                    due_date,
+                    completed_at,
+                    created_by,
+                    project_id,
+                    created_at,
+                    updated_at
+                `)
+                .eq('project_id', projectId);
+
+            if (error) {
+                console.error('❌ Error fetching tasks:', error);
+                throw error;
+            }
+
+            console.log('✅ Fetched tasks:', tasks?.length || 0);
+            return tasks?.map(t => ({
+                id: t.id,
+                title: t.title,
+                description: t.description || '',
+                status: t.status,
+                priority: t.priority,
+                assignee: t.assigned_to || '',
+                dueDate: t.due_date,
+                completedAt: t.completed_at,
+                createdBy: t.created_by,
+                projectId: t.project_id,
+                comments: [], // Would need separate query for comments
+                history: [], // Would need separate query for history
+                targetRoles: [] // Would need to add this field to schema if needed
+            })) || [];
+        } catch (error) {
+            console.error('❌ Error in fetchTasksForProject:', error);
+            return [];
+        }
+    } else {
+        // Mock implementation with multi-tenant check
+        await delay(LATENCY);
+        checkPermissions(currentUser, 'read', 'task');
+
+        // Verify project access first
+        const project = db.findProject(projectId);
+        if (!project || (project.companyId !== currentUser.companyId && currentUser.role !== 'super_admin')) {
+            console.log('❌ Access denied to project tasks (mock)');
+            return [];
+        }
+
+        return db.getTasks().filter(t => t.projectId === projectId);
+    }
 };
 
 export const fetchTasksForUser = async (user: User): Promise<Task[]> => {
-    await delay(LATENCY);
-    return db.getTasks().filter(t => t.assignee === user.name || t.targetRoles?.includes(user.role));
+    console.log('📋 Fetching tasks for user:', user.email);
+
+    if (supabase) {
+        try {
+            const { data: tasks, error } = await supabase
+                .from('tasks')
+                .select(`
+                    id,
+                    title,
+                    description,
+                    status,
+                    priority,
+                    assigned_to,
+                    due_date,
+                    completed_at,
+                    created_by,
+                    project_id,
+                    created_at,
+                    updated_at,
+                    projects!inner(company_id)
+                `)
+                .eq('assigned_to', user.id)
+                .eq('projects.company_id', user.companyId); // Multi-tenant filter
+
+            if (error) {
+                console.error('❌ Error fetching user tasks:', error);
+                throw error;
+            }
+
+            console.log('✅ Fetched user tasks:', tasks?.length || 0);
+            return tasks?.map(t => ({
+                id: t.id,
+                title: t.title,
+                description: t.description || '',
+                status: t.status,
+                priority: t.priority,
+                assignee: t.assigned_to || '',
+                dueDate: t.due_date,
+                completedAt: t.completed_at,
+                createdBy: t.created_by,
+                projectId: t.project_id,
+                comments: [],
+                history: [],
+                targetRoles: []
+            })) || [];
+        } catch (error) {
+            console.error('❌ Error in fetchTasksForUser:', error);
+            return [];
+        }
+    } else {
+        // Mock implementation with multi-tenant filtering
+        await delay(LATENCY);
+        const userTasks = db.getTasks().filter(t => t.assignee === user.name || t.targetRoles?.includes(user.role));
+
+        // Filter by company access
+        return userTasks.filter(task => {
+            const project = db.findProject(task.projectId);
+            return project && (project.companyId === user.companyId || user.role === 'super_admin');
+        });
+    }
 };
 
-export const fetchTaskById = async (id: string): Promise<Task | null> => {
-    await delay(LATENCY);
-    return db.findTask(id);
+export const fetchTaskById = async (id: string, currentUser?: User): Promise<Task | null> => {
+    console.log('📋 Fetching task by ID:', id, 'for user:', currentUser?.email);
+
+    if (supabase && currentUser) {
+        try {
+            const { data: task, error } = await supabase
+                .from('tasks')
+                .select(`
+                    id,
+                    title,
+                    description,
+                    status,
+                    priority,
+                    assigned_to,
+                    due_date,
+                    completed_at,
+                    created_by,
+                    project_id,
+                    created_at,
+                    updated_at,
+                    projects!inner(company_id)
+                `)
+                .eq('id', id)
+                .eq('projects.company_id', currentUser.companyId) // Multi-tenant security
+                .single();
+
+            if (error) {
+                console.error('❌ Error fetching task:', error);
+                return null;
+            }
+
+            if (!task) {
+                console.log('❌ Task not found or access denied');
+                return null;
+            }
+
+            console.log('✅ Fetched task:', task.title);
+            return {
+                id: task.id,
+                title: task.title,
+                description: task.description || '',
+                status: task.status,
+                priority: task.priority,
+                assignee: task.assigned_to || '',
+                dueDate: task.due_date,
+                completedAt: task.completed_at,
+                createdBy: task.created_by,
+                projectId: task.project_id,
+                comments: [],
+                history: [],
+                targetRoles: []
+            };
+        } catch (error) {
+            console.error('❌ Error in fetchTaskById:', error);
+            return null;
+        }
+    } else {
+        // Mock implementation with multi-tenant check
+        await delay(LATENCY);
+        const task = db.findTask(id);
+
+        if (task && currentUser) {
+            // Verify user has access to this task's project
+            const project = db.findProject(task.projectId);
+            if (!project || (project.companyId !== currentUser.companyId && currentUser.role !== 'super_admin')) {
+                console.log('❌ Access denied to task from different company');
+                return null;
+            }
+        }
+
+        return task;
+    }
 };
 
 export const createTask = async (taskData: Omit<Task, 'id' | 'comments' | 'history'>, creator: User): Promise<Task> => {
@@ -974,5 +1283,864 @@ export const analyzeDrawingAndGenerateTags = async (drawing: { title: string, nu
         });
 
         return Array.from(tags);
+    }
+};
+
+// =====================================================
+// AI AGENTS MARKETPLACE API
+// =====================================================
+
+export interface AIAgent {
+    id: string;
+    name: string;
+    description: string;
+    category: 'safety' | 'quality' | 'productivity' | 'compliance' | 'analytics' | 'documentation' | 'communication' | 'planning';
+    priceMonthly: number;
+    priceYearly: number;
+    features: string[];
+    capabilities: string[];
+    iconUrl?: string;
+    bannerUrl?: string;
+    isActive: boolean;
+    isFeatured: boolean;
+    minPlan: 'basic' | 'professional' | 'enterprise';
+}
+
+export interface CompanySubscription {
+    id: string;
+    companyId: string;
+    agentId: string;
+    status: 'active' | 'paused' | 'cancelled' | 'expired';
+    billingCycle: 'monthly' | 'yearly';
+    pricePaid: number;
+    startedAt: string;
+    expiresAt?: string;
+    autoRenew: boolean;
+    agent?: AIAgent;
+}
+
+// Fetch all available AI agents from marketplace
+export const fetchAvailableAIAgents = async (): Promise<AIAgent[]> => {
+    console.log('🤖 Fetching available AI agents');
+
+    if (supabase) {
+        try {
+            const { data: agents, error } = await supabase
+                .from('ai_agents')
+                .select('*')
+                .eq('is_active', true)
+                .order('is_featured', { ascending: false })
+                .order('name');
+
+            if (error) {
+                console.error('❌ Error fetching AI agents:', error);
+                throw error;
+            }
+
+            console.log('✅ Fetched AI agents:', agents?.length || 0);
+            return agents?.map(a => ({
+                id: a.id,
+                name: a.name,
+                description: a.description,
+                category: a.category,
+                priceMonthly: a.price_monthly,
+                priceYearly: a.price_yearly,
+                features: a.features || [],
+                capabilities: a.capabilities || [],
+                iconUrl: a.icon_url,
+                bannerUrl: a.banner_url,
+                isActive: a.is_active,
+                isFeatured: a.is_featured,
+                minPlan: a.min_plan
+            })) || [];
+        } catch (error) {
+            console.error('❌ Error in fetchAvailableAIAgents:', error);
+            return [];
+        }
+    } else {
+        // Mock implementation
+        await delay(LATENCY);
+        return [
+            {
+                id: 'agent-hse-sentinel',
+                name: 'HSE Sentinel AI',
+                description: 'Advanced health, safety, and environmental monitoring agent that analyzes site conditions and provides real-time safety recommendations.',
+                category: 'safety',
+                priceMonthly: 49.99,
+                priceYearly: 499.99,
+                features: ['Real-time safety monitoring', 'Incident prediction', 'Compliance checking', 'Safety report generation'],
+                capabilities: ['Image analysis for PPE compliance', 'Risk assessment automation', 'Safety training recommendations', 'Incident documentation'],
+                isActive: true,
+                isFeatured: true,
+                minPlan: 'basic'
+            },
+            {
+                id: 'agent-quality-inspector',
+                name: 'Quality Inspector AI',
+                description: 'Automated quality control agent that inspects work progress and identifies potential issues before they become problems.',
+                category: 'quality',
+                priceMonthly: 39.99,
+                priceYearly: 399.99,
+                features: ['Automated quality checks', 'Progress monitoring', 'Defect detection', 'Quality reports'],
+                capabilities: ['Photo analysis for quality issues', 'Progress tracking', 'Compliance verification', 'Quality metrics dashboard'],
+                isActive: true,
+                isFeatured: true,
+                minPlan: 'basic'
+            },
+            {
+                id: 'agent-productivity-optimizer',
+                name: 'Productivity Optimizer AI',
+                description: 'Analyzes project data to identify bottlenecks and suggest optimizations for improved efficiency.',
+                category: 'productivity',
+                priceMonthly: 59.99,
+                priceYearly: 599.99,
+                features: ['Performance analytics', 'Bottleneck identification', 'Resource optimization', 'Productivity insights'],
+                capabilities: ['Data analysis and reporting', 'Predictive scheduling', 'Resource allocation', 'Performance benchmarking'],
+                isActive: true,
+                isFeatured: false,
+                minPlan: 'professional'
+            }
+        ];
+    }
+};
+
+// Fetch company's active AI agent subscriptions
+export const fetchCompanySubscriptions = async (currentUser: User): Promise<CompanySubscription[]> => {
+    console.log('📋 Fetching company subscriptions for:', currentUser.companyId);
+
+    if (supabase) {
+        try {
+            const { data: subscriptions, error } = await supabase
+                .from('company_subscriptions')
+                .select(`
+                    *,
+                    ai_agents (
+                        id,
+                        name,
+                        description,
+                        category,
+                        price_monthly,
+                        price_yearly,
+                        features,
+                        capabilities,
+                        icon_url,
+                        banner_url,
+                        is_active,
+                        is_featured,
+                        min_plan
+                    )
+                `)
+                .eq('company_id', currentUser.companyId)
+                .eq('status', 'active');
+
+            if (error) {
+                console.error('❌ Error fetching company subscriptions:', error);
+                throw error;
+            }
+
+            console.log('✅ Fetched company subscriptions:', subscriptions?.length || 0);
+            return subscriptions?.map(s => ({
+                id: s.id,
+                companyId: s.company_id,
+                agentId: s.agent_id,
+                status: s.status,
+                billingCycle: s.billing_cycle,
+                pricePaid: s.price_paid,
+                startedAt: s.started_at,
+                expiresAt: s.expires_at,
+                autoRenew: s.auto_renew,
+                agent: s.ai_agents ? {
+                    id: s.ai_agents.id,
+                    name: s.ai_agents.name,
+                    description: s.ai_agents.description,
+                    category: s.ai_agents.category,
+                    priceMonthly: s.ai_agents.price_monthly,
+                    priceYearly: s.ai_agents.price_yearly,
+                    features: s.ai_agents.features || [],
+                    capabilities: s.ai_agents.capabilities || [],
+                    iconUrl: s.ai_agents.icon_url,
+                    bannerUrl: s.ai_agents.banner_url,
+                    isActive: s.ai_agents.is_active,
+                    isFeatured: s.ai_agents.is_featured,
+                    minPlan: s.ai_agents.min_plan
+                } : undefined
+            })) || [];
+        } catch (error) {
+            console.error('❌ Error in fetchCompanySubscriptions:', error);
+            return [];
+        }
+    } else {
+        // Mock implementation
+        await delay(LATENCY);
+        return [
+            {
+                id: 'sub-1',
+                companyId: currentUser.companyId,
+                agentId: 'agent-hse-sentinel',
+                status: 'active',
+                billingCycle: 'monthly',
+                pricePaid: 49.99,
+                startedAt: new Date().toISOString(),
+                autoRenew: true,
+                agent: {
+                    id: 'agent-hse-sentinel',
+                    name: 'HSE Sentinel AI',
+                    description: 'Advanced health, safety, and environmental monitoring agent.',
+                    category: 'safety',
+                    priceMonthly: 49.99,
+                    priceYearly: 499.99,
+                    features: ['Real-time safety monitoring', 'Incident prediction'],
+                    capabilities: ['Image analysis for PPE compliance', 'Risk assessment automation'],
+                    isActive: true,
+                    isFeatured: true,
+                    minPlan: 'basic'
+                }
+            }
+        ];
+    }
+};
+
+// Check if company has access to a specific AI agent
+export const hasAgentAccess = async (currentUser: User, agentId: string): Promise<boolean> => {
+    console.log('🔍 Checking agent access for:', agentId, 'user:', currentUser.email);
+
+    if (supabase) {
+        try {
+            const { data: subscription, error } = await supabase
+                .from('company_subscriptions')
+                .select('id')
+                .eq('company_id', currentUser.companyId)
+                .eq('agent_id', agentId)
+                .eq('status', 'active')
+                .single();
+
+            if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+                console.error('❌ Error checking agent access:', error);
+                return false;
+            }
+
+            const hasAccess = !!subscription;
+            console.log(hasAccess ? '✅ Agent access granted' : '❌ Agent access denied');
+            return hasAccess;
+        } catch (error) {
+            console.error('❌ Error in hasAgentAccess:', error);
+            return false;
+        }
+    } else {
+        // Mock implementation - always grant access for demo
+        await delay(LATENCY / 2);
+        return true;
+    }
+};
+
+// Subscribe company to an AI agent
+export const subscribeToAgent = async (
+    currentUser: User,
+    agentId: string,
+    billingCycle: 'monthly' | 'yearly'
+): Promise<CompanySubscription | null> => {
+    console.log('💳 Subscribing to agent:', agentId, 'billing:', billingCycle);
+
+    // Check permissions
+    if (!['company_admin', 'super_admin'].includes(currentUser.role)) {
+        throw new Error('Only company administrators can manage subscriptions');
+    }
+
+    if (supabase) {
+        try {
+            // Get agent details first
+            const { data: agent, error: agentError } = await supabase
+                .from('ai_agents')
+                .select('*')
+                .eq('id', agentId)
+                .single();
+
+            if (agentError || !agent) {
+                throw new Error('Agent not found');
+            }
+
+            const price = billingCycle === 'monthly' ? agent.price_monthly : agent.price_yearly;
+            const expiresAt = new Date();
+            if (billingCycle === 'monthly') {
+                expiresAt.setMonth(expiresAt.getMonth() + 1);
+            } else {
+                expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+            }
+
+            const { data: subscription, error } = await supabase
+                .from('company_subscriptions')
+                .insert({
+                    company_id: currentUser.companyId,
+                    agent_id: agentId,
+                    billing_cycle: billingCycle,
+                    price_paid: price,
+                    expires_at: expiresAt.toISOString(),
+                    status: 'active',
+                    auto_renew: true
+                })
+                .select()
+                .single();
+
+            if (error) {
+                console.error('❌ Error creating subscription:', error);
+                throw error;
+            }
+
+            console.log('✅ Subscription created successfully');
+            return {
+                id: subscription.id,
+                companyId: subscription.company_id,
+                agentId: subscription.agent_id,
+                status: subscription.status,
+                billingCycle: subscription.billing_cycle,
+                pricePaid: subscription.price_paid,
+                startedAt: subscription.started_at,
+                expiresAt: subscription.expires_at,
+                autoRenew: subscription.auto_renew
+            };
+        } catch (error) {
+            console.error('❌ Error in subscribeToAgent:', error);
+            throw error;
+        }
+    } else {
+        // Mock implementation
+        await delay(LATENCY * 2);
+        return {
+            id: `sub-${Date.now()}`,
+            companyId: currentUser.companyId,
+            agentId,
+            status: 'active',
+            billingCycle,
+            pricePaid: billingCycle === 'monthly' ? 49.99 : 499.99,
+            startedAt: new Date().toISOString(),
+            autoRenew: true
+        };
+    }
+};
+
+// =====================================================
+// PLATFORM ADMINISTRATION API
+// =====================================================
+
+export interface PlatformInvitation {
+    id: string;
+    email: string;
+    companyName: string;
+    invitedBy: string;
+    invitationType: 'company_admin' | 'super_admin' | 'platform_partner';
+    status: 'pending' | 'accepted' | 'declined' | 'expired';
+    invitationToken: string;
+    expiresAt: string;
+    acceptedAt?: string;
+    metadata: any;
+    createdAt: string;
+}
+
+export interface CompanyPlan {
+    id: string;
+    name: string;
+    description: string;
+    priceMonthly: number;
+    priceYearly: number;
+    maxUsers: number;
+    maxProjects: number;
+    features: string[];
+    aiAgentsIncluded: string[];
+    aiAgentsLimit: number;
+    storageGb: number;
+    isActive: boolean;
+    isFeatured: boolean;
+    sortOrder: number;
+}
+
+export interface PlatformSettings {
+    [key: string]: any;
+}
+
+export interface PlatformStats {
+    totalCompanies: number;
+    totalUsers: number;
+    totalProjects: number;
+    activeSubscriptions: number;
+    monthlyRevenue: number;
+    newCompaniesThisMonth: number;
+    newUsersThisMonth: number;
+}
+
+export interface AuditLogEntry {
+    id: string;
+    userId?: string;
+    companyId?: string;
+    action: string;
+    resourceType: string;
+    resourceId?: string;
+    oldValues?: any;
+    newValues?: any;
+    ipAddress?: string;
+    userAgent?: string;
+    createdAt: string;
+}
+
+// Get platform statistics (super admin only)
+export const getPlatformStats = async (currentUser: User): Promise<PlatformStats> => {
+    console.log('📊 Fetching platform statistics');
+
+    if (currentUser.role !== 'super_admin') {
+        throw new Error('Access denied: Super admin required');
+    }
+
+    if (supabase) {
+        try {
+            // Get companies count
+            const { count: companiesCount } = await supabase
+                .from('companies')
+                .select('*', { count: 'exact', head: true });
+
+            // Get users count
+            const { count: usersCount } = await supabase
+                .from('profiles')
+                .select('*', { count: 'exact', head: true });
+
+            // Get projects count
+            const { count: projectsCount } = await supabase
+                .from('projects')
+                .select('*', { count: 'exact', head: true });
+
+            // Get active subscriptions count
+            const { count: subscriptionsCount } = await supabase
+                .from('company_subscriptions')
+                .select('*', { count: 'exact', head: true })
+                .eq('status', 'active');
+
+            // Get new companies this month
+            const startOfMonth = new Date();
+            startOfMonth.setDate(1);
+            startOfMonth.setHours(0, 0, 0, 0);
+
+            const { count: newCompaniesCount } = await supabase
+                .from('companies')
+                .select('*', { count: 'exact', head: true })
+                .gte('created_at', startOfMonth.toISOString());
+
+            // Get new users this month
+            const { count: newUsersCount } = await supabase
+                .from('profiles')
+                .select('*', { count: 'exact', head: true })
+                .gte('created_at', startOfMonth.toISOString());
+
+            // Calculate monthly revenue (simplified)
+            const { data: subscriptions } = await supabase
+                .from('company_subscriptions')
+                .select('price_paid')
+                .eq('status', 'active')
+                .eq('billing_cycle', 'monthly');
+
+            const monthlyRevenue = subscriptions?.reduce((sum, sub) => sum + sub.price_paid, 0) || 0;
+
+            return {
+                totalCompanies: companiesCount || 0,
+                totalUsers: usersCount || 0,
+                totalProjects: projectsCount || 0,
+                activeSubscriptions: subscriptionsCount || 0,
+                monthlyRevenue,
+                newCompaniesThisMonth: newCompaniesCount || 0,
+                newUsersThisMonth: newUsersCount || 0
+            };
+        } catch (error) {
+            console.error('❌ Error fetching platform stats:', error);
+            throw error;
+        }
+    } else {
+        // Mock data for development
+        await delay(LATENCY);
+        return {
+            totalCompanies: 15,
+            totalUsers: 127,
+            totalProjects: 89,
+            activeSubscriptions: 12,
+            monthlyRevenue: 2847.50,
+            newCompaniesThisMonth: 3,
+            newUsersThisMonth: 18
+        };
+    }
+};
+
+// Get all companies (super admin only)
+export const getAllCompanies = async (currentUser: User): Promise<(Company & { plan?: CompanyPlan; userCount: number; projectCount: number })[]> => {
+    console.log('🏢 Fetching all companies');
+
+    if (currentUser.role !== 'super_admin') {
+        throw new Error('Access denied: Super admin required');
+    }
+
+    if (supabase) {
+        try {
+            const { data: companies, error } = await supabase
+                .from('companies')
+                .select(`
+                    *,
+                    company_plans (
+                        id, name, description, price_monthly, price_yearly,
+                        max_users, max_projects, features, ai_agents_included,
+                        ai_agents_limit, storage_gb, is_active, is_featured, sort_order
+                    )
+                `)
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('❌ Error fetching companies:', error);
+                throw error;
+            }
+
+            // Get user and project counts for each company
+            const companiesWithCounts = await Promise.all(
+                (companies || []).map(async (company) => {
+                    const [userCountResult, projectCountResult] = await Promise.all([
+                        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('company_id', company.id),
+                        supabase.from('projects').select('*', { count: 'exact', head: true }).eq('company_id', company.id)
+                    ]);
+
+                    return {
+                        id: company.id,
+                        name: company.name,
+                        userCount: userCountResult.count || 0,
+                        projectCount: projectCountResult.count || 0,
+                        plan: company.company_plans ? {
+                            id: company.company_plans.id,
+                            name: company.company_plans.name,
+                            description: company.company_plans.description,
+                            priceMonthly: company.company_plans.price_monthly,
+                            priceYearly: company.company_plans.price_yearly,
+                            maxUsers: company.company_plans.max_users,
+                            maxProjects: company.company_plans.max_projects,
+                            features: company.company_plans.features || [],
+                            aiAgentsIncluded: company.company_plans.ai_agents_included || [],
+                            aiAgentsLimit: company.company_plans.ai_agents_limit,
+                            storageGb: company.company_plans.storage_gb,
+                            isActive: company.company_plans.is_active,
+                            isFeatured: company.company_plans.is_featured,
+                            sortOrder: company.company_plans.sort_order
+                        } : undefined
+                    };
+                })
+            );
+
+            console.log('✅ Fetched companies:', companiesWithCounts.length);
+            return companiesWithCounts;
+        } catch (error) {
+            console.error('❌ Error in getAllCompanies:', error);
+            throw error;
+        }
+    } else {
+        // Mock data
+        await delay(LATENCY);
+        return [
+            {
+                id: 'comp-1',
+                name: 'Demo Construction Company',
+                userCount: 8,
+                projectCount: 5,
+                plan: {
+                    id: 'plan-professional',
+                    name: 'Professional Plan',
+                    description: 'Ideal for growing construction companies',
+                    priceMonthly: 79.99,
+                    priceYearly: 799.99,
+                    maxUsers: 25,
+                    maxProjects: 15,
+                    features: ['Everything in Basic', 'Advanced Reporting'],
+                    aiAgentsIncluded: ['agent-hse-sentinel', 'agent-quality-inspector'],
+                    aiAgentsLimit: 5,
+                    storageGb: 100,
+                    isActive: true,
+                    isFeatured: true,
+                    sortOrder: 2
+                }
+            }
+        ];
+    }
+};
+
+// Send platform invitation
+export const sendPlatformInvitation = async (
+    currentUser: User,
+    email: string,
+    companyName: string,
+    invitationType: 'company_admin' | 'super_admin' | 'platform_partner' = 'company_admin'
+): Promise<PlatformInvitation> => {
+    console.log('📧 Sending platform invitation to:', email);
+
+    if (currentUser.role !== 'super_admin') {
+        throw new Error('Access denied: Super admin required');
+    }
+
+    if (supabase) {
+        try {
+            const invitationToken = `inv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            const expiresAt = new Date();
+            expiresAt.setDate(expiresAt.getDate() + 7); // 7 days expiry
+
+            const { data: invitation, error } = await supabase
+                .from('platform_invitations')
+                .insert({
+                    email,
+                    company_name: companyName,
+                    invited_by: currentUser.id,
+                    invitation_type: invitationType,
+                    invitation_token: invitationToken,
+                    expires_at: expiresAt.toISOString(),
+                    status: 'pending',
+                    metadata: {
+                        invitedByName: currentUser.name,
+                        invitedByEmail: currentUser.email
+                    }
+                })
+                .select()
+                .single();
+
+            if (error) {
+                console.error('❌ Error creating invitation:', error);
+                throw error;
+            }
+
+            // Log the action
+            await logPlatformAction(currentUser, 'invitation_sent', 'platform_invitation', invitation.id, null, {
+                email,
+                companyName,
+                invitationType
+            });
+
+            console.log('✅ Invitation sent successfully');
+            return {
+                id: invitation.id,
+                email: invitation.email,
+                companyName: invitation.company_name,
+                invitedBy: invitation.invited_by,
+                invitationType: invitation.invitation_type,
+                status: invitation.status,
+                invitationToken: invitation.invitation_token,
+                expiresAt: invitation.expires_at,
+                acceptedAt: invitation.accepted_at,
+                metadata: invitation.metadata,
+                createdAt: invitation.created_at
+            };
+        } catch (error) {
+            console.error('❌ Error in sendPlatformInvitation:', error);
+            throw error;
+        }
+    } else {
+        // Mock implementation
+        await delay(LATENCY * 2);
+        return {
+            id: `inv-${Date.now()}`,
+            email,
+            companyName,
+            invitedBy: currentUser.id,
+            invitationType,
+            status: 'pending',
+            invitationToken: `inv_${Date.now()}_mock`,
+            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+            metadata: {},
+            createdAt: new Date().toISOString()
+        };
+    }
+};
+
+// Get all company plans
+export const getAllCompanyPlans = async (): Promise<CompanyPlan[]> => {
+    console.log('📋 Fetching company plans');
+
+    if (supabase) {
+        try {
+            const { data: plans, error } = await supabase
+                .from('company_plans')
+                .select('*')
+                .eq('is_active', true)
+                .order('sort_order');
+
+            if (error) {
+                console.error('❌ Error fetching plans:', error);
+                throw error;
+            }
+
+            return (plans || []).map(plan => ({
+                id: plan.id,
+                name: plan.name,
+                description: plan.description,
+                priceMonthly: plan.price_monthly,
+                priceYearly: plan.price_yearly,
+                maxUsers: plan.max_users,
+                maxProjects: plan.max_projects,
+                features: plan.features || [],
+                aiAgentsIncluded: plan.ai_agents_included || [],
+                aiAgentsLimit: plan.ai_agents_limit,
+                storageGb: plan.storage_gb,
+                isActive: plan.is_active,
+                isFeatured: plan.is_featured,
+                sortOrder: plan.sort_order
+            }));
+        } catch (error) {
+            console.error('❌ Error in getAllCompanyPlans:', error);
+            return [];
+        }
+    } else {
+        // Mock data
+        await delay(LATENCY);
+        return [
+            {
+                id: 'plan-basic',
+                name: 'Basic Plan',
+                description: 'Perfect for small construction teams',
+                priceMonthly: 29.99,
+                priceYearly: 299.99,
+                maxUsers: 5,
+                maxProjects: 3,
+                features: ['Project Management', 'Task Tracking', 'Basic Reporting'],
+                aiAgentsIncluded: ['agent-hse-sentinel'],
+                aiAgentsLimit: 1,
+                storageGb: 10,
+                isActive: true,
+                isFeatured: false,
+                sortOrder: 1
+            }
+        ];
+    }
+};
+
+// Update company plan
+export const updateCompanyPlan = async (
+    currentUser: User,
+    companyId: string,
+    planId: string
+): Promise<boolean> => {
+    console.log('📝 Updating company plan:', companyId, 'to plan:', planId);
+
+    if (currentUser.role !== 'super_admin') {
+        throw new Error('Access denied: Super admin required');
+    }
+
+    if (supabase) {
+        try {
+            const { error } = await supabase
+                .from('companies')
+                .update({
+                    plan_id: planId,
+                    plan_started_at: new Date().toISOString()
+                })
+                .eq('id', companyId);
+
+            if (error) {
+                console.error('❌ Error updating company plan:', error);
+                throw error;
+            }
+
+            // Log the action
+            await logPlatformAction(currentUser, 'plan_updated', 'company', companyId, null, {
+                newPlanId: planId
+            });
+
+            console.log('✅ Company plan updated successfully');
+            return true;
+        } catch (error) {
+            console.error('❌ Error in updateCompanyPlan:', error);
+            return false;
+        }
+    } else {
+        await delay(LATENCY);
+        return true;
+    }
+};
+
+// Log platform action for audit trail
+export const logPlatformAction = async (
+    currentUser: User,
+    action: string,
+    resourceType: string,
+    resourceId: string,
+    oldValues?: any,
+    newValues?: any
+): Promise<void> => {
+    if (!supabase) return;
+
+    try {
+        await supabase
+            .from('platform_audit_log')
+            .insert({
+                user_id: currentUser.id,
+                company_id: currentUser.companyId,
+                action,
+                resource_type: resourceType,
+                resource_id: resourceId,
+                old_values: oldValues,
+                new_values: newValues,
+                ip_address: null, // Would be populated from request in real app
+                user_agent: navigator.userAgent
+            });
+    } catch (error) {
+        console.error('❌ Error logging platform action:', error);
+    }
+};
+
+// Get platform audit logs
+export const getPlatformAuditLogs = async (
+    currentUser: User,
+    limit: number = 50,
+    offset: number = 0
+): Promise<AuditLogEntry[]> => {
+    console.log('📜 Fetching platform audit logs');
+
+    if (currentUser.role !== 'super_admin') {
+        throw new Error('Access denied: Super admin required');
+    }
+
+    if (supabase) {
+        try {
+            const { data: logs, error } = await supabase
+                .from('platform_audit_log')
+                .select(`
+                    *,
+                    profiles!platform_audit_log_user_id_fkey (name, email),
+                    companies!platform_audit_log_company_id_fkey (name)
+                `)
+                .order('created_at', { ascending: false })
+                .range(offset, offset + limit - 1);
+
+            if (error) {
+                console.error('❌ Error fetching audit logs:', error);
+                throw error;
+            }
+
+            return (logs || []).map(log => ({
+                id: log.id,
+                userId: log.user_id,
+                companyId: log.company_id,
+                action: log.action,
+                resourceType: log.resource_type,
+                resourceId: log.resource_id,
+                oldValues: log.old_values,
+                newValues: log.new_values,
+                ipAddress: log.ip_address,
+                userAgent: log.user_agent,
+                createdAt: log.created_at
+            }));
+        } catch (error) {
+            console.error('❌ Error in getPlatformAuditLogs:', error);
+            return [];
+        }
+    } else {
+        // Mock data
+        await delay(LATENCY);
+        return [
+            {
+                id: 'audit-1',
+                userId: currentUser.id,
+                companyId: 'comp-1',
+                action: 'invitation_sent',
+                resourceType: 'platform_invitation',
+                resourceId: 'inv-1',
+                newValues: { email: 'test@example.com' },
+                createdAt: new Date().toISOString()
+            }
+        ];
     }
 };

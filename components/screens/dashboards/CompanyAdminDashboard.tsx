@@ -10,6 +10,7 @@ import NotificationsWidget from '../../widgets/NotificationsWidget.tsx';
 import ProjectsOverviewWidget from '../../widgets/ProjectsOverviewWidget.tsx';
 import GlobalStatsWidget from '../../widgets/GlobalStatsWidget.tsx';
 import UpcomingDeadlinesWidget from '../../widgets/UpcomingDeadlinesWidget.tsx';
+import AIAgentsWidget from '../../widgets/AIAgentsWidget.tsx';
 
 interface CompanyAdminDashboardProps {
     currentUser: User;
@@ -51,7 +52,8 @@ const CompanyAdminDashboard: React.FC<CompanyAdminDashboardProps> = (props) => {
                    <ProjectsOverviewWidget currentUser={currentUser} navigateTo={navigateTo} onDeepLink={onDeepLink} />
                    <UpcomingDeadlinesWidget currentUser={currentUser} onDeepLink={onDeepLink} />
                 </div>
-                <div className="lg:col-span-1">
+                <div className="lg:col-span-1 space-y-8">
+                    <AIAgentsWidget currentUser={currentUser} navigateTo={navigateTo} />
                     <NotificationsWidget currentUser={currentUser} onDeepLink={onDeepLink} />
                 </div>
             </main>

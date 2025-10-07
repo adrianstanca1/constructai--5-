@@ -19,14 +19,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
         e.preventDefault();
         setError('');
         setIsLoading(true);
+        console.log('🔐 Login form submitted for:', email);
         try {
             const user = await api.loginUser(email, password);
             if (user) {
+                console.log('✅ Login successful, calling onLoginSuccess');
                 onLoginSuccess(user);
             } else {
-                 setError('Login failed. Please check your credentials.');
+                console.log('❌ Login failed - no user returned');
+                setError('Login failed. Please check your credentials.');
             }
         } catch (err: any) {
+            console.error('❌ Login error:', err);
             setError(err.message || 'An unexpected error occurred.');
         } finally {
             setIsLoading(false);
@@ -41,22 +45,27 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
 
         setError('');
         setIsOAuthLoading(provider);
+        console.log(`🔐 Starting ${provider} OAuth login`);
 
         try {
             const { data, error } = await supabase.auth.signInWithOAuth({
                 provider: provider,
                 options: {
-                    redirectTo: window.location.origin,
+                    redirectTo: `${window.location.origin}/#dashboard`,
                 }
             });
 
             if (error) {
+                console.error(`❌ ${provider} OAuth error:`, error);
                 setError(`${provider} login failed: ${error.message}`);
                 setIsOAuthLoading(null);
+            } else {
+                console.log(`✅ ${provider} OAuth initiated successfully`);
             }
             // If successful, user will be redirected to OAuth provider
-            // They'll come back and we'll handle it in the callback
+            // They'll come back to the dashboard and we'll handle it in the callback
         } catch (err: any) {
+            console.error(`❌ ${provider} OAuth exception:`, err);
             setError(err.message || `An error occurred during ${provider} login.`);
             setIsOAuthLoading(null);
         }
