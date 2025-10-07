@@ -34,7 +34,16 @@ export const getMyProfile = async (): Promise<User | null> => {
     if (!supabase) return null;
 
     const { data: { session } } = await supabase.auth.getSession();
+
+    console.log('🔍 Session check:', {
+        hasSession: !!session,
+        userId: session?.user?.id,
+        userEmail: session?.user?.email,
+        provider: session?.user?.app_metadata?.provider
+    });
+
     if (!session?.user) {
+        console.log('❌ No session found');
         return null;
     }
 
@@ -52,10 +61,23 @@ export const getMyProfile = async (): Promise<User | null> => {
         .single();
 
     if (error) {
-        console.error('Error fetching profile:', error);
+        console.error('❌ Error fetching profile:', error);
+        console.log('User ID that failed:', session.user.id);
+        console.log('Suggestion: Check if profile exists for this user_id in profiles table');
         return null;
     }
-    
+
+    if (!profile) {
+        console.error('❌ Profile not found for user:', session.user.id);
+        return null;
+    }
+
+    console.log('✅ Profile loaded:', {
+        id: profile.id,
+        email: profile.email,
+        role: profile.role
+    });
+
     // Manual mapping from snake_case to camelCase
     return profile ? {
         id: profile.id,
