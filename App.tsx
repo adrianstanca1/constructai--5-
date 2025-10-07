@@ -112,27 +112,46 @@ const App: React.FC = () => {
             return;
         }
 
-        const checkSession = async () => {
-            const profile = await getMyProfile();
-            setCurrentUser(profile);
-            if (profile) {
-                window.dispatchEvent(new CustomEvent('userLoggedIn'));
-            }
+        // Timeout to prevent infinite loading
+        const sessionTimeout = setTimeout(() => {
+            console.warn('Session check timeout - proceeding anyway');
             setSessionChecked(true);
+        }, 5000); // 5 seconds timeout
+
+        const checkSession = async () => {
+            try {
+                const profile = await getMyProfile();
+                setCurrentUser(profile);
+                if (profile) {
+                    window.dispatchEvent(new CustomEvent('userLoggedIn'));
+                }
+            } catch (error) {
+                console.error('Error checking session:', error);
+            } finally {
+                clearTimeout(sessionTimeout);
+                setSessionChecked(true);
+            }
         };
         checkSession();
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-            const profile = await getMyProfile();
-            setCurrentUser(profile);
-            if (profile) {
-                window.dispatchEvent(new CustomEvent('userLoggedIn'));
-            } else {
-                window.dispatchEvent(new CustomEvent('userLoggedOut'));
+            try {
+                const profile = await getMyProfile();
+                setCurrentUser(profile);
+                if (profile) {
+                    window.dispatchEvent(new CustomEvent('userLoggedIn'));
+                } else {
+                    window.dispatchEvent(new CustomEvent('userLoggedOut'));
+                }
+            } catch (error) {
+                console.error('Error in auth state change:', error);
             }
         });
 
-        return () => subscription.unsubscribe();
+        return () => {
+            clearTimeout(sessionTimeout);
+            subscription.unsubscribe();
+        };
     }, []);
 
 
@@ -262,7 +281,15 @@ const App: React.FC = () => {
     };
 
     if (!sessionChecked) {
-        return <div className="p-8">Loading session...</div>
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+                <div className="bg-white p-8 rounded-xl shadow-2xl text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <p className="text-gray-700 font-medium">Loading session...</p>
+                    <p className="text-gray-500 text-sm mt-2">This should only take a moment</p>
+                </div>
+            </div>
+        );
     }
 
     if (!currentUser) {
