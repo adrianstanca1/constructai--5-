@@ -106,49 +106,65 @@ const App: React.FC = () => {
     const { can } = usePermissions(currentUser!);
 
     useEffect(() => {
+        console.log('🚀 App.tsx useEffect started');
+
         // If supabase is not configured, we rely on mock login/logout and skip session checks.
         if (!supabase) {
+            console.log('⚠️ Supabase not configured, using mock auth');
             setSessionChecked(true);
             return;
         }
 
+        console.log('✅ Supabase configured, checking session...');
+
         // Timeout to prevent infinite loading
         const sessionTimeout = setTimeout(() => {
-            console.warn('Session check timeout - proceeding anyway');
+            console.warn('⏱️ Session check timeout - proceeding anyway');
             setSessionChecked(true);
         }, 5000); // 5 seconds timeout
 
         const checkSession = async () => {
+            console.log('🔍 Checking initial session...');
             try {
                 const profile = await getMyProfile();
+                console.log('📋 Profile result:', profile);
                 setCurrentUser(profile);
                 if (profile) {
+                    console.log('✅ User logged in:', profile.email);
                     window.dispatchEvent(new CustomEvent('userLoggedIn'));
+                } else {
+                    console.log('❌ No profile found');
                 }
             } catch (error) {
-                console.error('Error checking session:', error);
+                console.error('❌ Error checking session:', error);
             } finally {
                 clearTimeout(sessionTimeout);
                 setSessionChecked(true);
+                console.log('✅ Session check complete');
             }
         };
         checkSession();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            console.log('🔄 Auth state changed:', event, 'Has session:', !!session);
             try {
                 const profile = await getMyProfile();
+                console.log('📋 Profile after auth change:', profile);
                 setCurrentUser(profile);
                 if (profile) {
+                    console.log('✅ User logged in via auth change:', profile.email);
                     window.dispatchEvent(new CustomEvent('userLoggedIn'));
                 } else {
+                    console.log('❌ No profile after auth change');
                     window.dispatchEvent(new CustomEvent('userLoggedOut'));
                 }
             } catch (error) {
-                console.error('Error in auth state change:', error);
+                console.error('❌ Error in auth state change:', error);
             }
         });
 
         return () => {
+            console.log('🧹 Cleaning up App.tsx useEffect');
             clearTimeout(sessionTimeout);
             subscription.unsubscribe();
         };
