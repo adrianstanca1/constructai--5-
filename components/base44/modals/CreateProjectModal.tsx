@@ -54,11 +54,17 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
         setError(null);
 
         try {
+            // Get company_id from localStorage
+            const userStr = localStorage.getItem('user');
+            const user = userStr ? JSON.parse(userStr) : null;
+            const company_id = user?.company_id || 'company-1'; // Fallback to default
+
             const response = await fetch('/api/projects', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...formData,
+                    company_id,
                     client_id: parseInt(formData.client_id),
                     budget: parseFloat(formData.budget) || 0
                 })

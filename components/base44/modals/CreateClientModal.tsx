@@ -35,10 +35,18 @@ export const CreateClientModal: React.FC<CreateClientModalProps> = ({ isOpen, on
         setError(null);
 
         try {
+            // Get company_id from localStorage
+            const userStr = localStorage.getItem('user');
+            const user = userStr ? JSON.parse(userStr) : null;
+            const company_id = user?.company_id || 'company-1'; // Fallback to default
+
             const response = await fetch('/api/clients', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
+                body: JSON.stringify({
+                    ...formData,
+                    company_id
+                })
             });
 
             const data = await response.json();
