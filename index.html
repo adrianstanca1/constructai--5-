@@ -121,6 +121,24 @@
             }
         }
 
+        .animate-pulse-slow {
+            animation: pulse-slow 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse-slow {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(59, 130, 246, 0.1);
+            }
+
+            50% {
+                opacity: 0.9;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 0 0 5px rgba(59, 130, 246, 0.2);
+            }
+        }
+
         .ai-agent-node {
             transition: all 0.3s ease;
             cursor: pointer;
@@ -357,6 +375,8 @@
                         Features</button>
                     <button data-target="connectivity"
                         class="nav-item text-sm font-medium marketing-nav">Connectivity</button>
+                    <button data-target="developer-platform"
+                        class="nav-item text-sm font-medium marketing-nav">Developer Platform</button>
                     <button data-target="get-started" class="nav-item text-sm font-medium marketing-nav">Get
                         Started</button>
                 </nav>
@@ -399,6 +419,9 @@
                     Features</button>
                 <button data-target="connectivity"
                     class="mobile-nav-item marketing-nav block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Connectivity</button>
+                <button data-target="developer-platform"
+                    class="mobile-nav-item marketing-nav block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Developer
+                    Platform</button>
                 <button data-target="get-started"
                     class="mobile-nav-item marketing-nav block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Get
                     Started</button>
@@ -412,9 +435,12 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
                 <!-- Left: Hero Content -->
                 <div class="text-left">
-                    <div class="inline-block px-4 py-2 bg-blue-50 rounded-full mb-6">
-                        <span class="text-blue-600 font-semibold text-sm">🚀 The Future of Construction
-                            Intelligence</span>
+                    <div
+                        class="inline-block px-6 py-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-full mb-6 shadow-lg border-2 border-blue-200 animate-pulse-slow">
+                        <span class="text-blue-600 font-bold text-lg flex items-center gap-2">
+                            <span class="text-2xl">🚀</span>
+                            <span>The Future of Construction Intelligence</span>
+                        </span>
                     </div>
                     <h1 class="text-5xl md:text-6xl font-bold tracking-tight text-gray-900 mb-6">
                         Build Smarter,<br />
@@ -590,6 +616,176 @@
                         With real-time job costing, AI-powered estimates, and automated compliance,
                         you can make decisions that directly improve your bottom line.
                     </p>
+                </div>
+            </div>
+
+            <!-- Developer Ecosystem & Modular Platform Section -->
+            <div class="mt-32 mb-20">
+                <div class="text-center mb-12">
+                    <div class="inline-block px-6 py-2 bg-gradient-to-r from-cyan-50 to-indigo-50 rounded-full mb-4">
+                        <span class="text-cyan-600 font-bold text-sm">🚀 INDUSTRY FIRST</span>
+                    </div>
+                    <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                        Developer Ecosystem & <span
+                            class="bg-gradient-to-r from-cyan-600 to-indigo-600 bg-clip-text text-transparent">Modular
+                            Platform</span>
+                    </h2>
+                    <p class="text-xl text-gray-600 max-w-4xl mx-auto">
+                        The first and only construction management platform with an open developer ecosystem.
+                        Build, share, and monetize intelligent modules that transform the industry.
+                    </p>
+                </div>
+
+                <!-- Main Features Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    <!-- 1. Modular Architecture -->
+                    <div
+                        class="bg-gradient-to-br from-cyan-500 to-blue-600 p-8 rounded-3xl shadow-2xl text-white relative overflow-hidden group hover:scale-105 transition-all duration-300">
+                        <div
+                            class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -translate-y-1/2 translate-x-1/2">
+                        </div>
+                        <div class="relative z-10">
+                            <div class="text-6xl mb-4">🧩</div>
+                            <h3 class="text-2xl font-bold mb-3">Modular Architecture</h3>
+                            <p class="text-sm leading-relaxed opacity-90 mb-4">
+                                Built on open-source, extensible architecture. Each module is self-contained and
+                                integrates seamlessly.
+                            </p>
+                            <ul class="text-sm space-y-2 opacity-90">
+                                <li class="flex items-start">
+                                    <span class="mr-2">✓</span>
+                                    <span>Independent development & deployment</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="mr-2">✓</span>
+                                    <span>Plug-and-play integration</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="mr-2">✓</span>
+                                    <span>Scalable & future-proof</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- 2. Developer Sandbox -->
+                    <div
+                        class="bg-gradient-to-br from-indigo-500 to-purple-600 p-8 rounded-3xl shadow-2xl text-white relative overflow-hidden group hover:scale-105 transition-all duration-300">
+                        <div
+                            class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -translate-y-1/2 translate-x-1/2">
+                        </div>
+                        <div class="relative z-10">
+                            <div class="text-6xl mb-4">👨‍💻</div>
+                            <h3 class="text-2xl font-bold mb-3">Developer Sandbox</h3>
+                            <p class="text-sm leading-relaxed opacity-90 mb-4">
+                                Dedicated workspace to create, test, and deploy your innovations safely.
+                            </p>
+                            <ul class="text-sm space-y-2 opacity-90">
+                                <li class="flex items-start">
+                                    <span class="mr-2">✓</span>
+                                    <span>Build custom AI agents</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="mr-2">✓</span>
+                                    <span>Create API applications</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="mr-2">✓</span>
+                                    <span>Real-time testing & debugging</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="mr-2">✓</span>
+                                    <span>Comprehensive API docs</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- 3. Marketplace -->
+                    <div
+                        class="bg-gradient-to-br from-purple-500 to-pink-600 p-8 rounded-3xl shadow-2xl text-white relative overflow-hidden group hover:scale-105 transition-all duration-300">
+                        <div
+                            class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -translate-y-1/2 translate-x-1/2">
+                        </div>
+                        <div class="relative z-10">
+                            <div class="text-6xl mb-4">🏪</div>
+                            <h3 class="text-2xl font-bold mb-3">Module Marketplace</h3>
+                            <p class="text-sm leading-relaxed opacity-90 mb-4">
+                                Publish, share, and monetize your intelligent modules with the community.
+                            </p>
+                            <ul class="text-sm space-y-2 opacity-90">
+                                <li class="flex items-start">
+                                    <span class="mr-2">✓</span>
+                                    <span>Browse community modules</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="mr-2">✓</span>
+                                    <span>Publish your innovations</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="mr-2">✓</span>
+                                    <span>Revenue sharing model</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="mr-2">✓</span>
+                                    <span>Ratings & reviews system</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- 4. Innovation & Impact -->
+                    <div
+                        class="bg-gradient-to-br from-orange-500 to-red-600 p-8 rounded-3xl shadow-2xl text-white relative overflow-hidden group hover:scale-105 transition-all duration-300">
+                        <div
+                            class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -translate-y-1/2 translate-x-1/2">
+                        </div>
+                        <div class="relative z-10">
+                            <div class="text-6xl mb-4">💡</div>
+                            <h3 class="text-2xl font-bold mb-3">Transform the Industry</h3>
+                            <p class="text-sm leading-relaxed opacity-90 mb-4">
+                                Join a community revolutionizing construction through collaborative innovation.
+                            </p>
+                            <ul class="text-sm space-y-2 opacity-90">
+                                <li class="flex items-start">
+                                    <span class="mr-2">✓</span>
+                                    <span>Democratize advanced tech</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="mr-2">✓</span>
+                                    <span>Continuous evolution</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="mr-2">✓</span>
+                                    <span>Community-driven growth</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="mr-2">✓</span>
+                                    <span>Industry transformation</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CTA Section -->
+                <div
+                    class="bg-gradient-to-r from-cyan-600 via-indigo-600 to-purple-600 rounded-3xl p-12 text-center text-white shadow-2xl">
+                    <h3 class="text-3xl font-bold mb-4">Ready to Build the Future?</h3>
+                    <p class="text-xl mb-8 opacity-90 max-w-3xl mx-auto">
+                        Join our developer community and start creating intelligent modules that will shape the future
+                        of construction technology.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button data-target="developer-platform"
+                            class="nav-item-direct bg-white text-indigo-600 font-bold py-4 px-8 rounded-lg hover:bg-gray-100 transition-all hover:scale-105 shadow-lg">
+                            Explore Developer Platform
+                        </button>
+                        <button
+                            class="bg-transparent border-2 border-white text-white font-bold py-4 px-8 rounded-lg hover:bg-white hover:text-indigo-600 transition-all">
+                            View API Documentation
+                        </button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1150,6 +1346,218 @@
                         </div>
                         <p id="form-feedback" class="text-sm text-center mt-4"></p>
                     </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Developer Platform Page -->
+        <section id="developer-platform" class="content-section">
+            <div class="text-center mb-16">
+                <div
+                    class="inline-block px-6 py-3 bg-gradient-to-r from-cyan-50 to-indigo-50 rounded-full mb-6 shadow-lg border-2 border-cyan-200">
+                    <span class="text-cyan-600 font-bold text-lg flex items-center gap-2">
+                        <span class="text-2xl">👨‍💻</span>
+                        <span>Build the Future of Construction Tech</span>
+                    </span>
+                </div>
+                <h1 class="text-5xl md:text-6xl font-bold tracking-tight text-gray-900 mb-6">
+                    Developer <span
+                        class="bg-gradient-to-r from-cyan-600 to-indigo-600 bg-clip-text text-transparent">Ecosystem</span>
+                </h1>
+                <p class="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+                    Join the first open developer platform for construction management. Create, test, and monetize
+                    intelligent modules that transform how the industry works.
+                </p>
+            </div>
+
+            <!-- Platform Overview -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
+                <!-- Left: Key Features -->
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6">Why Build on ConstructAI?</h2>
+                    <div class="space-y-6">
+                        <div class="flex items-start gap-4">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white text-2xl flex-shrink-0">
+                                🧩
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">Modular Architecture</h3>
+                                <p class="text-gray-600">Build self-contained modules that integrate seamlessly. Our
+                                    open-source architecture ensures your innovations work perfectly with the platform.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl flex-shrink-0">
+                                🔧
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">Complete Toolset</h3>
+                                <p class="text-gray-600">Access comprehensive APIs, SDKs, and documentation. Build AI
+                                    agents, automation tools, custom integrations, and more.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white text-2xl flex-shrink-0">
+                                💰
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">Monetization</h3>
+                                <p class="text-gray-600">Publish your modules to our marketplace and earn revenue. Fair
+                                    revenue sharing model ensures you're rewarded for your innovations.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-white text-2xl flex-shrink-0">
+                                🌍
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">Global Impact</h3>
+                                <p class="text-gray-600">Your modules reach thousands of construction professionals
+                                    worldwide. Make a real difference in how the industry operates.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Code Example -->
+                <div class="bg-gray-900 rounded-3xl p-8 shadow-2xl">
+                    <div class="flex items-center gap-2 mb-6">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        <span class="ml-4 text-gray-400 text-sm font-mono">example-module.ts</span>
+                    </div>
+                    <pre class="text-sm text-gray-300 font-mono overflow-x-auto"><code><span class="text-purple-400">import</span> { <span class="text-cyan-400">ConstructAI</span> } <span class="text-purple-400">from</span> <span class="text-green-400">'@constructai/sdk'</span>;
+
+<span class="text-purple-400">export</span> <span class="text-purple-400">class</span> <span class="text-yellow-400">SmartScheduler</span> {
+  <span class="text-purple-400">async</span> <span class="text-blue-400">optimizeSchedule</span>(<span class="text-orange-400">project</span>: <span class="text-cyan-400">Project</span>) {
+    <span class="text-gray-500">// Access project data</span>
+    <span class="text-purple-400">const</span> tasks = <span class="text-purple-400">await</span> project.<span class="text-blue-400">getTasks</span>();
+
+    <span class="text-gray-500">// Run AI optimization</span>
+    <span class="text-purple-400">const</span> optimized = <span class="text-purple-400">await</span> <span class="text-purple-400">this</span>.<span class="text-blue-400">ai</span>.<span class="text-blue-400">optimize</span>(tasks);
+
+    <span class="text-gray-500">// Update schedule</span>
+    <span class="text-purple-400">return</span> project.<span class="text-blue-400">updateSchedule</span>(optimized);
+  }
+}</code></pre>
+                    <div class="mt-6 flex items-center gap-3">
+                        <span class="text-green-400 text-sm">✓ Type-safe APIs</span>
+                        <span class="text-green-400 text-sm">✓ Real-time data</span>
+                        <span class="text-green-400 text-sm">✓ AI-powered</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Developer Sandbox -->
+            <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-3xl p-12 mb-20">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Developer Sandbox</h2>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                        Safe environment to build, test, and debug your modules before deploying to production
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white p-8 rounded-2xl shadow-lg">
+                        <div class="text-5xl mb-4">🛠️</div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Build & Test</h3>
+                        <p class="text-gray-600">Create modules with our comprehensive SDK. Test in real-time with
+                            sample data and debug tools.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-2xl shadow-lg">
+                        <div class="text-5xl mb-4">📊</div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Monitor Performance</h3>
+                        <p class="text-gray-600">Track module performance, API usage, and user engagement with built-in
+                            analytics.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-2xl shadow-lg">
+                        <div class="text-5xl mb-4">🚀</div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Deploy Instantly</h3>
+                        <p class="text-gray-600">One-click deployment to production. Automatic versioning and rollback
+                            support.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Marketplace -->
+            <div class="mb-20">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Module Marketplace</h2>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                        Publish your modules and reach thousands of construction professionals
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-gradient-to-br from-purple-500 to-pink-600 p-10 rounded-3xl shadow-2xl text-white">
+                        <h3 class="text-3xl font-bold mb-4">For Developers</h3>
+                        <ul class="space-y-4 text-lg">
+                            <li class="flex items-start">
+                                <span class="mr-3 text-2xl">✓</span>
+                                <span>Publish unlimited modules</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-3 text-2xl">✓</span>
+                                <span>70% revenue share</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-3 text-2xl">✓</span>
+                                <span>Built-in payment processing</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-3 text-2xl">✓</span>
+                                <span>Marketing & promotion support</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="bg-gradient-to-br from-cyan-500 to-blue-600 p-10 rounded-3xl shadow-2xl text-white">
+                        <h3 class="text-3xl font-bold mb-4">For Users</h3>
+                        <ul class="space-y-4 text-lg">
+                            <li class="flex items-start">
+                                <span class="mr-3 text-2xl">✓</span>
+                                <span>Browse 100+ modules</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-3 text-2xl">✓</span>
+                                <span>Community ratings & reviews</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-3 text-2xl">✓</span>
+                                <span>One-click installation</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-3 text-2xl">✓</span>
+                                <span>Free & premium options</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA -->
+            <div
+                class="bg-gradient-to-r from-cyan-600 via-indigo-600 to-purple-600 rounded-3xl p-12 text-center text-white shadow-2xl">
+                <h2 class="text-4xl font-bold mb-6">Start Building Today</h2>
+                <p class="text-xl mb-8 opacity-90 max-w-3xl mx-auto">
+                    Join our growing community of developers transforming the construction industry
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button
+                        class="bg-white text-indigo-600 font-bold py-4 px-8 rounded-lg hover:bg-gray-100 transition-all hover:scale-105 shadow-lg">
+                        Get API Access
+                    </button>
+                    <button
+                        class="bg-transparent border-2 border-white text-white font-bold py-4 px-8 rounded-lg hover:bg-white hover:text-indigo-600 transition-all">
+                        View Documentation
+                    </button>
+                    <button
+                        class="bg-transparent border-2 border-white text-white font-bold py-4 px-8 rounded-lg hover:bg-white hover:text-indigo-600 transition-all">
+                        Join Community
+                    </button>
                 </div>
             </div>
         </section>
