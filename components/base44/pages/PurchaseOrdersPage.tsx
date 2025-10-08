@@ -1,14 +1,57 @@
 /**
- * Purchase Orders Page - Complete implementation from Base44
+ * Purchase Orders Page - Connected to CortexBuild API
+ * Version: 1.1.0 GOLDEN
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+interface PurchaseOrder {
+    id: number;
+    po_number?: string;
+    vendor_name?: string;
+    project_name?: string;
+    total?: number;
+    status: string;
+    order_date?: string;
+    delivery_date?: string;
+}
 
 export const PurchaseOrdersPage: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [showCreateModal, setShowCreateModal] = useState(false);
 
-    const purchaseOrders = [
+    useEffect(() => {
+        fetchPurchaseOrders();
+    }, [searchQuery, statusFilter]);
+
+    const fetchPurchaseOrders = async () => {
+        try {
+            setLoading(true);
+            const params = new URLSearchParams({ page: '1', limit: '50' });
+            if (searchQuery) params.append('search', searchQuery);
+            if (statusFilter !== 'all') params.append('status', statusFilter);
+
+            const response = await fetch(`/api/purchase-orders?${params}`);
+            const data = await response.json();
+
+            if (data.success) {
+                setPurchaseOrders(data.data);
+            } else {
+                setError(data.error);
+            }
+        } catch (err: any) {
+            setError(err.message);
+            setPurchaseOrders(mockPurchaseOrders);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const mockPurchaseOrders: PurchaseOrder[] = [
         {
             id: 'PO-2024-001',
             vendor: 'ABC Supplies Inc',

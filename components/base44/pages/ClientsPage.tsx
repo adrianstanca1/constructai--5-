@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { CreateClientModal } from '../modals/CreateClientModal';
 
 interface Client {
     id: number;
@@ -29,6 +30,7 @@ export const ClientsPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [showCreateModal, setShowCreateModal] = useState(false);
 
     // Fetch clients from API
     useEffect(() => {
@@ -228,6 +230,7 @@ export const ClientsPage: React.FC = () => {
                         {/* New Client Button */}
                         <button
                             type="button"
+                            onClick={() => setShowCreateModal(true)}
                             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -314,6 +317,16 @@ export const ClientsPage: React.FC = () => {
                     </div>
                 ))}
             </div>
+
+            {/* Create Client Modal */}
+            <CreateClientModal
+                isOpen={showCreateModal}
+                onClose={() => setShowCreateModal(false)}
+                onSuccess={() => {
+                    fetchClients();
+                    setShowCreateModal(false);
+                }}
+            />
         </div>
     );
 };

@@ -1,14 +1,57 @@
 /**
- * Documents Page - Complete implementation from Base44
+ * Documents Page - Connected to CortexBuild API
+ * Version: 1.1.0 GOLDEN
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+interface Document {
+    id: number;
+    name: string;
+    file_type?: string;
+    file_size?: number;
+    project_name?: string;
+    uploaded_by_name?: string;
+    created_at?: string;
+    category?: string;
+}
 
 export const DocumentsPage: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [typeFilter, setTypeFilter] = useState('all');
+    const [documents, setDocuments] = useState<Document[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [showUploadModal, setShowUploadModal] = useState(false);
 
-    const documents = [
+    useEffect(() => {
+        fetchDocuments();
+    }, [searchQuery, typeFilter]);
+
+    const fetchDocuments = async () => {
+        try {
+            setLoading(true);
+            const params = new URLSearchParams({ page: '1', limit: '50' });
+            if (searchQuery) params.append('search', searchQuery);
+            if (typeFilter !== 'all') params.append('category', typeFilter);
+
+            const response = await fetch(`/api/documents?${params}`);
+            const data = await response.json();
+
+            if (data.success) {
+                setDocuments(data.data);
+            } else {
+                setError(data.error);
+            }
+        } catch (err: any) {
+            setError(err.message);
+            setDocuments(mockDocuments);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const mockDocuments: Document[] = [
         {
             id: '1',
             name: 'Project Blueprint - Phase 1.pdf',
