@@ -16,6 +16,7 @@ import { DocumentsPage } from './pages/DocumentsPage';
 import { ReportsPage } from './pages/ReportsPage';
 import { LedgerPage } from './pages/LedgerPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { ChatbotWidget } from '../chat/ChatbotWidget';
 
 interface Base44CloneProps {
     user: User;
@@ -48,6 +49,9 @@ export const Base44Clone: React.FC<Base44CloneProps> = ({ user, onLogout }) => {
                 {currentPage === 'ledger' && <LedgerPage />}
                 {currentPage === 'settings' && <SettingsPage user={user} />}
             </main>
+
+            {/* Global AI Chatbot - Available on all pages */}
+            <ChatbotWidget />
         </div>
     );
 };
