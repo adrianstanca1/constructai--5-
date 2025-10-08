@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS projects (
     state TEXT,
     zip_code TEXT,
     client_id INTEGER,
-    project_manager_id TEXT,
+    project_manager_id INTEGER,
     progress INTEGER DEFAULT 0 CHECK(progress >= 0 AND progress <= 100),
     is_archived BOOLEAN DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -116,7 +116,7 @@ CREATE TABLE IF NOT EXISTS milestones (
 CREATE TABLE IF NOT EXISTS project_team (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     project_id INTEGER NOT NULL,
-    user_id TEXT NOT NULL,
+    user_id INTEGER NOT NULL,
     role TEXT NOT NULL,
     hourly_rate DECIMAL(10, 2),
     joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -229,7 +229,7 @@ CREATE TABLE IF NOT EXISTS invoice_items (
 -- Time Entries Table
 CREATE TABLE IF NOT EXISTS time_entries (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id TEXT NOT NULL,
+    user_id INTEGER NOT NULL,
     project_id INTEGER NOT NULL,
     task_id INTEGER,
     description TEXT,
@@ -364,7 +364,7 @@ CREATE TABLE IF NOT EXISTS documents (
 -- Activities Table
 CREATE TABLE IF NOT EXISTS activities (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id TEXT NOT NULL,
+    user_id INTEGER NOT NULL,
     project_id INTEGER,
     entity_type TEXT NOT NULL,
     entity_id INTEGER NOT NULL,
@@ -408,7 +408,7 @@ CREATE TABLE IF NOT EXISTS modules (
 CREATE TABLE IF NOT EXISTS module_reviews (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     module_id INTEGER NOT NULL,
-    user_id TEXT NOT NULL,
+    user_id INTEGER NOT NULL,
     rating INTEGER NOT NULL CHECK(rating >= 1 AND rating <= 5),
     review TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -421,7 +421,7 @@ CREATE TABLE IF NOT EXISTS module_reviews (
 -- API Keys Table
 CREATE TABLE IF NOT EXISTS api_keys (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id TEXT NOT NULL,
+    user_id INTEGER NOT NULL,
     name TEXT NOT NULL,
     key_hash TEXT UNIQUE NOT NULL,
     key_prefix TEXT NOT NULL,
@@ -436,7 +436,7 @@ CREATE TABLE IF NOT EXISTS api_keys (
 -- Webhooks Table
 CREATE TABLE IF NOT EXISTS webhooks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id TEXT NOT NULL,
+    user_id INTEGER NOT NULL,
     url TEXT NOT NULL,
     events TEXT NOT NULL,
     secret TEXT NOT NULL,
