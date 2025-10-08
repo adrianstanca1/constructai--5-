@@ -24,7 +24,7 @@ interface RecentProject {
     name: string;
     client: string;
     budget: string;
-    status: 'planning' | 'in progress' | 'on hold' | 'completed';
+    status: 'planning' | 'active' | 'on-hold' | 'completed' | 'cancelled';
     progress?: number;
 }
 
@@ -176,14 +176,14 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
                                 name="Canary Wharf Office Tower"
                                 client="London Development Group"
                                 budget="£8,750,000"
-                                status="in progress"
+                                status="active"
                                 progress={62}
                             />
                             <ProjectCard
                                 name="Thames Riverside Apartments"
                                 client="Green Valley Homes UK"
                                 budget="£6,200,000"
-                                status="in progress"
+                                status="active"
                                 progress={38}
                             />
                             <ProjectCard
@@ -196,7 +196,7 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
                                 name="Birmingham Shopping Centre"
                                 client="Retail Developments PLC"
                                 budget="£9,800,000"
-                                status="in progress"
+                                status="active"
                                 progress={15}
                             />
                         </div>
@@ -378,9 +378,18 @@ const AIInsightCard: React.FC<AIInsight> = ({ icon, title, description, action, 
 const ProjectCard: React.FC<RecentProject> = ({ name, client, budget, status, progress }) => {
     const statusColors = {
         'planning': 'bg-yellow-100 text-yellow-800',
-        'in progress': 'bg-blue-100 text-blue-800',
-        'on hold': 'bg-gray-100 text-gray-800',
-        'completed': 'bg-green-100 text-green-800'
+        'active': 'bg-blue-100 text-blue-800',
+        'on-hold': 'bg-gray-100 text-gray-800',
+        'completed': 'bg-green-100 text-green-800',
+        'cancelled': 'bg-red-100 text-red-800'
+    };
+
+    const statusLabels = {
+        'planning': 'Planning',
+        'active': 'Active',
+        'on-hold': 'On Hold',
+        'completed': 'Completed',
+        'cancelled': 'Cancelled'
     };
 
     return (
@@ -391,7 +400,7 @@ const ProjectCard: React.FC<RecentProject> = ({ name, client, budget, status, pr
                     <p className="text-sm text-gray-600">{client}</p>
                 </div>
                 <span className={`px-2 py-1 rounded text-xs font-medium ${statusColors[status]}`}>
-                    {status}
+                    {statusLabels[status]}
                 </span>
             </div>
             <div className="flex items-center justify-between text-sm">

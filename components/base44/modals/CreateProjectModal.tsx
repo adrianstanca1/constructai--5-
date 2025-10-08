@@ -247,9 +247,10 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             >
                                 <option value="planning">Planning</option>
-                                <option value="in progress">In Progress</option>
-                                <option value="on hold">On Hold</option>
+                                <option value="active">Active</option>
+                                <option value="on-hold">On Hold</option>
                                 <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
                             </select>
                         </div>
                         <div>
