@@ -3,8 +3,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-// Fix: Added .tsx extension to the import of App component.
-import App from './App.tsx';
+import { SimpleApp } from './SimpleApp.tsx';
 import ErrorBoundary from './components/ErrorBoundary.tsx';
 
 const rootElement = document.getElementById('root');
@@ -16,7 +15,7 @@ const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
     <ErrorBoundary>
-      <App />
+      <SimpleApp />
     </ErrorBoundary>
   </React.StrictMode>
 );
