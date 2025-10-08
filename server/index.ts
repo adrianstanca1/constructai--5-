@@ -178,27 +178,9 @@ app.post('/api/auth/refresh', async (req, res) => {
  * Health check
  */
 app.get('/api/health', (req, res) => {
-    res.json({ 
+    res.json({
         status: 'ok',
         timestamp: new Date().toISOString()
-    });
-});
-
-/**
- * 404 handler
- */
-app.use((req, res) => {
-    res.status(404).json({ error: 'Not found' });
-});
-
-/**
- * Error handler
- */
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-    console.error('Server error:', err);
-    res.status(500).json({ 
-        error: 'Internal server error',
-        message: err.message 
     });
 });
 
@@ -278,19 +260,57 @@ const startServer = async () => {
         db.pragma('foreign_keys = ON');
 
         // Register API routes
-        app.use('/api/clients', createClientsRouter(db));
-        app.use('/api/projects', createProjectsRouter(db));
-        app.use('/api/rfis', createRFIsRouter(db));
-        app.use('/api/invoices', createInvoicesRouter(db));
-        app.use('/api/time-entries', createTimeEntriesRouter(db));
-        app.use('/api/subcontractors', createSubcontractorsRouter(db));
-        app.use('/api/purchase-orders', createPurchaseOrdersRouter(db));
-        app.use('/api/tasks', createTasksRouter(db));
-        app.use('/api/milestones', createMilestonesRouter(db));
-        app.use('/api/documents', createDocumentsRouter(db));
-        app.use('/api/modules', createModulesRouter(db));
+        console.log('📝 Registering API routes...');
+        const clientsRouter = createClientsRouter(db);
+        app.use('/api/clients', clientsRouter);
+        console.log('  ✓ /api/clients');
 
-        console.log('✅ All API routes registered');
+        app.use('/api/projects', createProjectsRouter(db));
+        console.log('  ✓ /api/projects');
+
+        app.use('/api/rfis', createRFIsRouter(db));
+        console.log('  ✓ /api/rfis');
+
+        app.use('/api/invoices', createInvoicesRouter(db));
+        console.log('  ✓ /api/invoices');
+
+        app.use('/api/time-entries', createTimeEntriesRouter(db));
+        console.log('  ✓ /api/time-entries');
+
+        app.use('/api/subcontractors', createSubcontractorsRouter(db));
+        console.log('  ✓ /api/subcontractors');
+
+        app.use('/api/purchase-orders', createPurchaseOrdersRouter(db));
+        console.log('  ✓ /api/purchase-orders');
+
+        app.use('/api/tasks', createTasksRouter(db));
+        console.log('  ✓ /api/tasks');
+
+        app.use('/api/milestones', createMilestonesRouter(db));
+        console.log('  ✓ /api/milestones');
+
+        app.use('/api/documents', createDocumentsRouter(db));
+        console.log('  ✓ /api/documents');
+
+        app.use('/api/modules', createModulesRouter(db));
+        console.log('  ✓ /api/modules');
+
+        console.log('✅ All 11 API routes registered successfully');
+
+        // Register 404 handler AFTER all routes
+        app.use((req, res) => {
+            console.log(`❌ 404 Not Found: ${req.method} ${req.path}`);
+            res.status(404).json({ error: 'Not found' });
+        });
+
+        // Register error handler LAST
+        app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+            console.error('Server error:', err);
+            res.status(500).json({
+                error: 'Internal server error',
+                message: err.message
+            });
+        });
 
         // Clean up expired sessions every hour
         setInterval(() => {
