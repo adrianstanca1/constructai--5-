@@ -385,16 +385,13 @@ const App: React.FC = () => {
 
     const handleLoginSuccess = (user: User) => {
         console.log('✅ Login successful:', user.name);
-        console.log('🔄 Setting current user and navigating to dashboard...');
+        console.log('🔄 Setting current user...');
         setCurrentUser(user);
-
-        // Use navigateToModule to properly set navigation
-        navigateToModule('global-dashboard', {});
 
         window.dispatchEvent(new CustomEvent('userLoggedIn'));
         showSuccess('Welcome back!', `Hello ${user.name}`);
 
-        console.log('✅ Navigation complete - dashboard should appear');
+        console.log('✅ User set - dashboard will render automatically');
     };
 
     const handleLogout = async () => {
@@ -470,9 +467,31 @@ const App: React.FC = () => {
     }
 
     console.log('✅ Current user exists - showing app:', currentUser.name);
+    console.log('📊 Navigation stack length:', navigationStack.length);
+    console.log('📊 Current nav item:', currentNavItem);
 
-    if (!currentNavItem) {
-        return <div className="p-8">Loading...</div>;
+    // If no navigation stack, show dashboard directly
+    if (!currentNavItem || navigationStack.length === 0) {
+        console.log('🏠 No navigation - showing dashboard directly');
+        const dashboardProps = {
+            currentUser,
+            navigateTo,
+            onDeepLink: handleDeepLinkWrapper,
+            onQuickAction: handleQuickAction,
+            onSuggestAction: handleSuggestAction,
+            selectProject: (id: string) => {
+                const project = allProjects.find(p => p.id === id);
+                if (project) selectProject(project);
+            },
+            can: () => true, // Simple permission check - allow all for now
+            goBack
+        };
+
+        return (
+            <div className="min-h-screen bg-gray-50">
+                <UnifiedDashboardScreen {...dashboardProps} />
+            </div>
+        );
     }
 
     const { screen, params, project } = currentNavItem;
