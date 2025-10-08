@@ -3,8 +3,6 @@
  * Global AI assistant present on all pages
  */
 
-'use client';
-
 import React, { useState, useRef, useEffect } from 'react';
 import { ChatMessage, ToolResultMessage } from './ChatMessage';
 import { v4 as uuidv4 } from 'uuid';
@@ -43,9 +41,19 @@ export const ChatbotWidget: React.FC = () => {
         loadChatHistory();
     }, []);
 
+    const getAuthHeaders = () => {
+        const token = localStorage.getItem('constructai_token');
+        return {
+            'Content-Type': 'application/json',
+            ...(token && { 'Authorization': `Bearer ${token}` }),
+        };
+    };
+
     const loadChatHistory = async () => {
         try {
-            const response = await fetch(`/api/chat/message?sessionId=${sessionId}`);
+            const response = await fetch(`/api/chat/message?sessionId=${sessionId}`, {
+                headers: getAuthHeaders(),
+            });
             if (response.ok) {
                 const data = await response.json();
                 if (data.success && data.data.length > 0) {
@@ -82,9 +90,7 @@ export const ChatbotWidget: React.FC = () => {
         try {
             const response = await fetch('/api/chat/message', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: getAuthHeaders(),
                 body: JSON.stringify({
                     message: inputValue,
                     sessionId,
