@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@google/genai": "^1.22.0",
+    "@google/generative-ai": "0.24.1",
     "@supabase/supabase-js": "2.44.4",
     "@types/bcryptjs": "2.4.6",
     "@types/cors": "2.8.19",
@@ -33,6 +34,7 @@
     "jsonwebtoken": "9.0.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-markdown": "10.1.0",
     "react-router-dom": "7.9.3",
     "sqlite3": "5.1.7",
     "uuid": "13.0.0"

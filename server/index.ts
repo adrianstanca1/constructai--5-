@@ -199,6 +199,53 @@ const startServer = async () => {
             auth.cleanupExpiredSessions();
         }, 60 * 60 * 1000);
 
+        /**
+         * Chat Routes (AI Chatbot)
+         */
+
+        // POST /api/chat/message
+        app.post('/api/chat/message', auth.authenticateToken, async (req, res) => {
+            try {
+                const { message, sessionId, currentPage } = req.body;
+                const userId = (req as any).user.id;
+                const companyId = (req as any).user.company_id;
+
+                // Import chatbot dynamically
+                const { GeminiChatbot } = await import('../lib/ai/gemini-client');
+                const { ChatTools } = await import('../lib/ai/chat-tools');
+
+                // Build context
+                const chatContext = {
+                    userId,
+                    companyId,
+                    userName: (req as any).user.name,
+                    companyName: (req as any).user.company?.name || 'Company',
+                    userRole: (req as any).user.role,
+                    currentPage,
+                    availableData: {},
+                };
+
+                // Initialize chatbot
+                const chatbot = new GeminiChatbot();
+                await chatbot.initializeChat(chatContext, []);
+
+                // Send message
+                const response = await chatbot.sendMessage(message, chatContext);
+
+                res.json({
+                    success: true,
+                    data: {
+                        message: response.message,
+                        toolResults: [],
+                        pendingConfirmations: [],
+                    },
+                });
+            } catch (error: any) {
+                console.error('Chat error:', error);
+                res.status(500).json({ error: error.message || 'Chat failed' });
+            }
+        });
+
         // Start listening
         app.listen(PORT, () => {
             console.log('');
@@ -215,8 +262,10 @@ const startServer = async () => {
             console.log(`  POST   http://localhost:${PORT}/api/auth/logout`);
             console.log(`  GET    http://localhost:${PORT}/api/auth/me`);
             console.log(`  POST   http://localhost:${PORT}/api/auth/refresh`);
+            console.log(`  POST   http://localhost:${PORT}/api/chat/message`);
             console.log(`  GET    http://localhost:${PORT}/api/health`);
             console.log('');
+            console.log('🤖 AI Chatbot Ready!');
         });
     } catch (error) {
         console.error('❌ Failed to start server:', error);

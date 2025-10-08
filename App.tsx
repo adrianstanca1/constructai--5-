@@ -15,6 +15,7 @@ import * as authService from './auth/authService.ts';
 import { useToast } from './hooks/useToast.ts';
 import { useNavigation } from './hooks/useNavigation.ts';
 import { logger } from './utils/logger.ts';
+import { ChatbotWidget } from './components/chat/ChatbotWidget.tsx';
 
 // Screen Components
 import UnifiedDashboardScreen from './components/screens/UnifiedDashboardScreen.tsx';
@@ -564,6 +565,9 @@ const App: React.FC = () => {
             )}
 
             <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
+
+            {/* Global AI Chatbot - Available on all pages */}
+            {currentUser && <ChatbotWidget />}
         </div>
     );
 }
