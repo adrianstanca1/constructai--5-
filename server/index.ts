@@ -208,11 +208,15 @@ app.get('/api/chat/message', auth.authenticateToken, async (req, res) => {
 // POST /api/chat/message
 app.post('/api/chat/message', auth.authenticateToken, async (req, res) => {
             try {
+                console.log('🤖 [Chat] Received message:', req.body.message);
                 const { message, sessionId, currentPage } = req.body;
                 const userId = (req as any).user.id;
                 const companyId = (req as any).user.company_id;
 
+                console.log('🤖 [Chat] User:', (req as any).user.name);
+
                 // Import chatbot dynamically
+                console.log('🤖 [Chat] Importing Gemini client...');
                 const { GeminiChatbot } = await import('../lib/ai/gemini-client');
                 const { ChatTools } = await import('../lib/ai/chat-tools');
 
@@ -227,12 +231,16 @@ app.post('/api/chat/message', auth.authenticateToken, async (req, res) => {
                     availableData: {},
                 };
 
+                console.log('🤖 [Chat] Initializing chatbot...');
                 // Initialize chatbot
                 const chatbot = new GeminiChatbot();
                 await chatbot.initializeChat(chatContext, []);
 
+                console.log('🤖 [Chat] Sending message to Gemini...');
                 // Send message
                 const response = await chatbot.sendMessage(message, chatContext);
+
+                console.log('🤖 [Chat] Got response:', response.message.substring(0, 100));
 
                 res.json({
                     success: true,
@@ -243,7 +251,8 @@ app.post('/api/chat/message', auth.authenticateToken, async (req, res) => {
                     },
                 });
             } catch (error: any) {
-                console.error('Chat error:', error);
+                console.error('❌ [Chat] Error:', error);
+                console.error('❌ [Chat] Stack:', error.stack);
                 res.status(500).json({ error: error.message || 'Chat failed' });
             }
         });
