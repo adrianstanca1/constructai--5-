@@ -190,6 +190,21 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
  * Chat Routes (AI Chatbot)
  */
 
+// GET /api/chat/message - Get chat history
+app.get('/api/chat/message', auth.authenticateToken, async (req, res) => {
+    try {
+        // For now, return empty history
+        // TODO: Implement chat history from database
+        res.json({
+            success: true,
+            data: [],
+        });
+    } catch (error: any) {
+        console.error('Chat history error:', error);
+        res.status(500).json({ error: error.message || 'Failed to load chat history' });
+    }
+});
+
 // POST /api/chat/message
 app.post('/api/chat/message', auth.authenticateToken, async (req, res) => {
             try {
