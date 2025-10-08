@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { User } from '../../types.ts';
-import * as api from '../../api.ts';
+import * as authService from '../../auth/authService.ts';
 import { ArrowPathIcon } from '../Icons.tsx';
 import { supabase } from '../../supabaseClient.ts';
 import { validateEmail, validatePassword, combineValidations } from '../../utils/validation.ts';
@@ -35,24 +35,20 @@ const LoginForm: React.FC<LoginFormProps> = React.memo(({ onLoginSuccess }) => {
         }
 
         try {
-            const user = await api.loginUser(email.trim(), password);
-            if (user) {
-                console.log('✅ Login successful');
-                // For Supabase auth, the auth state change listener will handle navigation
-                // For mock auth, we need to call onLoginSuccess
-                if (!supabase) {
-                    console.log('📱 Mock auth: calling onLoginSuccess');
-                    onLoginSuccess(user);
-                } else {
-                    console.log('🔄 Supabase auth: navigation handled by auth state change');
-                }
-            } else {
-                console.log('❌ Login failed - no user returned');
-                setError('Login failed. Please check your credentials.');
-            }
+            const user = await authService.login(email.trim(), password);
+            console.log('✅ Login successful, user:', user);
+
+            // Always call onLoginSuccess to trigger navigation
+            onLoginSuccess(user);
         } catch (err: any) {
             console.error('❌ Login error:', err);
-            setError(err.message || 'An unexpected error occurred.');
+
+            // Check if it's an authentication error
+            if (err.message && err.message.includes('Invalid credentials')) {
+                setError('Invalid email or password. Please try again.');
+            } else {
+                setError(err.message || 'Login failed. Please try again.');
+            }
         } finally {
             setIsLoading(false);
         }
