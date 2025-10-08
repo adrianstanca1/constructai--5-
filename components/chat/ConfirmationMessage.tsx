@@ -3,8 +3,6 @@
  * Displays pending actions that require user confirmation
  */
 
-'use client';
-
 import React from 'react';
 
 export interface ConfirmationMessageProps {

@@ -3,8 +3,6 @@
  * Displays individual chat messages with markdown support
  */
 
-'use client';
-
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 
@@ -29,27 +27,24 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
             <div className={`flex gap-3 max-w-[80%] ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
                 {/* Avatar */}
                 <div
-                    className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
-                        isUser
+                    className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${isUser
                             ? 'bg-blue-600 text-white'
                             : 'bg-gradient-to-br from-purple-600 to-blue-600 text-white'
-                    }`}
+                        }`}
                 >
                     {isUser ? '👤' : '🤖'}
                 </div>
 
                 {/* Message Content */}
                 <div
-                    className={`flex flex-col ${
-                        isUser ? 'items-end' : 'items-start'
-                    }`}
+                    className={`flex flex-col ${isUser ? 'items-end' : 'items-start'
+                        }`}
                 >
                     <div
-                        className={`rounded-2xl px-4 py-3 ${
-                            isUser
+                        className={`rounded-2xl px-4 py-3 ${isUser
                                 ? 'bg-blue-600 text-white'
                                 : 'bg-gray-100 text-gray-900'
-                        }`}
+                            }`}
                     >
                         {isLoading ? (
                             <div className="flex items-center gap-2">
@@ -70,9 +65,8 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
                                         li: ({ children }) => <li className="mb-1">{children}</li>,
                                         strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
                                         code: ({ children }) => (
-                                            <code className={`px-1 py-0.5 rounded text-xs ${
-                                                isUser ? 'bg-blue-700' : 'bg-gray-200'
-                                            }`}>
+                                            <code className={`px-1 py-0.5 rounded text-xs ${isUser ? 'bg-blue-700' : 'bg-gray-200'
+                                                }`}>
                                                 {children}
                                             </code>
                                         ),
