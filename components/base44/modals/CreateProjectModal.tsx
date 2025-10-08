@@ -65,7 +65,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                 body: JSON.stringify({
                     ...formData,
                     company_id,
-                    client_id: parseInt(formData.client_id),
+                    client_id: formData.client_id || null, // Optional - can be null
                     budget: parseFloat(formData.budget) || 0
                 })
             });
@@ -150,21 +150,28 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Client *
+                                Client (Optional)
                             </label>
                             <select
-                                required
                                 value={formData.client_id}
                                 onChange={(e) => setFormData({ ...formData, client_id: e.target.value })}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             >
-                                <option value="">Select client</option>
+                                <option value="">No client (optional)</option>
+                                {clients.length === 0 && (
+                                    <option value="" disabled>No clients available - create one first</option>
+                                )}
                                 {clients.map((client) => (
                                     <option key={client.id} value={client.id}>
                                         {client.name}
                                     </option>
                                 ))}
                             </select>
+                            {clients.length === 0 && (
+                                <p className="mt-1 text-xs text-amber-600">
+                                    💡 Tip: Create a client first from the Clients page
+                                </p>
+                            )}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
