@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User } from '../../../types';
+import { User, Company } from '../../../types';
 import * as api from '../../../api';
 
 interface CompaniesManagementProps {
@@ -7,7 +7,7 @@ interface CompaniesManagementProps {
 }
 
 const CompaniesManagement: React.FC<CompaniesManagementProps> = ({ currentUser }) => {
-    const [companies, setCompanies] = useState<(api.Company & { plan?: api.CompanyPlan; userCount: number; projectCount: number })[]>([]);
+    const [companies, setCompanies] = useState<(Company & { plan?: api.CompanyPlan; userCount: number; projectCount: number })[]>([]);
     const [plans, setPlans] = useState<api.CompanyPlan[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);

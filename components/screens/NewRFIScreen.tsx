@@ -41,7 +41,7 @@ const NewRFIScreen: React.FC<NewRFIScreenProps> = ({ project, goBack, currentUse
         }
 
         const attachmentsForApi: Attachment[] = await Promise.all(
-            attachments.map(file => new Promise((resolve, reject) => {
+            attachments.map(file => new Promise<Attachment>((resolve, reject) => {
                  const reader = new FileReader();
                 reader.onload = (e) => {
                     resolve({ name: file.name, url: e.target?.result as string });

@@ -86,7 +86,7 @@ const TaskDetailScreen: React.FC<TaskDetailScreenProps> = ({ taskId, project, go
         if (!task || (!newComment.trim() && commentFiles.length === 0)) return;
 
         const attachments: Attachment[] = await Promise.all(
-            commentFiles.map(file => new Promise((resolve, reject) => {
+            commentFiles.map(file => new Promise<Attachment>((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     resolve({ name: file.name, url: e.target?.result as string });

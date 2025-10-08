@@ -19,8 +19,10 @@ export const MENU_ITEMS: MenuItem[] = [
     },
     {
         label: 'AI Tools',
-        screen: 'ai-tools',
-        // No specific permission, shown to relevant roles based on tool definitions
+        children: [
+            { label: 'AI Agents Marketplace', screen: 'ai-agents-marketplace', permission: { subject: 'user', action: 'read' } },
+            { label: 'AI Tools Suite', screen: 'ai-tools', permission: { subject: 'task', action: 'read' } },
+        ]
     },
     {
         label: 'Document Management',
@@ -50,5 +52,10 @@ export const MENU_ITEMS: MenuItem[] = [
         label: 'Business Development',
         screen: 'business-development',
         // No specific permission
+    },
+    {
+        label: 'Platform Admin',
+        screen: 'platform-admin',
+        permission: { subject: 'user', action: 'read' }, // Only super admins can access
     }
 ];

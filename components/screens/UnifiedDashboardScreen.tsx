@@ -1,7 +1,8 @@
 import React from 'react';
 import { User, Screen, PermissionAction, PermissionSubject } from '../../types.ts';
-import SuperAdminDashboard from './dashboards/SuperAdminDashboard.tsx';
+import PlatformAdminScreen from './admin/PlatformAdminScreen.tsx';
 import CompanyAdminDashboard from './dashboards/CompanyAdminDashboard.tsx';
+import CompanyAdminDashboardNew from './dashboards/CompanyAdminDashboardNew.tsx';
 import SupervisorDashboard from './dashboards/SupervisorDashboard.tsx';
 import OperativeDashboard from './dashboards/OperativeDashboard.tsx';
 
@@ -14,6 +15,7 @@ interface UnifiedDashboardScreenProps {
     onSuggestAction: () => void;
     selectProject: (id: string) => void;
     can: (action: PermissionAction, subject: PermissionSubject) => boolean;
+    goBack: () => void;
 }
 
 const UnifiedDashboardScreen: React.FC<UnifiedDashboardScreenProps> = (props) => {
@@ -22,17 +24,18 @@ const UnifiedDashboardScreen: React.FC<UnifiedDashboardScreenProps> = (props) =>
     // Route to the correct dashboard based on the user's role
     switch (currentUser.role) {
         case 'super_admin':
-            return <SuperAdminDashboard {...props} />;
-        
+            // Super admins get the full platform administration dashboard
+            return <PlatformAdminScreen {...props} />;
+
         case 'company_admin':
         case 'Project Manager':
         case 'Accounting Clerk':
-            // These roles get a more comprehensive, company-wide view
-            return <CompanyAdminDashboard {...props} />;
+            // These roles get a more comprehensive, company-wide view with new Base44 design
+            return <CompanyAdminDashboardNew {...props} />;
 
         case 'Foreman':
         case 'Safety Officer':
-             // These roles get a supervisor-level view focused on tasks and teams
+            // These roles get a supervisor-level view focused on tasks and teams
             return <SupervisorDashboard {...props} />;
 
         case 'operative':
@@ -40,8 +43,8 @@ const UnifiedDashboardScreen: React.FC<UnifiedDashboardScreenProps> = (props) =>
             return <OperativeDashboard {...props} />;
 
         default:
-            // Fallback for any other roles, providing a safe default
-            return <CompanyAdminDashboard {...props} />;
+            // Fallback for any other roles, providing a safe default with new design
+            return <CompanyAdminDashboardNew {...props} />;
     }
 };
 

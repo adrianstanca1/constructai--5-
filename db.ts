@@ -21,13 +21,21 @@ const COMPANIES: Company[] = [
 ];
 
 const USERS: User[] = [
+    // Platform Super Admin
+    { id: 'user-adrian', name: 'Adrian Stanca', email: 'adrian.stanca1@gmail.com', role: 'super_admin', avatar: 'https://ui-avatars.com/api/?name=Adrian+Stanca&background=4F46E5&color=fff&size=200', companyId: 'comp_platform_admin' },
+
+    // Legacy Super Admin
     { id: 'user-sa', name: 'Sam Admin', email: 'sam@constructai.com', role: 'super_admin', avatar: 'https://i.pravatar.cc/150?u=sam', companyId: '' },
-    { id: 'user-ca', name: 'Casey Admin', email: 'casey@constructco.com', role: 'company_admin', avatar: 'https://i.pravatar.cc/150?u=casey', companyId: 'comp-1' },
+
+    // ConstructCo Users
+    { id: 'user-ca', name: 'Casey Jordan', email: 'casey@constructco.com', role: 'company_admin', avatar: 'https://i.pravatar.cc/150?u=casey', companyId: 'comp-1' },
     { id: 'user-pm', name: 'Susan Manager', email: 'susan@constructco.com', role: 'Project Manager', avatar: 'https://i.pravatar.cc/150?u=susan', companyId: 'comp-1' },
     { id: 'user-foreman', name: 'Oscar Foreman', email: 'oscar@constructco.com', role: 'Foreman', avatar: 'https://i.pravatar.cc/150?u=oscar', companyId: 'comp-1' },
     { id: 'user-operative', name: 'Olivia Operative', email: 'olivia@constructco.com', role: 'operative', avatar: 'https://i.pravatar.cc/150?u=olivia', companyId: 'comp-1' },
     { id: 'user-safety', name: 'Simon Safety', email: 'simon@constructco.com', role: 'Safety Officer', avatar: 'https://i.pravatar.cc/150?u=simon', companyId: 'comp-1' },
     { id: 'user-acct', name: 'Amy Accountant', email: 'amy@constructco.com', role: 'Accounting Clerk', avatar: 'https://i.pravatar.cc/150?u=amy', companyId: 'comp-1' },
+
+    // BuildRight Inc. Users
     { id: 'user-br', name: 'Bob Right', email: 'bob@buildright.com', role: 'company_admin', avatar: 'https://i.pravatar.cc/150?u=bob', companyId: 'comp-2' },
 ];
 

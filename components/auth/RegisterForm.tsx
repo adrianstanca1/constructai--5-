@@ -3,12 +3,13 @@ import { User } from '../../types.ts';
 import * as api from '../../api.ts';
 import { ArrowPathIcon } from '../Icons.tsx';
 import { supabase } from '../../supabaseClient.ts';
+import { validateName, validateEmail, validatePassword, validateCompanyName, combineValidations } from '../../utils/validation.ts';
 
 interface RegisterFormProps {
     onLoginSuccess: (user: User) => void;
 }
 
-const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginSuccess }) => {
+const RegisterForm: React.FC<RegisterFormProps> = React.memo(({ onLoginSuccess }) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [companyName, setCompanyName] = useState('');
@@ -21,8 +22,23 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginSuccess }) => {
         e.preventDefault();
         setError('');
         setIsLoading(true);
+
+        // Validate form inputs
+        const validation = combineValidations(
+            validateName(name),
+            validateEmail(email),
+            validateCompanyName(companyName),
+            validatePassword(password)
+        );
+
+        if (!validation.isValid) {
+            setError(validation.errors.join('. '));
+            setIsLoading(false);
+            return;
+        }
+
         try {
-            const newUser = await api.registerUser({ name, email, companyName, password });
+            const newUser = await api.registerUser({ name: name.trim(), email: email.trim(), companyName: companyName.trim(), password });
             if (newUser) {
                 onLoginSuccess(newUser);
             }
@@ -46,7 +62,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginSuccess }) => {
             const { data, error } = await supabase.auth.signInWithOAuth({
                 provider: provider,
                 options: {
-                    redirectTo: window.location.origin,
+                    redirectTo: `${window.location.origin}/#dashboard`,
                 }
             });
 
@@ -79,7 +95,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginSuccess }) => {
 
             <div>
                 <label htmlFor="reg-email" className="block text-sm font-medium text-gray-700">Email Address</label>
-                <input id="reg-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+                <input id="reg-email" name="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
                     className="mt-1 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
             </div>
 
@@ -150,6 +166,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginSuccess }) => {
             </div>
         </form>
     );
-};
+});
+
+RegisterForm.displayName = 'RegisterForm';
 
 export default RegisterForm;

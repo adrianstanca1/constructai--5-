@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { User, Screen, Task, SiteInstruction, DailyLog } from '../../../types.ts';
+import { User, Screen, Task, SiteInstruction, DailyLog, Project } from '../../../types.ts';
 import * as api from '../../../api.ts';
 import { ListBulletIcon, ClipboardDocumentListIcon, AlertTriangleIcon } from '../../Icons.tsx';
+import DailyFocusWidget from '../../widgets/DailyFocusWidget.tsx';
+import { calculateDashboardMetrics } from '../../../utils/dashboardLogic.ts';
 
 interface OperativeDashboardProps {
     currentUser: User;
@@ -11,6 +13,7 @@ interface OperativeDashboardProps {
 
 const OperativeDashboard: React.FC<OperativeDashboardProps> = ({ currentUser, navigateTo, onDeepLink }) => {
     const [firstTask, setFirstTask] = useState<Task | null>(null);
+    const [allTasks, setAllTasks] = useState<Task[]>([]);
     const [siteInstructions, setSiteInstructions] = useState<SiteInstruction[]>([]);
     const [dailyLog, setDailyLog] = useState<DailyLog | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -24,11 +27,12 @@ const OperativeDashboard: React.FC<OperativeDashboardProps> = ({ currentUser, na
                 api.fetchSiteInstructions(),
                 api.fetchDailyLogForUser(currentUser.id, todayStr)
             ]);
-            
+
             const openTasks = userTasks
                 .filter(t => t.status !== 'Done')
                 .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-            
+
+            setAllTasks(userTasks);
             setFirstTask(openTasks.length > 0 ? openTasks[0] : null);
             setSiteInstructions(instructions);
             setDailyLog(log);
@@ -37,29 +41,28 @@ const OperativeDashboard: React.FC<OperativeDashboardProps> = ({ currentUser, na
         loadDashboardData();
     }, [currentUser]);
 
+    // Calculate metrics for DailyFocusWidget
+    const metrics = calculateDashboardMetrics([], allTasks);
+
     const handleDailyLogClick = () => {
-        // Find the project for the first task, or default to some logic
-        const projectId = firstTask?.projectId; 
+        const projectId = firstTask?.projectId;
         if (projectId) {
             onDeepLink(projectId, 'daily-log', {});
-        } else {
-            // If no tasks, we can't deep link. Here you might prompt to select a project.
-            // For now, we'll assume a project context is needed and disable if no tasks.
-            alert("Please be assigned to a task on a project to create a daily log.");
         }
     };
 
 
     return (
         <div className="space-y-8">
-            <header className="flex justify-between items-start">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900">My Workday</h1>
-                    <p className="text-md text-gray-500">Welcome, {currentUser.name}!</p>
-                </div>
-                <img src={currentUser.avatar} alt="User Avatar" className="w-12 h-12 rounded-full" />
-            </header>
-            
+            {/* Daily Focus Widget - Replaces header */}
+            {!isLoading && (
+                <DailyFocusWidget
+                    firstTask={firstTask}
+                    metrics={metrics}
+                    userName={currentUser.name}
+                />
+            )}
+
             {isLoading ? (
                 <div className="text-center p-8 text-gray-500">Loading your workday...</div>
             ) : (
@@ -68,7 +71,7 @@ const OperativeDashboard: React.FC<OperativeDashboardProps> = ({ currentUser, na
                         {firstTask ? (
                             <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
                                 <h2 className="text-lg font-bold text-gray-800 mb-3">First Task Up</h2>
-                                <div 
+                                <div
                                     onClick={() => onDeepLink(firstTask.projectId, 'task-detail', { taskId: firstTask.id })}
                                     className="p-4 bg-blue-50 border border-blue-200 rounded-lg cursor-pointer hover:bg-blue-100"
                                 >
@@ -79,40 +82,41 @@ const OperativeDashboard: React.FC<OperativeDashboardProps> = ({ currentUser, na
                         ) : (
                             <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
                                 <h2 className="text-lg font-bold text-gray-800 mb-3">First Task Up</h2>
-                                <p className="p-4 bg-green-50 text-green-800 text-center rounded-lg">No open tasks. Great job!</p>
+                                <div className="p-4 bg-green-50 text-green-800 text-center rounded-lg">
+                                    <p>No open tasks. Great job!</p>
+                                    <button onClick={() => navigateTo('my-tasks')} className="mt-4 px-4 py-2 bg-green-600 text-white font-bold rounded-md hover:bg-green-700">
+                                        View All Tasks
+                                    </button>
+                                </div>
                             </div>
                         )}
-                        
+
                         <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
-                             <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                            <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                                 <ListBulletIcon className="w-6 h-6 text-gray-500" /> All My Tasks
                             </h2>
-                            <button onClick={() => {
-                                // This requires a global "my tasks" screen, which we don't have.
-                                // For now, this can be a placeholder or navigate to the first task's project task list.
-                                if(firstTask) onDeepLink(firstTask.projectId, 'tasks', {});
-                                else alert("No tasks to display.");
-                            }} className="w-full px-4 py-3 bg-blue-600 text-white font-bold rounded-md hover:bg-blue-700">
+                            <button onClick={() => navigateTo('my-tasks')} className="w-full px-4 py-3 bg-blue-600 text-white font-bold rounded-md hover:bg-blue-700">
                                 View All My Tasks
                             </button>
                         </div>
                     </div>
-                     <div className="space-y-8">
+                    <div className="space-y-8">
                         <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
                             <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                                 <ClipboardDocumentListIcon className="w-6 h-6 text-gray-500" /> Daily Log
                             </h2>
-                             <button 
+                            <button
                                 onClick={handleDailyLogClick}
                                 disabled={!firstTask}
+                                title={!firstTask ? 'You must have an active task on a project to create a daily log' : (dailyLog ? "View or edit today's log" : "Start a new daily log")}
                                 className={`w-full px-4 py-3 font-bold rounded-md transition-colors ${dailyLog ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-yellow-400 text-yellow-900 hover:bg-yellow-500'} disabled:bg-gray-300 disabled:cursor-not-allowed`}
                             >
-                                {dailyLog ? "View/Edit Today's Log" : "Start Daily Log"}
+                                {dailyLog ? "View/Edit Today's Log" : `Start Daily Log for ${firstTask?.projectName || 'Project'}`}
                             </button>
                         </div>
 
                         {siteInstructions.length > 0 && (
-                             <div className="bg-orange-50 rounded-lg shadow-lg border border-orange-200 p-6">
+                            <div className="bg-orange-50 rounded-lg shadow-lg border border-orange-200 p-6">
                                 <h2 className="text-lg font-bold text-orange-800 mb-4 flex items-center gap-2">
                                     <AlertTriangleIcon className="w-6 h-6 text-orange-600" /> Recent Site Instructions
                                 </h2>

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 // Fix: Corrected import paths to include file extensions.
-import { ActivityEvent, Screen, User } from '../../types.ts';
+import { ActivityEvent, Screen } from '../../types.ts';
 // Fix: Corrected import paths to include file extensions.
 // Fix: Corrected the import path for the 'api' module.
 import * as api from '../../api.ts';
@@ -8,24 +8,11 @@ import * as api from '../../api.ts';
 import { CheckBadgeIcon, CameraIcon, ChatBubbleBottomCenterTextIcon, ClipboardDocumentListIcon } from '../Icons.tsx';
 
 interface RecentActivityWidgetProps {
+    activities: ActivityEvent[];
     onDeepLink: (projectId: string, screen: Screen, params: any) => void;
-    currentUser: User;
 }
 
-const RecentActivityWidget: React.FC<RecentActivityWidgetProps> = ({ onDeepLink, currentUser }) => {
-    const [activities, setActivities] = useState<ActivityEvent[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        const loadActivities = async () => {
-            setIsLoading(true);
-            const fetchedActivities = await api.fetchRecentActivity(currentUser);
-            setActivities(fetchedActivities.slice(0, 5));
-            setIsLoading(false);
-        };
-        loadActivities();
-    }, [currentUser]);
-
+const RecentActivityWidget: React.FC<RecentActivityWidgetProps> = ({ activities, onDeepLink }) => {
     const ICONS: Record<ActivityEvent['type'], React.FC<any>> = {
         comment: ChatBubbleBottomCenterTextIcon,
         photo: CameraIcon,
@@ -57,13 +44,11 @@ const RecentActivityWidget: React.FC<RecentActivityWidgetProps> = ({ onDeepLink,
                 <ChatBubbleBottomCenterTextIcon className="w-6 h-6 text-gray-500" />
                 Recent Project Activity
             </h2>
-             {isLoading ? (
-                <p className="text-gray-500 flex-grow flex items-center justify-center">Loading activity...</p>
-            ) : activities.length === 0 ? (
+            {activities.length === 0 ? (
                 <p className="text-gray-500 flex-grow flex items-center justify-center">No recent activity.</p>
             ) : (
                 <ul className="space-y-2">
-                    {activities.map(activity => {
+                    {activities.slice(0, 5).map(activity => {
                         const Icon = ICONS[activity.type];
                         return (
                             <li 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 // Fix: Added .ts extension to import
-import { Project, Screen, User } from '../../types.ts';
+import { Project, Screen, User, PermissionAction, PermissionSubject } from '../../types.ts';
 import { usePermissions } from '../../hooks/usePermissions.ts';
 // Fix: Added .tsx extension to import
 import { 
@@ -102,7 +102,7 @@ const Sidebar: React.FC<SidebarProps> = ({ project, navigateTo, navigateToModule
         ? allNavItems.filter(item => item.screen !== 'projects')
         : [allNavItems.find(item => item.screen === 'projects')!];
     
-    const visibleNavItems = itemsToShow.filter(item => can(item.permission.action, item.permission.subject));
+    const visibleNavItems = itemsToShow.filter(item => can(item.permission.action as PermissionAction, item.permission.subject as PermissionSubject));
 
 
     return (

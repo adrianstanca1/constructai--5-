@@ -1,31 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 // Fix: Corrected import paths to include file extensions.
-import { Project, Screen, User } from '../../types.ts';
+import { Project, Screen } from '../../types.ts';
 // Fix: Corrected import paths to include file extensions.
 // Fix: Corrected the import path for the 'api' module.
 import * as api from '../../api.ts';
 import { ChevronRightIcon, QuestionMarkCircleIcon, AlertTriangleIcon } from '../Icons.tsx';
 
 interface ProjectsOverviewWidgetProps {
+    projects: Project[];
     navigateTo: (screen: Screen, params?: any) => void;
     onDeepLink: (projectId: string, screen: Screen, params: any) => void;
-    currentUser: User;
 }
 
-const ProjectsOverviewWidget: React.FC<ProjectsOverviewWidgetProps> = ({ navigateTo, onDeepLink, currentUser }) => {
-    const [projects, setProjects] = useState<Project[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        const loadProjects = async () => {
-            setIsLoading(true);
-            const fetchedProjects = await api.fetchAllProjects(currentUser);
-            setProjects(fetchedProjects);
-            setIsLoading(false);
-        };
-        loadProjects();
-    }, [currentUser]);
-
+const ProjectsOverviewWidget: React.FC<ProjectsOverviewWidgetProps> = ({ projects, navigateTo, onDeepLink }) => {
     const totalOpenRFIs = projects.reduce((sum, p) => sum + p.snapshot.openRFIs, 0);
     const totalOverdueTasks = projects.reduce((sum, p) => sum + p.snapshot.overdueTasks, 0);
 
@@ -46,32 +33,28 @@ const ProjectsOverviewWidget: React.FC<ProjectsOverviewWidgetProps> = ({ navigat
                 </button>
             </div>
 
-            {isLoading ? (
-                <p className="text-gray-500 flex-grow flex items-center justify-center">Loading project stats...</p>
-            ) : (
-                <>
-                    <div className="p-4 bg-gray-50 rounded-lg border flex flex-col sm:flex-row justify-around gap-4 mb-4">
-                       <Stat value={totalOpenRFIs} label="Open RFIs" icon={QuestionMarkCircleIcon} color="text-red-600" />
-                       <Stat value={totalOverdueTasks} label="Overdue Tasks" icon={AlertTriangleIcon} color="text-amber-600" />
-                    </div>
-                    <ul className="space-y-1 flex-grow">
-                         {projects.slice(0, 4).map(project => (
-                            <li key={project.id}>
-                                <button
-                                    onClick={() => onDeepLink(project.id, 'project-home', {})}
-                                    className="w-full flex items-center gap-3 p-2 rounded-lg text-left transition-colors hover:bg-gray-100"
-                                >
-                                    <img src={project.image} alt={project.name} className="w-12 h-10 object-cover rounded-md flex-shrink-0" />
-                                    <div className="flex-grow">
-                                        <p className="font-bold text-sm">{project.name}</p>
-                                    </div>
-                                    <ChevronRightIcon className="w-5 h-5 text-gray-400" />
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-                </>
-            )}
+            <>
+                <div className="p-4 bg-gray-50 rounded-lg border flex flex-col sm:flex-row justify-around gap-4 mb-4">
+                   <Stat value={totalOpenRFIs} label="Open RFIs" icon={QuestionMarkCircleIcon} color="text-red-600" />
+                   <Stat value={totalOverdueTasks} label="Overdue Tasks" icon={AlertTriangleIcon} color="text-amber-600" />
+                </div>
+                <ul className="space-y-1 flex-grow">
+                     {projects.slice(0, 4).map(project => (
+                        <li key={project.id}>
+                            <button
+                                onClick={() => onDeepLink(project.id, 'project-home', {})}
+                                className="w-full flex items-center gap-3 p-2 rounded-lg text-left transition-colors hover:bg-gray-100"
+                            >
+                                <img src={project.image} alt={project.name} className="w-12 h-10 object-cover rounded-md flex-shrink-0" />
+                                <div className="flex-grow">
+                                    <p className="font-bold text-sm">{project.name}</p>
+                                </div>
+                                <ChevronRightIcon className="w-5 h-5 text-gray-400" />
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            </>
         </div>
     );
 };

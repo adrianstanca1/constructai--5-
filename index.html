@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ConstructAI - Interactive Platform Showcase</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -215,11 +214,14 @@
     </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // These would be set by your build/deployment environment.
-    // In a real app, these should be secured.
-    // IMPORTANT: Replace with your actual Supabase project URL and anon key.
-    var __supabase_url = 'YOUR_SUPABASE_URL';
-    var __supabase_anon_key = 'YOUR_SUPABASE_ANON_KEY';
+// These would be set by your build/deployment environment.
+// In a real app, these should be secured.
+// IMPORTANT: Replace with your actual Supabase project URL and anon key.
+var __supabase_url = 'https://jkpeuejmhlccnpyorxfz.supabase.co';
+var __supabase_anon_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImprcGV1ZWptaGxjY25weW9yeGZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3NjkyNDcsImV4cCI6MjA3NTM0NTI0N30.vPLMIfL5rfWdoNealtviBQRfrPuSLq9siPs23oiV9FE';
+
+// Firebase config for demo form - replace with your actual Firebase config
+var __firebase_config = undefined; // Set to valid Firebase config JSON string when needed
 </script>
 <script type="importmap">
 {
@@ -453,31 +455,31 @@
 
     <script type="module" src="/index.tsx"></script>
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
-        let db, auth;
-
-        async function initializeFirebase() {
-            try {
-                if (typeof __firebase_config === 'undefined' || !__firebase_config) {
-                    console.warn('Firebase config not provided. Demo form submissions will not work.');
-                    return;
+                import { createClient } from "@supabase/supabase-js";
+    
+                let supabaseClient;
+    
+                async function initializeSupabase() {
+                    try {
+                        // Check if a Supabase client already exists to avoid multiple instances
+                        if (window.supabaseClient) {
+                            supabaseClient = window.supabaseClient;
+                            console.log('Using existing Supabase client for demo form');
+                            return;
+                        }
+    
+                        if (typeof __supabase_url === 'undefined' || !__supabase_url || __supabase_url === 'YOUR_SUPABASE_URL' ||
+                            typeof __supabase_anon_key === 'undefined' || !__supabase_anon_key || __supabase_anon_key === 'YOUR_SUPABASE_ANON_KEY') {
+                            console.warn('Supabase not configured. Demo form submissions will not work.');
+                            return;
+                        }
+                        supabaseClient = createClient(__supabase_url, __supabase_anon_key);
+                        window.supabaseClient = supabaseClient; // Store globally to avoid duplicates
+                        console.log('Supabase client initialized for demo form');
+                    } catch (error) {
+                        console.error("Supabase initialization failed:", error);
+                    }
                 }
-                const firebaseConfig = JSON.parse(__firebase_config);
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("Firebase initialization failed:", error);
-            }
-        }
 
         const featuresData = [
             { name: 'Document Management', category: 'project', icon: '🗂️', description: 'Centralized repository for all project documents with version control and real-time collaboration.', improvement: 'AI-driven tagging and search to automatically categorize files and flag compliance issues.' },
@@ -860,8 +862,8 @@
             const form = e.target;
             const submitBtn = form.querySelector('button[type="submit"]');
             const feedbackEl = document.getElementById('form-feedback');
-            
-            if (!db) {
+
+            if (!supabaseClient) {
                 feedbackEl.textContent = 'Database not connected. Please try again later.';
                 feedbackEl.className = 'text-sm text-center mt-4 text-red-600';
                 return;
@@ -872,15 +874,16 @@
             feedbackEl.textContent = '';
 
             try {
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-                const collectionPath = `/artifacts/${appId}/public/data/demo-requests`;
+                const { error } = await supabaseClient
+                    .from('demo_requests')
+                    .insert({
+                        name: form.name.value,
+                        email: form.email.value,
+                        company: form.company.value,
+                        submitted_at: new Date().toISOString()
+                    });
 
-                await addDoc(collection(db, collectionPath), {
-                    name: form.name.value,
-                    email: form.email.value,
-                    company: form.company.value,
-                    submittedAt: serverTimestamp()
-                });
+                if (error) throw error;
 
                 feedbackEl.textContent = 'Thank you! We will be in touch shortly.';
                 feedbackEl.className = 'text-sm text-center mt-4 text-green-600';
@@ -921,7 +924,7 @@
             observer.observe(aiCoreSection);
         }
 
-        initializeFirebase();
+        initializeSupabase();
         handleLogoutUI(); // Ensure initial state is logged out
     </script>
 </body>

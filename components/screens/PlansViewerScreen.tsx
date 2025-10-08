@@ -309,12 +309,12 @@ const PlansViewerScreen: React.FC<PlansViewerScreenProps> = ({ project, goBack, 
             }
             ctx.strokeStyle = strokeColor;
             
-            if (activeTool === 'line' || (resizeHandle && selectedMarkup?.type === 'line')) {
+            if (activeTool === 'line' || (resizeHandle && selectedMarkup && !('x' in selectedMarkup) && selectedMarkup.type === 'line')) {
                 ctx.beginPath();
                 ctx.moveTo(startPoint.x, startPoint.y);
                 ctx.lineTo(currentCoords.x, currentCoords.y);
                 ctx.stroke();
-            } else if (activeTool === 'rectangle' || (resizeHandle && selectedMarkup?.type === 'rectangle')) {
+            } else if (activeTool === 'rectangle' || (resizeHandle && selectedMarkup && !('x' in selectedMarkup) && selectedMarkup.type === 'rectangle')) {
                 ctx.strokeRect(startPoint.x, startPoint.y, currentCoords.x - startPoint.x, currentCoords.y - startPoint.y);
             }
         } else if (isDragging && selectedMarkup && dragStart) {

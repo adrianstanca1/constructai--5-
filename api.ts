@@ -1,22 +1,24 @@
 import { GoogleGenAI, Type } from '@google/genai';
-// Fix: Consolidated permission type imports to break a circular dependency.
-import { 
+import {
     User, Project, Task, RFI, PunchListItem, Drawing, Document, SiteInstruction, DeliveryItem, DayworkSheet,
     Comment, Notification, ActivityEvent, Company, AISuggestion, AIInsight, AIFeedback, DailyLog, LogItem, Attachment,
     TimeEntry,
     PermissionAction,
     PermissionSubject
-} from './types.ts';
+} from './types';
 import * as db from './db.ts';
-import { supabase, getMyProfile } from './supabaseClient.ts';
 import { can } from './permissions.ts';
+import { validateName, validateEmail, validatePassword, validateCompanyName } from './utils/validation.ts';
+import { APIError, withErrorHandling } from './utils/errorHandling.ts';
+import { getMLPredictor } from './utils/mlPredictor.ts';
+import { PredictionResult } from './utils/neuralNetwork.ts';
+import * as authService from './auth/authService.ts';
 
 // Simulate API latency
 const LATENCY = 200;
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Fix: Initialized the Gemini API client.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 const model = 'gemini-2.5-flash';
 
 const checkPermissions = (user: User, action: PermissionAction, subject: PermissionSubject) => {
@@ -28,89 +30,89 @@ const checkPermissions = (user: User, action: PermissionAction, subject: Permiss
 
 // --- Auth ---
 export const loginUser = async (email: string, password?: string): Promise<User | null> => {
-    if (supabase) {
-        const { error } = await supabase.auth.signInWithPassword({ email, password: password || '' });
-        if (error) throw error;
-        // After successful sign-in, getMyProfile will be called by the auth state change listener.
-        // We call it here to ensure the user object is returned immediately for the login form.
-        return getMyProfile();
-    } else {
-        // Mock implementation
-        await delay(LATENCY * 2);
-        const user = db.findUserByEmail(email);
-        if (user) {
-            return user;
-        }
-        return null;
-    }
+    console.log('🔐 [API] Login user:', email);
+    return authService.login(email, password || '');
 }
 
 export const registerUser = async (details: { name: string, email: string, companyName: string, password?: string }): Promise<User | null> => {
-    if (supabase) {
-        // This is a simplified registration flow. A real app would have more robust company handling.
-        const { data: companies } = await supabase.from('companies').select('id').eq('name', details.companyName).limit(1);
-        let companyId;
+    return withErrorHandling(async () => {
+        // Validate input data
+        const nameValidation = validateName(details.name);
+        const emailValidation = validateEmail(details.email);
+        const companyValidation = validateCompanyName(details.companyName);
+        const passwordValidation = details.password ? validatePassword(details.password) : { isValid: true, errors: [] };
 
-        if (companies && companies.length > 0) {
-            companyId = companies[0].id;
+        if (!nameValidation.isValid || !emailValidation.isValid || !companyValidation.isValid || !passwordValidation.isValid) {
+            const allErrors = [...nameValidation.errors, ...emailValidation.errors, ...companyValidation.errors, ...passwordValidation.errors];
+            throw new APIError(allErrors.join('. '), 'VALIDATION_ERROR');
+        }
+
+        if (supabase) {
+            // This is a simplified registration flow. A real app would have more robust company handling.
+            const { data: companies } = await supabase.from('companies').select('id').eq('name', details.companyName.trim()).limit(1);
+            let companyId;
+
+            if (companies && companies.length > 0) {
+                companyId = companies[0].id;
+            } else {
+                const { data: newCompany, error: companyError } = await supabase.from('companies').insert({ name: details.companyName.trim() }).select('id').single();
+                if (companyError) throw companyError;
+                companyId = newCompany.id;
+            }
+
+            const { data, error: signUpError } = await supabase.auth.signUp({
+                email: details.email.trim(),
+                password: details.password || '',
+            });
+
+            if (signUpError) throw signUpError;
+
+            if (data.user) {
+                  const { error: profileError } = await supabase.from('profiles').insert({
+                      id: data.user.id,
+                      name: details.name.trim(),
+                      email: details.email.trim(),
+                      role: 'Project Manager', // default role
+                      company_id: companyId,
+                      avatar: `https://i.pravatar.cc/150?u=${details.email.trim()}`,
+                  });
+                  if(profileError) throw profileError;
+
+                // Immediately log in the new user to create a session
+                return loginUser(details.email.trim(), details.password);
+            }
+            return null;
+
         } else {
-            const { data: newCompany, error: companyError } = await supabase.from('companies').insert({ name: details.companyName }).select('id').single();
-            if (companyError) throw companyError;
-            companyId = newCompany.id;
-        }
+            // Mock implementation
+            await delay(LATENCY * 3);
+            if (db.findUserByEmail(details.email.trim())) {
+                throw new APIError("User with this email already exists.", 'DUPLICATE_USER');
+            }
 
-        const { data, error: signUpError } = await supabase.auth.signUp({
-            email: details.email,
-            password: details.password || '',
-        });
+            let company = db.findCompanyByName(details.companyName.trim());
+            if (!company) {
+                const newCompany: Company = {
+                    id: `comp-${Date.now()}`,
+                    name: details.companyName.trim(),
+                };
+                db.addCompany(newCompany);
+                company = newCompany;
+            }
 
-        if (signUpError) throw signUpError;
-
-        if (data.user) {
-             const { error: profileError } = await supabase.from('profiles').insert({
-                 id: data.user.id,
-                 name: details.name,
-                 email: details.email,
-                 role: 'Project Manager', // default role
-                 company_id: companyId,
-                 avatar: `https://i.pravatar.cc/150?u=${details.email}`,
-             });
-             if(profileError) throw profileError;
-
-            // Immediately log in the new user to create a session
-            return loginUser(details.email, details.password);
-        }
-        return null;
-
-    } else {
-        // Mock implementation
-        await delay(LATENCY * 3);
-        if (db.findUserByEmail(details.email)) {
-            throw new Error("User with this email already exists.");
-        }
-        
-        let company = db.findCompanyByName(details.companyName);
-        if (!company) {
-            const newCompany: Company = {
-                id: `comp-${Date.now()}`,
-                name: details.companyName,
+            const newUser: User = {
+                id: `user-${Date.now()}`,
+                name: details.name.trim(),
+                email: details.email.trim(),
+                role: 'Project Manager', // New users default to Project Manager for demo purposes
+                avatar: `https://i.pravatar.cc/150?u=${details.email.trim()}`,
+                companyId: company.id,
             };
-            db.addCompany(newCompany);
-            company = newCompany;
+            db.addUser(newUser);
+
+            return newUser;
         }
-
-        const newUser: User = {
-            id: `user-${Date.now()}`,
-            name: details.name,
-            email: details.email,
-            role: 'Project Manager', // New users default to Project Manager for demo purposes
-            avatar: `https://i.pravatar.cc/150?u=${details.email}`,
-            companyId: company.id,
-        };
-        db.addUser(newUser);
-
-        return newUser;
-    }
+    }, 'registerUser');
 };
 
 
@@ -135,10 +137,15 @@ export const fetchCompanies = async (currentUser: User): Promise<Company[]> => {
 
 // --- Projects ---
 export const fetchAllProjects = async (currentUser: User): Promise<Project[]> => {
-    console.log('🏗️ Fetching projects for user:', currentUser.email, 'Company:', currentUser.companyId);
+    return withErrorHandling(async () => {
+        console.log('🏗️ Fetching projects for user:', currentUser.email, 'Company:', currentUser.companyId);
 
-    if (supabase) {
-        try {
+        // Data integrity check
+        if (!currentUser.companyId) {
+            throw new APIError('User company ID is required', 'VALIDATION_ERROR');
+        }
+
+        if (supabase) {
             const { data: projects, error } = await supabase
                 .from('projects')
                 .select(`
@@ -164,7 +171,17 @@ export const fetchAllProjects = async (currentUser: User): Promise<Project[]> =>
             }
 
             console.log('✅ Fetched projects:', projects?.length || 0);
-            return projects?.map(p => ({
+
+            // Data integrity validation
+            const validProjects = projects?.filter(p => {
+                if (!p.id || !p.name || !p.company_id) {
+                    console.warn('⚠️ Invalid project data:', p);
+                    return false;
+                }
+                return true;
+            }) || [];
+
+            return validProjects.map(p => ({
                 id: p.id,
                 name: p.name,
                 description: p.description || '',
@@ -177,20 +194,25 @@ export const fetchAllProjects = async (currentUser: User): Promise<Project[]> =>
                 companyId: p.company_id,
                 projectManagerId: p.project_manager_id,
                 createdAt: p.created_at,
-                updatedAt: p.updated_at
-            })) || [];
-        } catch (error) {
-            console.error('❌ Error in fetchAllProjects:', error);
-            return [];
+                updatedAt: p.updated_at,
+                image: '', // Default empty image
+                contacts: [], // Default empty contacts
+                snapshot: {
+                    openRFIs: 0,
+                    overdueTasks: 0,
+                    pendingTMTickets: 0,
+                    aiRiskLevel: 'low'
+                } // Default snapshot
+            }));
+        } else {
+            // Mock implementation with multi-tenant filtering
+            await delay(LATENCY);
+            if (currentUser.role === 'super_admin') {
+                return db.getProjects();
+            }
+            return db.getProjects().filter(p => p.companyId === currentUser.companyId);
         }
-    } else {
-        // Mock implementation with multi-tenant filtering
-        await delay(LATENCY);
-        if (currentUser.role === 'super_admin') {
-            return db.getProjects();
-        }
-        return db.getProjects().filter(p => p.companyId === currentUser.companyId);
-    }
+    }, 'fetchAllProjects', []);
 };
 
 export const fetchProjectById = async (id: string, currentUser?: User): Promise<Project | null> => {
@@ -243,7 +265,15 @@ export const fetchProjectById = async (id: string, currentUser?: User): Promise<
                 companyId: project.company_id,
                 projectManagerId: project.project_manager_id,
                 createdAt: project.created_at,
-                updatedAt: project.updated_at
+                updatedAt: project.updated_at,
+                image: '', // Default empty image
+                contacts: [], // Default empty contacts
+                snapshot: {
+                    openRFIs: 0,
+                    overdueTasks: 0,
+                    pendingTMTickets: 0,
+                    aiRiskLevel: 'low'
+                } // Default snapshot
             };
         } catch (error) {
             console.error('❌ Error in fetchProjectById:', error);
@@ -312,6 +342,7 @@ export const fetchTasksForProject = async (projectId: string, currentUser: User)
                 completedAt: t.completed_at,
                 createdBy: t.created_by,
                 projectId: t.project_id,
+                attachments: [], // Would need separate query for attachments
                 comments: [], // Would need separate query for comments
                 history: [], // Would need separate query for history
                 targetRoles: [] // Would need to add this field to schema if needed
@@ -378,6 +409,7 @@ export const fetchTasksForUser = async (user: User): Promise<Task[]> => {
                 completedAt: t.completed_at,
                 createdBy: t.created_by,
                 projectId: t.project_id,
+                attachments: [],
                 comments: [],
                 history: [],
                 targetRoles: []
@@ -447,6 +479,7 @@ export const fetchTaskById = async (id: string, currentUser?: User): Promise<Tas
                 completedAt: task.completed_at,
                 createdBy: task.created_by,
                 projectId: task.project_id,
+                attachments: [],
                 comments: [],
                 history: [],
                 targetRoles: []
@@ -474,43 +507,78 @@ export const fetchTaskById = async (id: string, currentUser?: User): Promise<Tas
 };
 
 export const createTask = async (taskData: Omit<Task, 'id' | 'comments' | 'history'>, creator: User): Promise<Task> => {
-    await delay(LATENCY);
-    checkPermissions(creator, 'create', 'task');
-    const newTask: Task = {
-        id: `task-${Date.now()}`,
-        comments: [],
-        history: [{
-            timestamp: new Date().toISOString(),
-            author: creator.name,
-            change: 'Created task.'
-        }],
-        ...taskData
-    };
-    db.addTask(newTask);
+    return withErrorHandling(async () => {
+        await delay(LATENCY);
+        checkPermissions(creator, 'create', 'task');
 
-    // If task is assigned to a role, notify all users with that role in the company
-    if (newTask.targetRoles && newTask.targetRoles.length > 0) {
-        const project = db.findProject(newTask.projectId);
-        if (project) {
-            const usersToNotify = db.getUsers().filter(u => 
-                u.companyId === project.companyId && 
+        // Data integrity checks
+        if (!taskData.title || taskData.title.trim().length === 0) {
+            throw new APIError('Task title is required', 'VALIDATION_ERROR');
+        }
+        if (taskData.title.length > 200) {
+            throw new APIError('Task title must be less than 200 characters', 'VALIDATION_ERROR');
+        }
+        if (!taskData.projectId) {
+            throw new APIError('Project ID is required', 'VALIDATION_ERROR');
+        }
+
+        // Verify project exists and user has access
+        const project = db.findProject(taskData.projectId);
+        if (!project) {
+            throw new APIError('Project not found', 'NOT_FOUND');
+        }
+        if (project.companyId !== creator.companyId && creator.role !== 'super_admin') {
+            throw new APIError('Access denied to project', 'PERMISSION_DENIED');
+        }
+
+        // Validate due date
+        if (taskData.dueDate) {
+            const dueDate = new Date(taskData.dueDate);
+            if (isNaN(dueDate.getTime())) {
+                throw new APIError('Invalid due date', 'VALIDATION_ERROR');
+            }
+            if (dueDate < new Date()) {
+                throw new APIError('Due date cannot be in the past', 'VALIDATION_ERROR');
+            }
+        }
+
+        // Validate priority
+        if (taskData.priority && !['Low', 'Medium', 'High', 'Critical'].includes(taskData.priority)) {
+            throw new APIError('Invalid priority level', 'VALIDATION_ERROR');
+        }
+
+        const newTask: Task = {
+            id: `task-${Date.now()}`,
+            comments: [],
+            history: [{
+                timestamp: new Date().toISOString(),
+                author: creator.name,
+                change: 'Created task.'
+            }],
+            ...taskData
+        };
+        db.addTask(newTask);
+
+        // If task is assigned to a role, notify all users with that role in the company
+        if (newTask.targetRoles && newTask.targetRoles.length > 0) {
+            const usersToNotify = db.getUsers().filter(u =>
+                u.companyId === project.companyId &&
                 newTask.targetRoles?.includes(u.role)
             );
 
             usersToNotify.forEach(user => {
-                 db.addNotification({
-                    userId: user.id,
-                    message: `New task for your role (${newTask.targetRoles?.join(', ')}): "${newTask.title}"`,
-                    timestamp: new Date().toISOString(),
-                    read: false,
-                    link: { projectId: newTask.projectId, screen: 'task-detail', params: { taskId: newTask.id } }
-                });
+                  db.addNotification({
+                     userId: user.id,
+                     message: `New task for your role (${newTask.targetRoles?.join(', ')}): "${newTask.title}"`,
+                     timestamp: new Date().toISOString(),
+                     read: false,
+                     link: { projectId: newTask.projectId, screen: 'task-detail', params: { taskId: newTask.id } }
+                 });
             });
         }
-    }
 
-
-    return newTask;
+        return newTask;
+    }, 'createTask');
 };
 
 export const updateTask = async (updatedTask: Task, user: User): Promise<Task> => {
@@ -2051,6 +2119,407 @@ export const updateCompanyPlan = async (
     }
 };
 
+// Create company plan
+export const createCompanyPlan = async (
+    currentUser: User,
+    planData: Omit<CompanyPlan, 'id' | 'createdAt' | 'updatedAt'>
+): Promise<CompanyPlan> => {
+    console.log('📝 Creating company plan:', planData.name);
+
+    if (currentUser.role !== 'super_admin') {
+        throw new Error('Access denied: Super admin required');
+    }
+
+    if (supabase) {
+        try {
+            const { data: plan, error } = await supabase
+                .from('company_plans')
+                .insert({
+                    name: planData.name,
+                    description: planData.description,
+                    price_monthly: planData.priceMonthly,
+                    price_yearly: planData.priceYearly,
+                    max_users: planData.maxUsers,
+                    max_projects: planData.maxProjects,
+                    features: planData.features,
+                    ai_agents_included: planData.aiAgentsIncluded,
+                    ai_agents_limit: planData.aiAgentsLimit,
+                    storage_gb: planData.storageGb,
+                    is_active: planData.isActive,
+                    is_featured: planData.isFeatured,
+                    sort_order: planData.sortOrder
+                })
+                .select()
+                .single();
+
+            if (error) {
+                console.error('❌ Error creating company plan:', error);
+                throw error;
+            }
+
+            // Log the action
+            await logPlatformAction(currentUser, 'plan_created', 'company_plan', plan.id, null, {
+                planName: planData.name
+            });
+
+            console.log('✅ Company plan created successfully');
+            return {
+                id: plan.id,
+                name: plan.name,
+                description: plan.description,
+                priceMonthly: plan.price_monthly,
+                priceYearly: plan.price_yearly,
+                maxUsers: plan.max_users,
+                maxProjects: plan.max_projects,
+                features: plan.features || [],
+                aiAgentsIncluded: plan.ai_agents_included || [],
+                aiAgentsLimit: plan.ai_agents_limit,
+                storageGb: plan.storage_gb,
+                isActive: plan.is_active,
+                isFeatured: plan.is_featured,
+                sortOrder: plan.sort_order
+            };
+        } catch (error) {
+            console.error('❌ Error in createCompanyPlan:', error);
+            throw error;
+        }
+    } else {
+        // Mock implementation
+        await delay(LATENCY);
+        const newPlan: CompanyPlan = {
+            id: `plan-${Date.now()}`,
+            ...planData
+        };
+        return newPlan;
+    }
+};
+
+// Update company plan details
+export const updateCompanyPlanDetails = async (
+    currentUser: User,
+    planId: string,
+    planData: Partial<Omit<CompanyPlan, 'id' | 'createdAt' | 'updatedAt'>>
+): Promise<CompanyPlan> => {
+    console.log('📝 Updating company plan details:', planId);
+
+    if (currentUser.role !== 'super_admin') {
+        throw new Error('Access denied: Super admin required');
+    }
+
+    if (supabase) {
+        try {
+            const updateData: any = {};
+            if (planData.name !== undefined) updateData.name = planData.name;
+            if (planData.description !== undefined) updateData.description = planData.description;
+            if (planData.priceMonthly !== undefined) updateData.price_monthly = planData.priceMonthly;
+            if (planData.priceYearly !== undefined) updateData.price_yearly = planData.priceYearly;
+            if (planData.maxUsers !== undefined) updateData.max_users = planData.maxUsers;
+            if (planData.maxProjects !== undefined) updateData.max_projects = planData.maxProjects;
+            if (planData.features !== undefined) updateData.features = planData.features;
+            if (planData.aiAgentsIncluded !== undefined) updateData.ai_agents_included = planData.aiAgentsIncluded;
+            if (planData.aiAgentsLimit !== undefined) updateData.ai_agents_limit = planData.aiAgentsLimit;
+            if (planData.storageGb !== undefined) updateData.storage_gb = planData.storageGb;
+            if (planData.isActive !== undefined) updateData.is_active = planData.isActive;
+            if (planData.isFeatured !== undefined) updateData.is_featured = planData.isFeatured;
+            if (planData.sortOrder !== undefined) updateData.sort_order = planData.sortOrder;
+
+            const { data: plan, error } = await supabase
+                .from('company_plans')
+                .update(updateData)
+                .eq('id', planId)
+                .select()
+                .single();
+
+            if (error) {
+                console.error('❌ Error updating company plan:', error);
+                throw error;
+            }
+
+            // Log the action
+            await logPlatformAction(currentUser, 'plan_updated', 'company_plan', planId, null, planData);
+
+            console.log('✅ Company plan updated successfully');
+            return {
+                id: plan.id,
+                name: plan.name,
+                description: plan.description,
+                priceMonthly: plan.price_monthly,
+                priceYearly: plan.price_yearly,
+                maxUsers: plan.max_users,
+                maxProjects: plan.max_projects,
+                features: plan.features || [],
+                aiAgentsIncluded: plan.ai_agents_included || [],
+                aiAgentsLimit: plan.ai_agents_limit,
+                storageGb: plan.storage_gb,
+                isActive: plan.is_active,
+                isFeatured: plan.is_featured,
+                sortOrder: plan.sort_order
+            };
+        } catch (error) {
+            console.error('❌ Error in updateCompanyPlanDetails:', error);
+            throw error;
+        }
+    } else {
+        // Mock implementation
+        await delay(LATENCY);
+        return {
+            id: planId,
+            name: 'Updated Plan',
+            description: 'Updated description',
+            priceMonthly: 50,
+            priceYearly: 500,
+            maxUsers: 10,
+            maxProjects: 5,
+            features: ['Updated features'],
+            aiAgentsIncluded: [],
+            aiAgentsLimit: 2,
+            storageGb: 50,
+            isActive: true,
+            isFeatured: false,
+            sortOrder: 1,
+            ...planData
+        };
+    }
+};
+
+// Toggle company plan status
+export const toggleCompanyPlanStatus = async (
+    currentUser: User,
+    planId: string,
+    isActive: boolean
+): Promise<boolean> => {
+    console.log('📝 Toggling company plan status:', planId, 'to:', isActive);
+
+    if (currentUser.role !== 'super_admin') {
+        throw new Error('Access denied: Super admin required');
+    }
+
+    if (supabase) {
+        try {
+            const { error } = await supabase
+                .from('company_plans')
+                .update({ is_active: isActive })
+                .eq('id', planId);
+
+            if (error) {
+                console.error('❌ Error toggling company plan status:', error);
+                throw error;
+            }
+
+            // Log the action
+            await logPlatformAction(currentUser, 'plan_status_toggled', 'company_plan', planId, null, {
+                isActive
+            });
+
+            console.log('✅ Company plan status toggled successfully');
+            return true;
+        } catch (error) {
+            console.error('❌ Error in toggleCompanyPlanStatus:', error);
+            return false;
+        }
+    } else {
+        await delay(LATENCY);
+        return true;
+    }
+};
+
+// Create AI agent
+export const createAIAgent = async (
+    currentUser: User,
+    agentData: Omit<AIAgent, 'id' | 'createdAt' | 'updatedAt'>
+): Promise<AIAgent> => {
+    console.log('🤖 Creating AI agent:', agentData.name);
+
+    if (currentUser.role !== 'super_admin') {
+        throw new Error('Access denied: Super admin required');
+    }
+
+    if (supabase) {
+        try {
+            const { data: agent, error } = await supabase
+                .from('ai_agents')
+                .insert({
+                    name: agentData.name,
+                    description: agentData.description,
+                    category: agentData.category,
+                    price_monthly: agentData.priceMonthly,
+                    price_yearly: agentData.priceYearly,
+                    features: agentData.features,
+                    capabilities: agentData.capabilities,
+                    icon_url: agentData.iconUrl,
+                    banner_url: agentData.bannerUrl,
+                    is_active: agentData.isActive,
+                    is_featured: agentData.isFeatured,
+                    min_plan: agentData.minPlan
+                })
+                .select()
+                .single();
+
+            if (error) {
+                console.error('❌ Error creating AI agent:', error);
+                throw error;
+            }
+
+            // Log the action
+            await logPlatformAction(currentUser, 'agent_created', 'ai_agent', agent.id, null, {
+                agentName: agentData.name
+            });
+
+            console.log('✅ AI agent created successfully');
+            return {
+                id: agent.id,
+                name: agent.name,
+                description: agent.description,
+                category: agent.category,
+                priceMonthly: agent.price_monthly,
+                priceYearly: agent.price_yearly,
+                features: agent.features || [],
+                capabilities: agent.capabilities || [],
+                iconUrl: agent.icon_url,
+                bannerUrl: agent.banner_url,
+                isActive: agent.is_active,
+                isFeatured: agent.is_featured,
+                minPlan: agent.min_plan
+            };
+        } catch (error) {
+            console.error('❌ Error in createAIAgent:', error);
+            throw error;
+        }
+    } else {
+        // Mock implementation
+        await delay(LATENCY);
+        const newAgent: AIAgent = {
+            id: `agent-${Date.now()}`,
+            ...agentData
+        };
+        return newAgent;
+    }
+};
+
+// Update AI agent
+export const updateAIAgent = async (
+    currentUser: User,
+    agentId: string,
+    agentData: Partial<Omit<AIAgent, 'id' | 'createdAt' | 'updatedAt'>>
+): Promise<AIAgent> => {
+    console.log('🤖 Updating AI agent:', agentId);
+
+    if (currentUser.role !== 'super_admin') {
+        throw new Error('Access denied: Super admin required');
+    }
+
+    if (supabase) {
+        try {
+            const updateData: any = {};
+            if (agentData.name !== undefined) updateData.name = agentData.name;
+            if (agentData.description !== undefined) updateData.description = agentData.description;
+            if (agentData.category !== undefined) updateData.category = agentData.category;
+            if (agentData.priceMonthly !== undefined) updateData.price_monthly = agentData.priceMonthly;
+            if (agentData.priceYearly !== undefined) updateData.price_yearly = agentData.priceYearly;
+            if (agentData.features !== undefined) updateData.features = agentData.features;
+            if (agentData.capabilities !== undefined) updateData.capabilities = agentData.capabilities;
+            if (agentData.iconUrl !== undefined) updateData.icon_url = agentData.iconUrl;
+            if (agentData.bannerUrl !== undefined) updateData.banner_url = agentData.bannerUrl;
+            if (agentData.isActive !== undefined) updateData.is_active = agentData.isActive;
+            if (agentData.isFeatured !== undefined) updateData.is_featured = agentData.isFeatured;
+            if (agentData.minPlan !== undefined) updateData.min_plan = agentData.minPlan;
+
+            const { data: agent, error } = await supabase
+                .from('ai_agents')
+                .update(updateData)
+                .eq('id', agentId)
+                .select()
+                .single();
+
+            if (error) {
+                console.error('❌ Error updating AI agent:', error);
+                throw error;
+            }
+
+            // Log the action
+            await logPlatformAction(currentUser, 'agent_updated', 'ai_agent', agentId, null, agentData);
+
+            console.log('✅ AI agent updated successfully');
+            return {
+                id: agent.id,
+                name: agent.name,
+                description: agent.description,
+                category: agent.category,
+                priceMonthly: agent.price_monthly,
+                priceYearly: agent.price_yearly,
+                features: agent.features || [],
+                capabilities: agent.capabilities || [],
+                iconUrl: agent.icon_url,
+                bannerUrl: agent.banner_url,
+                isActive: agent.is_active,
+                isFeatured: agent.is_featured,
+                minPlan: agent.min_plan
+            };
+        } catch (error) {
+            console.error('❌ Error in updateAIAgent:', error);
+            throw error;
+        }
+    } else {
+        // Mock implementation
+        await delay(LATENCY);
+        return {
+            id: agentId,
+            name: 'Updated Agent',
+            description: 'Updated description',
+            category: 'safety',
+            priceMonthly: 50,
+            priceYearly: 500,
+            features: ['Updated features'],
+            capabilities: ['Updated capabilities'],
+            isActive: true,
+            isFeatured: false,
+            minPlan: 'basic',
+            ...agentData
+        };
+    }
+};
+
+// Toggle AI agent status
+export const toggleAIAgentStatus = async (
+    currentUser: User,
+    agentId: string,
+    isActive: boolean
+): Promise<boolean> => {
+    console.log('🤖 Toggling AI agent status:', agentId, 'to:', isActive);
+
+    if (currentUser.role !== 'super_admin') {
+        throw new Error('Access denied: Super admin required');
+    }
+
+    if (supabase) {
+        try {
+            const { error } = await supabase
+                .from('ai_agents')
+                .update({ is_active: isActive })
+                .eq('id', agentId);
+
+            if (error) {
+                console.error('❌ Error toggling AI agent status:', error);
+                throw error;
+            }
+
+            // Log the action
+            await logPlatformAction(currentUser, 'agent_status_toggled', 'ai_agent', agentId, null, {
+                isActive
+            });
+
+            console.log('✅ AI agent status toggled successfully');
+            return true;
+        } catch (error) {
+            console.error('❌ Error in toggleAIAgentStatus:', error);
+            return false;
+        }
+    } else {
+        await delay(LATENCY);
+        return true;
+    }
+};
+
 // Log platform action for audit trail
 export const logPlatformAction = async (
     currentUser: User,
@@ -2144,3 +2613,125 @@ export const getPlatformAuditLogs = async (
         ];
     }
 };
+
+// Get platform invitations
+export const getPlatformInvitations = async (currentUser: User): Promise<PlatformInvitation[]> => {
+    console.log('📧 Fetching platform invitations');
+
+    if (currentUser.role !== 'super_admin') {
+        throw new Error('Access denied: Super admin required');
+    }
+
+    if (supabase) {
+        try {
+            const { data: invitations, error } = await supabase
+                .from('platform_invitations')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('❌ Error fetching platform invitations:', error);
+                throw error;
+            }
+
+            return (invitations || []).map(inv => ({
+                id: inv.id,
+                email: inv.email,
+                companyName: inv.company_name,
+                invitedBy: inv.invited_by,
+                invitationType: inv.invitation_type,
+                status: inv.status,
+                invitationToken: inv.invitation_token,
+                expiresAt: inv.expires_at,
+                acceptedAt: inv.accepted_at,
+                metadata: inv.metadata,
+                createdAt: inv.created_at
+            }));
+        } catch (error) {
+            console.error('❌ Error in getPlatformInvitations:', error);
+            return [];
+        }
+    } else {
+        // Mock data
+        await delay(LATENCY);
+        return [];
+    }
+}
+
+// --- ML Predictions ---
+
+/**
+ * Get ML-powered predictions for a project
+ */
+export const getProjectPredictions = async (
+    projectId: string,
+    currentUser: User
+): Promise<PredictionResult> => {
+    return withErrorHandling(async () => {
+        console.log('🧠 Generating ML predictions for project:', projectId);
+
+        // Fetch project data
+        const project = await fetchProjectById(projectId, currentUser);
+        if (!project) {
+            throw new APIError('Project not found', 'NOT_FOUND');
+        }
+
+        // Fetch related data
+        const tasks = await fetchTasksForProject(projectId, currentUser);
+        const rfis = await fetchRFIsForProject(projectId, currentUser);
+        const punchItems = await fetchPunchListItemsForProject(projectId, currentUser);
+
+        // Generate predictions using ML
+        const predictor = getMLPredictor();
+        const prediction = await predictor.predictProjectOutcome(
+            project,
+            tasks,
+            rfis,
+            punchItems
+        );
+
+        console.log('✅ ML predictions generated:', prediction);
+        return prediction;
+    }, 'getProjectPredictions');
+};
+
+/**
+ * Get ML insights for all projects (for dashboard)
+ */
+export const getAllProjectsPredictions = async (
+    currentUser: User
+): Promise<Array<{ projectId: string; projectName: string; prediction: PredictionResult }>> => {
+    return withErrorHandling(async () => {
+        console.log('🧠 Generating ML predictions for all projects');
+
+        const projects = await fetchAllProjects(currentUser);
+        const predictions: Array<{ projectId: string; projectName: string; prediction: PredictionResult }> = [];
+
+        for (const project of projects.slice(0, 5)) { // Limit to 5 projects for performance
+            try {
+                const tasks = await fetchTasksForProject(project.id, currentUser);
+                const rfis = await fetchRFIsForProject(project.id, currentUser);
+                const punchItems = await fetchPunchListItemsForProject(project.id, currentUser);
+
+                const predictor = getMLPredictor();
+                const prediction = await predictor.predictProjectOutcome(
+                    project,
+                    tasks,
+                    rfis,
+                    punchItems
+                );
+
+                predictions.push({
+                    projectId: project.id,
+                    projectName: project.name,
+                    prediction
+                });
+            } catch (error) {
+                console.error(`❌ Failed to generate prediction for project ${project.id}:`, error);
+            }
+        }
+
+        console.log('✅ Generated predictions for', predictions.length, 'projects');
+        return predictions;
+    }, 'getAllProjectsPredictions', []);
+};;

@@ -65,14 +65,23 @@ export interface Project {
     description: string;
     contacts: ProjectContact[];
     snapshot: ProjectSnapshot;
+    status?: string;
+    startDate?: string;
+    endDate?: string;
+    budget?: number;
+    spent?: number;
+    projectManagerId?: string;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
-export type Screen = 
+export type Screen =
     | 'global-dashboard'
-    | 'projects' 
+    | 'projects'
     | 'project-home'
     | 'my-day'
     | 'tasks'
+    | 'my-tasks'
     | 'task-detail'
     | 'new-task'
     | 'daily-log'
@@ -100,6 +109,10 @@ export type Screen =
     | 'financial-management'
     | 'business-development'
     | 'ai-agents-marketplace'
+    // Admin screens
+    | 'platform-admin'
+    // ML & Advanced Analytics
+    | 'ml-analytics'
     // Tool screens
     | 'placeholder-tool';
 
@@ -128,6 +141,8 @@ export interface Task {
     assignee?: string;
     targetRoles?: UserRole[];
     dueDate: string;
+    completedAt?: string;
+    createdBy?: string;
     dueDateNotified?: boolean;
     attachments: Attachment[];
     comments: Comment[];

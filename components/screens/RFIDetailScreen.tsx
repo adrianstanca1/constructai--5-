@@ -84,7 +84,7 @@ const RFIDetailScreen: React.FC<RFIDetailScreenProps> = ({ rfiId, project, goBac
             return;
         }
         const attachmentsForApi: Attachment[] = await Promise.all(
-            responseFiles.map(file => new Promise((resolve, reject) => {
+            responseFiles.map(file => new Promise<Attachment>((resolve, reject) => {
                  const reader = new FileReader();
                 reader.onload = (e) => {
                     resolve({ name: file.name, url: e.target?.result as string });

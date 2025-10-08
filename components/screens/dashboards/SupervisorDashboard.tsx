@@ -1,7 +1,6 @@
-// Fix: Created SupervisorDashboard.tsx to resolve "not a module" error.
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 // Fix: Added .ts extension to import
-import { User, Screen } from '../../../types.ts';
+import { User, Screen, Task, ActivityEvent, Project } from '../../../types.ts';
 // Fix: Added .ts extension to import
 import * as api from '../../../api.ts';
 // Fix: Added .tsx extension to widget imports
@@ -10,6 +9,9 @@ import MyTasksWidget from '../../widgets/MyTasksWidget.tsx';
 import NotificationsWidget from '../../widgets/NotificationsWidget.tsx';
 import ProjectsOverviewWidget from '../../widgets/ProjectsOverviewWidget.tsx';
 import RecentActivityWidget from '../../widgets/RecentActivityWidget.tsx';
+import SmartMetricsWidget from '../../widgets/SmartMetricsWidget.tsx';
+import SmartInsightsWidget from '../../widgets/SmartInsightsWidget.tsx';
+import { processDashboardData, DashboardData } from '../../../utils/dashboardLogic.ts';
 
 interface SupervisorDashboardProps {
     currentUser: User;
@@ -21,24 +23,88 @@ interface SupervisorDashboardProps {
 
 const SupervisorDashboard: React.FC<SupervisorDashboardProps> = (props) => {
     const { currentUser, navigateTo, onDeepLink, onQuickAction, onSuggestAction } = props;
+    const [tasks, setTasks] = useState<Task[]>([]);
+    const [activities, setActivities] = useState<ActivityEvent[]>([]);
+    const [projects, setProjects] = useState<Project[]>([]);
+    const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        const loadDashboardData = async () => {
+            setIsLoading(true);
+            try {
+                const [fetchedTasks, fetchedActivities, fetchedProjects] = await Promise.all([
+                    api.fetchTasksForUser(currentUser),
+                    api.fetchRecentActivity(currentUser),
+                    api.fetchAllProjects(currentUser)
+                ]);
+                setTasks(fetchedTasks);
+                setActivities(fetchedActivities);
+                setProjects(fetchedProjects);
+
+                // Process dashboard data with ML integration
+                const processedData = await processDashboardData(fetchedProjects, fetchedTasks, currentUser);
+                setDashboardData(processedData);
+            } catch (error) {
+                console.error('Error loading supervisor dashboard:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadDashboardData();
         api.checkAndCreateDueDateNotifications(currentUser);
     }, [currentUser]);
 
+    const handleNavigateToProject = (projectId: string) => {
+        navigateTo('project-detail', { projectId });
+    };
+
+    if (isLoading) {
+        return (
+            <div className="space-y-8 animate-pulse">
+                <header className="flex justify-between items-start">
+                    <div>
+                        <div className="h-8 bg-gray-200 rounded w-3/4 mb-2"></div>
+                        <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                    <div className="w-12 h-12 rounded-full bg-gray-200"></div>
+                </header>
+                <div className="h-32 bg-gray-200 rounded-lg"></div>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div className="lg:col-span-2 space-y-8">
+                        <div className="h-64 bg-gray-200 rounded-lg"></div>
+                        <div className="h-96 bg-gray-200 rounded-lg"></div>
+                    </div>
+                    <div className="lg:col-span-1 space-y-8">
+                        <div className="h-96 bg-gray-200 rounded-lg"></div>
+                        <div className="h-64 bg-gray-200 rounded-lg"></div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-8">
             <header className="flex justify-between items-start">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900">Supervisor Dashboard</h1>
-                    <p className="text-md text-gray-500">Welcome, {currentUser.name}!</p>
+                    <p className="text-md text-gray-500">Welcome, {currentUser.name}! 👷</p>
                 </div>
-                <img src={currentUser.avatar} alt="User Avatar" className="w-12 h-12 rounded-full" />
+                <img src={currentUser.avatar} alt="User Avatar" className="w-12 h-12 rounded-full shadow-lg border-2 border-purple-200" />
             </header>
-            
-            <QuickActionsWidget 
-                onQuickAction={onQuickAction} 
+
+            {/* Smart Metrics Widget - ML-Powered */}
+            {dashboardData && (
+                <SmartMetricsWidget
+                    metrics={dashboardData.metrics}
+                    trends={dashboardData.trends}
+                />
+            )}
+
+            <QuickActionsWidget
+                onQuickAction={onQuickAction}
                 onSuggestAction={onSuggestAction}
                 isGlobal={true}
                 currentUser={currentUser}
@@ -46,12 +112,20 @@ const SupervisorDashboard: React.FC<SupervisorDashboardProps> = (props) => {
 
             <main className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-8">
-                   <MyTasksWidget currentUser={currentUser} onDeepLink={onDeepLink} />
-                   <RecentActivityWidget currentUser={currentUser} onDeepLink={onDeepLink} />
+                    {/* Smart Insights - AI Recommendations */}
+                    {dashboardData && (
+                        <SmartInsightsWidget
+                            insights={dashboardData.insights}
+                            onNavigate={handleNavigateToProject}
+                        />
+                    )}
+
+                    <MyTasksWidget tasks={tasks} onDeepLink={onDeepLink} />
+                    <RecentActivityWidget activities={activities} onDeepLink={onDeepLink} />
                 </div>
                 <div className="lg:col-span-1 space-y-8">
                     <NotificationsWidget currentUser={currentUser} onDeepLink={onDeepLink} />
-                    <ProjectsOverviewWidget currentUser={currentUser} navigateTo={navigateTo} onDeepLink={onDeepLink} />
+                    <ProjectsOverviewWidget projects={projects} navigateTo={navigateTo} onDeepLink={onDeepLink} />
                 </div>
             </main>
         </div>
