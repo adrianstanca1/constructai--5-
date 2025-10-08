@@ -79,15 +79,28 @@ const Sidebar: React.FC<{
 
     return (
         <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
-            {/* Logo */}
+            {/* CortexBuild Revolutionary Brand */}
             <div className="p-6 border-b border-gray-200">
-                <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
-                        C
+                <div className="flex items-center gap-3">
+                    {/* Neural Network Icon with Gradient */}
+                    <div className="relative">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 via-purple-600 to-cyan-500 flex items-center justify-center shadow-lg transform hover:scale-110 hover:rotate-6 transition-all duration-300 cursor-pointer">
+                            <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                            </svg>
+                        </div>
+                        {/* Subtle pulse effect */}
+                        <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-blue-600 via-purple-600 to-cyan-500 animate-ping opacity-10"></div>
                     </div>
-                    <div>
-                        <h2 className="text-xl font-bold text-gray-900">ConstructAI</h2>
-                        <p className="text-xs text-gray-500">Powered by AI</p>
+
+                    {/* Brand Name */}
+                    <div className="flex flex-col">
+                        <h2 className="text-xl font-black tracking-tight bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-500 bg-clip-text text-transparent">
+                            CortexBuild
+                        </h2>
+                        <p className="text-[10px] font-semibold text-gray-500 tracking-wider -mt-0.5">
+                            AI PLATFORM
+                        </p>
                     </div>
                 </div>
             </div>
@@ -135,7 +148,7 @@ const Sidebar: React.FC<{
             <div className="p-4 border-t border-gray-200 space-y-3">
                 {/* User Info */}
                 <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-600 via-purple-600 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
                         {user.name.split(' ').map(n => n[0]).join('')}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -144,11 +157,11 @@ const Sidebar: React.FC<{
                     </div>
                 </div>
 
-                {/* Logout Button - Prominent */}
+                {/* Logout Button - Prominent with Gradient */}
                 <button
                     type="button"
                     onClick={onLogout}
-                    className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                    className="w-full flex items-center justify-center space-x-2 px-4 py-2.5 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 transition-all duration-300 font-semibold shadow-md hover:shadow-lg transform hover:scale-105"
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

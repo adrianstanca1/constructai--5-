@@ -1821,19 +1821,41 @@
         function handleLogoutUI() {
             state.loggedIn = false;
             authButton.textContent = 'Login';
+            // Show marketing header again
+            const marketingHeader = document.querySelector('header');
+            if (marketingHeader) {
+                marketingHeader.classList.remove('hidden');
+            }
+            // Show marketing container
+            if (marketingContainer) {
+                marketingContainer.classList.remove('hidden');
+            }
+            // Hide app container
+            if (appContainer) {
+                appContainer.classList.add('hidden');
+            }
+            // Show auth button
             authButton.classList.remove('hidden');
             logoutButton.classList.add('hidden');
-            marketingContainer.style.display = 'block';
-            appContainer.style.display = 'none';
             document.querySelectorAll('.marketing-nav').forEach(el => el.style.display = 'flex');
             navigateTo('home');
         }
 
         function handleLoginUI() {
             state.loggedIn = true;
-            // Hide both login and logout buttons from header after login
-            authButton.classList.add('hidden');
-            logoutButton.classList.add('hidden');
+            // Hide entire marketing header after login
+            const marketingHeader = document.querySelector('header');
+            if (marketingHeader) {
+                marketingHeader.classList.add('hidden');
+            }
+            // Hide marketing container
+            if (marketingContainer) {
+                marketingContainer.classList.add('hidden');
+            }
+            // Show app container
+            if (appContainer) {
+                appContainer.classList.remove('hidden');
+            }
         }
 
         window.addEventListener('userLoggedIn', () => {
