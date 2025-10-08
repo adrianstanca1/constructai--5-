@@ -1,52 +1,108 @@
 /**
- * Vercel Serverless Function - Logout
+ * Vercel Serverless Function - Enhanced Logout
  * POST /api/auth/logout
+ * 
+ * Features:
+ * - Rate limiting (60 requests per minute)
+ * - Token validation
+ * - Session cleanup
+ * - Security headers
+ * - Structured logging
+ * - Performance tracking
  */
 
 import { sql } from '@vercel/postgres';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { handleCors } from '../middleware/cors';
+import { setSecurityHeaders, getClientIp } from '../middleware/security';
+import { logger, logRequest, logResponse } from '../middleware/logger';
+import { apiRateLimit } from '../middleware/rateLimit';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-    // CORS headers
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization');
-
-    if (req.method === 'OPTIONS') {
-        res.status(200).end();
+    const startTime = Date.now();
+    
+    // Set security headers
+    setSecurityHeaders(res);
+    
+    // Handle CORS
+    if (handleCors(req, res)) {
         return;
     }
 
+    // Only allow POST
     if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
+        return res.status(405).json({ 
+            success: false,
+            error: 'Method not allowed' 
+        });
     }
 
     try {
+        const clientIp = getClientIp(req);
+        logRequest('POST', '/api/auth/logout', { ip: clientIp });
+
+        // Rate limiting
+        const rateLimitResult = apiRateLimit(clientIp);
+        res.setHeader('X-RateLimit-Limit', '60');
+        res.setHeader('X-RateLimit-Remaining', rateLimitResult.remaining.toString());
+        res.setHeader('X-RateLimit-Reset', new Date(rateLimitResult.resetTime).toISOString());
+
+        if (!rateLimitResult.allowed) {
+            logger.warn('Rate limit exceeded', { ip: clientIp });
+            return res.status(429).json({
+                success: false,
+                error: 'Too many requests. Please try again later.',
+                retryAfter: new Date(rateLimitResult.resetTime).toISOString()
+            });
+        }
+
+        // Extract token
         const authHeader = req.headers.authorization;
         const token = authHeader?.replace('Bearer ', '');
 
         if (!token) {
-            return res.status(401).json({ 
+            logger.warn('Missing token', { ip: clientIp });
+            return res.status(401).json({
                 success: false,
-                error: 'Token is required' 
+                error: 'Authentication token is required'
             });
         }
 
-        // Delete session from database
-        await sql`DELETE FROM sessions WHERE token = ${token}`;
+        // Get session info before deleting (for logging)
+        const { rows: sessions } = await sql`
+            SELECT user_id FROM sessions WHERE token = ${token} LIMIT 1
+        `;
 
-        console.log('✅ Logout successful');
+        // Delete session from database
+        const result = await sql`
+            DELETE FROM sessions WHERE token = ${token}
+        `;
+
+        if (sessions.length > 0) {
+            logger.info('Logout successful', { 
+                userId: sessions[0].user_id,
+                ip: clientIp 
+            });
+        } else {
+            logger.warn('Logout attempted with invalid token', { ip: clientIp });
+        }
+
+        const duration = Date.now() - startTime;
+        logResponse('POST', '/api/auth/logout', 200, duration);
 
         return res.status(200).json({
-            success: true
+            success: true,
+            message: 'Logged out successfully'
         });
     } catch (error: any) {
-        console.error('Logout error:', error);
-        return res.status(500).json({ 
+        logger.error('Logout error', error, { ip: getClientIp(req) });
+        
+        const duration = Date.now() - startTime;
+        logResponse('POST', '/api/auth/logout', 500, duration);
+        
+        return res.status(500).json({
             success: false,
-            error: 'Internal server error' 
+            error: 'Internal server error'
         });
     }
 }
-
