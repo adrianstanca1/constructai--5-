@@ -83,8 +83,23 @@
         }
 
         .filter-btn.active {
-            background-color: #2563eb;
-            color: white;
+            border-color: #2563eb !important;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .filter-btn.active[data-filter="project"] {
+            border-color: #10b981 !important;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .filter-btn.active[data-filter="financial"] {
+            border-color: #8b5cf6 !important;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .filter-btn.active[data-filter="business"] {
+            border-color: #f59e0b !important;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), 0 0 0 3px rgba(245, 158, 11, 0.1);
         }
 
         #ai-hub {
@@ -453,15 +468,75 @@
                 </div>
             </div>
 
-            <div class="flex justify-center space-x-1 sm:space-x-2 mb-8 bg-gray-100 p-2 rounded-lg max-w-md mx-auto">
-                <button class="filter-btn active flex-1 px-3 py-2 text-xs sm:text-sm font-medium rounded-md"
-                    data-filter="all">All</button>
-                <button class="filter-btn flex-1 px-3 py-2 text-xs sm:text-sm font-medium rounded-md"
-                    data-filter="project">Project Ops</button>
-                <button class="filter-btn flex-1 px-3 py-2 text-xs sm:text-sm font-medium rounded-md"
-                    data-filter="financial">Financial Mgt</button>
-                <button class="filter-btn flex-1 px-3 py-2 text-xs sm:text-sm font-medium rounded-md"
-                    data-filter="business">Business Dev</button>
+            <!-- Filter Module Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 max-w-6xl mx-auto">
+                <!-- All Features Card -->
+                <button
+                    class="filter-btn active group bg-white p-6 rounded-2xl shadow-lg border-2 border-blue-500 hover:shadow-2xl hover:scale-105 transition-all duration-300 text-left"
+                    data-filter="all">
+                    <div class="flex items-center mb-3">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-xl mr-3 group-hover:scale-110 transition-transform">
+                            🌐
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 text-lg">All Features</h3>
+                            <p class="text-xs text-gray-500">Complete Platform</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600">View all 100+ platform features across all categories</p>
+                </button>
+
+                <!-- Project Ops Card -->
+                <button
+                    class="filter-btn group bg-white p-6 rounded-2xl shadow-lg border-2 border-transparent hover:border-green-500 hover:shadow-2xl hover:scale-105 transition-all duration-300 text-left"
+                    data-filter="project">
+                    <div class="flex items-center mb-3">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white text-xl mr-3 group-hover:scale-110 transition-transform">
+                            🏗️
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 text-lg">Project Ops</h3>
+                            <p class="text-xs text-gray-500">Construction Management</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600">Daily logs, RFIs, punch lists, drawings, and more</p>
+                </button>
+
+                <!-- Financial Mgt Card -->
+                <button
+                    class="filter-btn group bg-white p-6 rounded-2xl shadow-lg border-2 border-transparent hover:border-purple-500 hover:shadow-2xl hover:scale-105 transition-all duration-300 text-left"
+                    data-filter="financial">
+                    <div class="flex items-center mb-3">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white text-xl mr-3 group-hover:scale-110 transition-transform">
+                            💰
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 text-lg">Financial Mgt</h3>
+                            <p class="text-xs text-gray-500">Accounting & Finance</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600">Invoicing, budgets, payments, and financial reports</p>
+                </button>
+
+                <!-- Business Dev Card -->
+                <button
+                    class="filter-btn group bg-white p-6 rounded-2xl shadow-lg border-2 border-transparent hover:border-orange-500 hover:shadow-2xl hover:scale-105 transition-all duration-300 text-left"
+                    data-filter="business">
+                    <div class="flex items-center mb-3">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white text-xl mr-3 group-hover:scale-110 transition-transform">
+                            📈
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 text-lg">Business Dev</h3>
+                            <p class="text-xs text-gray-500">Growth & Strategy</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600">Lead management, proposals, and business analytics</p>
+                </button>
             </div>
             <div id="features-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             </div>
