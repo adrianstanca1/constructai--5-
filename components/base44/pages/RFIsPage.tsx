@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { CreateRFIModal } from '../modals/CreateRFIModal';
 
 interface RFI {
     id: number;
@@ -28,6 +29,7 @@ export const RFIsPage: React.FC = () => {
     const [rfis, setRfis] = useState<RFI[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [showCreateModal, setShowCreateModal] = useState(false);
 
     useEffect(() => {
         fetchRFIs();
@@ -153,6 +155,16 @@ export const RFIsPage: React.FC = () => {
                         <p className="text-gray-600">Manage Requests for Information</p>
                     </div>
                     <div className="flex items-center space-x-4">
+                        <button
+                            type="button"
+                            onClick={() => setShowCreateModal(true)}
+                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            <span>New RFI</span>
+                        </button>
                         {/* Search */}
                         <div className="relative">
                             <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -322,6 +334,16 @@ export const RFIsPage: React.FC = () => {
                     </div>
                 ))}
             </div>
+
+            {/* Create RFI Modal */}
+            <CreateRFIModal
+                isOpen={showCreateModal}
+                onClose={() => setShowCreateModal(false)}
+                onSuccess={() => {
+                    setShowCreateModal(false);
+                    fetchRFIs();
+                }}
+            />
         </div>
     );
 };
