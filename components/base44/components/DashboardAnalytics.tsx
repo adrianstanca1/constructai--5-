@@ -54,6 +54,13 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
     const maxHours = Math.max(...timeTrackingData.map(d => d.hours));
     const totalProjects = projectStatusData.reduce((sum, d) => sum + d.count, 0);
 
+    // Intelligent calculations
+    const avgRevenuePerMonth = revenueData.reduce((sum, d) => sum + d.amount, 0) / revenueData.length;
+    const revenueGrowth = ((revenueData[revenueData.length - 1].amount - revenueData[0].amount) / revenueData[0].amount * 100).toFixed(1);
+    const avgHoursPerWeek = timeTrackingData.reduce((sum, d) => sum + d.hours, 0) / timeTrackingData.length;
+    const projectCompletionRate = ((projectStatusData.find(p => p.status === 'Completed')?.count || 0) / totalProjects * 100).toFixed(0);
+    const revenuePerHour = stats.totalRevenue / stats.totalHours;
+
     return (
         <div className="space-y-6">
             {/* KPI Cards */}
@@ -70,6 +77,7 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
                     </div>
                     <h3 className="text-2xl font-bold mb-1">{formatCurrency(stats.totalRevenue)}</h3>
                     <p className="text-sm opacity-90">Total Revenue</p>
+                    <p className="text-xs opacity-75 mt-2">Avg: {formatCurrency(avgRevenuePerMonth)}/month</p>
                 </div>
 
                 {/* Active Projects */}
@@ -84,6 +92,7 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
                     </div>
                     <h3 className="text-2xl font-bold mb-1">{stats.activeProjects}</h3>
                     <p className="text-sm opacity-90">Active Projects</p>
+                    <p className="text-xs opacity-75 mt-2">{projectCompletionRate}% completion rate</p>
                 </div>
 
                 {/* Total Hours */}
@@ -98,6 +107,7 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
                     </div>
                     <h3 className="text-2xl font-bold mb-1">{stats.totalHours.toLocaleString()}h</h3>
                     <p className="text-sm opacity-90">Total Hours Logged</p>
+                    <p className="text-xs opacity-75 mt-2">Avg: {avgHoursPerWeek.toFixed(0)}h/week</p>
                 </div>
 
                 {/* Pending Invoices */}
@@ -112,89 +122,7 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
                     </div>
                     <h3 className="text-2xl font-bold mb-1">{stats.pendingInvoices}</h3>
                     <p className="text-sm opacity-90">Pending Invoices</p>
-                </div>
-            </div>
-
-            {/* Charts Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Revenue Trend Chart */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenue Trend</h3>
-                    <div className="space-y-2">
-                        {revenueData.map((item, index) => (
-                            <div key={index} className="flex items-center space-x-3">
-                                <span className="text-sm font-medium text-gray-600 w-16">{item.month}</span>
-                                <div className="flex-1 bg-gray-100 rounded-full h-8 relative overflow-hidden">
-                                    <div
-                                        className="absolute inset-y-0 left-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-end pr-3"
-                                        style={{ width: `${(item.amount / maxRevenue) * 100}%` }}
-                                    >
-                                        <span className="text-xs font-medium text-white">{formatCurrency(item.amount)}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Project Status Distribution */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Project Status Distribution</h3>
-                    <div className="flex items-center justify-center mb-6">
-                        <div className="relative w-48 h-48">
-                            {/* Simple Pie Chart using conic-gradient */}
-                            <div
-                                className="w-full h-full rounded-full"
-                                style={{
-                                    background: `conic-gradient(
-                                        ${projectStatusData.map((item, index) => {
-                                        const prevPercentage = projectStatusData
-                                            .slice(0, index)
-                                            .reduce((sum, d) => sum + (d.count / totalProjects) * 100, 0);
-                                        const currentPercentage = (item.count / totalProjects) * 100;
-                                        return `${item.color} ${prevPercentage}% ${prevPercentage + currentPercentage}%`;
-                                    }).join(', ')}
-                                    )`
-                                }}
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="bg-white rounded-full w-24 h-24 flex items-center justify-center shadow-lg">
-                                    <div className="text-center">
-                                        <div className="text-2xl font-bold text-gray-900">{totalProjects}</div>
-                                        <div className="text-xs text-gray-600">Total</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="space-y-2">
-                        {projectStatusData.map((item, index) => (
-                            <div key={index} className="flex items-center justify-between">
-                                <div className="flex items-center space-x-2">
-                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                                    <span className="text-sm text-gray-700">{item.status}</span>
-                                </div>
-                                <span className="text-sm font-medium text-gray-900">{item.count} ({((item.count / totalProjects) * 100).toFixed(0)}%)</span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            {/* Time Tracking Chart */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Weekly Time Tracking</h3>
-                <div className="flex items-end space-x-4 h-64">
-                    {timeTrackingData.map((item, index) => (
-                        <div key={index} className="flex-1 flex flex-col items-center space-y-2">
-                            <div className="w-full bg-gray-100 rounded-t-lg relative" style={{ height: `${(item.hours / maxHours) * 100}%` }}>
-                                <div className="absolute inset-0 bg-gradient-to-t from-green-500 to-green-400 rounded-t-lg flex items-start justify-center pt-2">
-                                    <span className="text-xs font-medium text-white">{item.hours}h</span>
-                                </div>
-                            </div>
-                            <span className="text-xs font-medium text-gray-600">{item.week}</span>
-                        </div>
-                    ))}
+                    <p className="text-xs opacity-75 mt-2">{formatCurrency(revenuePerHour)}/hour rate</p>
                 </div>
             </div>
 
@@ -312,6 +240,105 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
                     </div>
                 </div>
             </div>
+
+            {/* Charts Row - MOVED TO BOTTOM */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Revenue Trend Chart */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenue Trend (Last 6 Months)</h3>
+                    <div className="space-y-2">
+                        {revenueData.map((item, index) => (
+                            <div key={index} className="flex items-center space-x-3">
+                                <span className="text-sm font-medium text-gray-600 w-16">{item.month}</span>
+                                <div className="flex-1 bg-gray-100 rounded-full h-8 relative overflow-hidden">
+                                    <div
+                                        className="absolute inset-y-0 left-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-end pr-3"
+                                        style={{ width: `${(item.amount / maxRevenue) * 100}%` }}
+                                    >
+                                        <span className="text-xs font-medium text-white">{formatCurrency(item.amount)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                        <div className="flex items-center justify-between text-sm">
+                            <span className="text-gray-600">Growth Rate:</span>
+                            <span className={`font-semibold ${parseFloat(revenueGrowth) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                {parseFloat(revenueGrowth) >= 0 ? '+' : ''}{revenueGrowth}%
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Project Status Distribution */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Project Status Distribution</h3>
+
+
+                    <div className="flex items-center justify-center mb-6">
+                        <div className="relative w-48 h-48">
+                            {/* Simple Pie Chart using conic-gradient */}
+                            <div
+                                className="w-full h-full rounded-full"
+                                style={{
+                                    background: `conic-gradient(
+                                        ${projectStatusData.map((item, index) => {
+                                        const prevPercentage = projectStatusData
+                                            .slice(0, index)
+                                            .reduce((sum, d) => sum + (d.count / totalProjects) * 100, 0);
+                                        const currentPercentage = (item.count / totalProjects) * 100;
+                                        return `${item.color} ${prevPercentage}% ${prevPercentage + currentPercentage}%`;
+                                    }).join(', ')}
+                                    )`
+                                }}
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="bg-white rounded-full w-24 h-24 flex items-center justify-center shadow-lg">
+                                    <div className="text-center">
+                                        <div className="text-2xl font-bold text-gray-900">{totalProjects}</div>
+                                        <div className="text-xs text-gray-600">Total</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="space-y-2">
+                        {projectStatusData.map((item, index) => (
+                            <div key={index} className="flex items-center justify-between">
+                                <div className="flex items-center space-x-2">
+                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+                                    <span className="text-sm text-gray-700">{item.status}</span>
+                                </div>
+                                <span className="text-sm font-medium text-gray-900">{item.count} ({((item.count / totalProjects) * 100).toFixed(0)}%)</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* Time Tracking Chart */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Weekly Time Tracking</h3>
+                <div className="flex items-end space-x-4 h-64">
+                    {timeTrackingData.map((item, index) => (
+                        <div key={index} className="flex-1 flex flex-col items-center space-y-2">
+                            <div className="w-full bg-gray-100 rounded-t-lg relative" style={{ height: `${(item.hours / maxHours) * 100}%` }}>
+                                <div className="absolute inset-0 bg-gradient-to-t from-green-500 to-green-400 rounded-t-lg flex items-start justify-center pt-2">
+                                    <span className="text-xs font-medium text-white">{item.hours}h</span>
+                                </div>
+                            </div>
+                            <span className="text-xs font-medium text-gray-600">{item.week}</span>
+                        </div>
+                    ))}
+                </div>
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-600">Weekly Average:</span>
+                        <span className="font-semibold text-green-600">{avgHoursPerWeek.toFixed(0)} hours</span>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
@@ -406,4 +433,3 @@ const AlertCard: React.FC<Alert> = ({ icon, title, description, color }) => {
         </div>
     );
 };
-

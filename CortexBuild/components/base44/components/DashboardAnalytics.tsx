@@ -42,9 +42,9 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
     timeTrackingData
 }) => {
     const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('en-US', {
+        return new Intl.NumberFormat('en-GB', {
             style: 'currency',
-            currency: 'USD',
+            currency: 'GBP',
             minimumFractionDigits: 0,
             maximumFractionDigits: 0
         }).format(amount);
@@ -208,22 +208,22 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
                     <AIInsightCard
                         icon="⚠️"
                         title="Budget Alert"
-                        description="3 projects are trending over budget. Review cost controls."
+                        description="3 projects trending over budget by £125K total. Review cost controls immediately."
                         action="View Projects"
                         color="red"
                     />
                     <AIInsightCard
-                        icon="💵"
+                        icon="💷"
                         title="Cash Flow Optimization"
-                        description="Send invoice reminders to improve cash flow by 15%."
+                        description="£485K in outstanding invoices. Send reminders to improve cash flow by 18%."
                         action="Send Reminders"
                         color="green"
                     />
                     <AIInsightCard
-                        icon="🌤️"
-                        title="Scheduling Insight"
-                        description="Weather forecast shows optimal conditions for outdoor work next week."
-                        action="View Schedule"
+                        icon="📊"
+                        title="Performance Insight"
+                        description="Team productivity up 12% this month. 2,340 hours logged across 15 active projects."
+                        action="View Analytics"
                         color="blue"
                     />
                 </div>
@@ -245,24 +245,31 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
                         </div>
                         <div className="space-y-3">
                             <ProjectCard
-                                name="Downtown Office Complex"
-                                client="Metro Construction Group"
-                                budget="$12,500,000"
+                                name="Canary Wharf Office Tower"
+                                client="London Development Group"
+                                budget="£8,750,000"
                                 status="in progress"
-                                progress={45}
+                                progress={62}
                             />
                             <ProjectCard
-                                name="Riverside Luxury Apartments"
-                                client="Green Valley Homes"
-                                budget="$8,900,000"
+                                name="Thames Riverside Apartments"
+                                client="Green Valley Homes UK"
+                                budget="£6,200,000"
                                 status="in progress"
-                                progress={28}
+                                progress={38}
                             />
                             <ProjectCard
-                                name="Manufacturing Facility Expansion"
-                                client="Industrial Partners LLC"
-                                budget="$15,000,000"
+                                name="Manchester Industrial Park"
+                                client="Northern Construction Ltd"
+                                budget="£12,500,000"
                                 status="planning"
+                            />
+                            <ProjectCard
+                                name="Birmingham Shopping Centre"
+                                client="Retail Developments PLC"
+                                budget="£9,800,000"
+                                status="in progress"
+                                progress={15}
                             />
                         </div>
                     </div>
@@ -277,15 +284,21 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
                         </h3>
                         <div className="space-y-3">
                             <AlertCard
-                                icon="💰"
+                                icon="💷"
                                 title="Outstanding Invoices"
-                                description="$1,036,800 awaiting payment"
+                                description="£485,000 awaiting payment from 12 clients"
                                 color="yellow"
+                            />
+                            <AlertCard
+                                icon="⏰"
+                                title="Deadline Alert"
+                                description="3 projects due for completion within 2 weeks"
+                                color="red"
                             />
                             <AlertCard
                                 icon="🤖"
                                 title="AI Recommendation"
-                                description="Schedule weekly project reviews to stay on track"
+                                description="Allocate 15% more resources to Canary Wharf project"
                                 color="blue"
                             />
                             <button
