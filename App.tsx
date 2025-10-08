@@ -276,7 +276,7 @@ const App: React.FC = () => {
                 // Navigate to dashboard after successful login
                 console.log('🚀 Navigating to dashboard...');
                 console.log('📍 Current navigation stack before:', navigationStack);
-                setNavigationStack([{ screen: 'global-dashboard', params: {}, project: undefined }]);
+                navigateToModule('global-dashboard', {});
                 console.log('📍 Navigation stack set to global-dashboard');
 
                 window.dispatchEvent(new CustomEvent('userLoggedIn'));
@@ -298,7 +298,7 @@ const App: React.FC = () => {
             };
             console.log('🔄 Using fallback profile:', fallbackProfile);
             setCurrentUser(fallbackProfile);
-            setNavigationStack([{ screen: 'global-dashboard', params: {}, project: undefined }]);
+            navigateToModule('global-dashboard', {});
         }
     };
 
@@ -313,7 +313,8 @@ const App: React.FC = () => {
                     console.log('✅ Session found:', user.name);
                     setCurrentUser(user);
                     if (navigationStack.length === 0) {
-                        setNavigationStack([{ screen: 'global-dashboard', params: {}, project: undefined }]);
+                        console.log('🔄 Navigating to dashboard from session restore...');
+                        navigateToModule('global-dashboard', {});
                     }
                     window.dispatchEvent(new CustomEvent('userLoggedIn'));
                 } else {
@@ -334,7 +335,7 @@ const App: React.FC = () => {
         const handleHashChange = () => {
             const hash = window.location.hash;
             if (hash === '#dashboard' && currentUser) {
-                setNavigationStack([{ screen: 'global-dashboard', params: {}, project: undefined }]);
+                navigateToModule('global-dashboard', {});
                 // Clean up the hash
                 window.history.replaceState(null, '', window.location.pathname);
             }
@@ -362,10 +363,14 @@ const App: React.FC = () => {
 
             // Ensure user is navigated to dashboard if no navigation exists
             if (navigationStack.length === 0) {
-                setNavigationStack([{ screen: 'global-dashboard', params: {}, project: undefined }]);
+                console.log('🔄 No navigation stack - navigating to dashboard...');
+                navigateToModule('global-dashboard', {});
             }
         } else {
-            setNavigationStack([]);
+            // User logged out - clear navigation
+            if (navigationStack.length > 0) {
+                setNavigationStack([]);
+            }
             setAllProjects([]);
         }
     }, [currentUser]);
@@ -380,10 +385,16 @@ const App: React.FC = () => {
 
     const handleLoginSuccess = (user: User) => {
         console.log('✅ Login successful:', user.name);
+        console.log('🔄 Setting current user and navigating to dashboard...');
         setCurrentUser(user);
-        setNavigationStack([{ screen: 'global-dashboard', params: {}, project: undefined }]);
+
+        // Use navigateToModule to properly set navigation
+        navigateToModule('global-dashboard', {});
+
         window.dispatchEvent(new CustomEvent('userLoggedIn'));
         showSuccess('Welcome back!', `Hello ${user.name}`);
+
+        console.log('✅ Navigation complete - dashboard should appear');
     };
 
     const handleLogout = async () => {
