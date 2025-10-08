@@ -17,6 +17,7 @@ import { ReportsPage } from './pages/ReportsPage';
 import { LedgerPage } from './pages/LedgerPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { ChatbotWidget } from '../chat/ChatbotWidget';
+import { DashboardAnalytics } from './components/DashboardAnalytics';
 
 interface Base44CloneProps {
     user: User;
@@ -175,6 +176,38 @@ const Sidebar: React.FC<{
 
 // Dashboard Page
 const DashboardPage: React.FC = () => {
+    // Mock data for analytics
+    const stats = {
+        totalRevenue: 972000,
+        activeProjects: 12,
+        totalHours: 1847,
+        pendingInvoices: 8
+    };
+
+    const revenueData = [
+        { month: 'Jan', amount: 125000 },
+        { month: 'Feb', amount: 145000 },
+        { month: 'Mar', amount: 165000 },
+        { month: 'Apr', amount: 155000 },
+        { month: 'May', amount: 185000 },
+        { month: 'Jun', amount: 197000 }
+    ];
+
+    const projectStatusData = [
+        { status: 'Active', count: 12, color: '#3B82F6' },
+        { status: 'Planning', count: 5, color: '#8B5CF6' },
+        { status: 'On Hold', count: 3, color: '#F59E0B' },
+        { status: 'Completed', count: 24, color: '#10B981' }
+    ];
+
+    const timeTrackingData = [
+        { week: 'Week 1', hours: 156 },
+        { week: 'Week 2', hours: 178 },
+        { week: 'Week 3', hours: 165 },
+        { week: 'Week 4', hours: 192 },
+        { week: 'Week 5', hours: 184 }
+    ];
+
     return (
         <div className="p-8">
             {/* Header */}
@@ -183,150 +216,150 @@ const DashboardPage: React.FC = () => {
                 <p className="text-gray-600">Here's what's happening with your construction projects today</p>
             </div>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <StatCard
-                    title="Active Projects"
-                    value="4"
-                    subtitle="of 7 total"
-                    icon="🏗️"
-                    color="blue"
-                />
-                <StatCard
-                    title="Total Revenue"
-                    value="£972,000"
-                    subtitle="12% vs last month"
-                    icon="💰"
-                    color="green"
-                    trend="up"
-                />
-                <StatCard
-                    title="Outstanding"
-                    value="£1,036,800"
-                    subtitle="Awaiting payment"
-                    icon="⏳"
-                    color="yellow"
-                />
-                <StatCard
-                    title="Completion Rate"
-                    value="0%"
-                    subtitle="Projects on track"
-                    icon="📈"
-                    color="purple"
-                />
-            </div>
-
-            {/* AI Business Insights */}
-            <div className="mb-8">
-                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                    <span className="mr-2">🤖</span>
-                    AI Business Insights
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <AIInsightCard
-                        icon="⚠️"
-                        title="Budget Alert"
-                        description="3 projects are trending over budget. Review cost controls."
-                        action="View Projects"
-                        color="red"
-                    />
-                    <AIInsightCard
-                        icon="💵"
-                        title="Cash Flow Optimization"
-                        description="Send invoice reminders to improve cash flow by 15%."
-                        action="Send Reminders"
-                        color="green"
-                    />
-                    <AIInsightCard
-                        icon="🌤️"
-                        title="Scheduling Insight"
-                        description="Weather forecast shows optimal conditions for outdoor work next week."
-                        action="View Schedule"
-                        color="blue"
-                    />
-                </div>
-            </div>
-
-            {/* Recent Projects and Alerts */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Recent Projects */}
-                <div className="lg:col-span-2">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-xl font-bold text-gray-900 flex items-center">
-                            <span className="mr-2">📋</span>
-                            Recent Projects
-                        </h3>
-                        <button type="button" className="text-blue-600 hover:text-blue-700 font-medium text-sm">
-                            View All →
-                        </button>
-                    </div>
-                    <div className="space-y-4">
-                        <ProjectCard
-                            name="ASasdad"
-                            client="Green Valley Homes"
-                            budget="£123,333"
-                            status="planning"
-                        />
-                        <ProjectCard
-                            name="Downtown Office Complex"
-                            client="Metro Construction Group"
-                            budget="£12,500,000"
-                            status="in progress"
-                            progress={45}
-                        />
-                        <ProjectCard
-                            name="Riverside Luxury Apartments"
-                            client="Green Valley Homes"
-                            budget="£8,900,000"
-                            status="in progress"
-                            progress={28}
-                        />
-                        <ProjectCard
-                            name="Manufacturing Facility Expansion"
-                            client="Industrial Partners LLC"
-                            budget="£15,000,000"
-                            status="planning"
-                        />
-                        <ProjectCard
-                            name="Riverside Apartments"
-                            client="Green Valley Homes"
-                            budget="£3,200,000"
-                            status="in progress"
-                            progress={56}
-                        />
-                    </div>
-                </div>
-
-                {/* Alerts & Actions */}
-                <div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                        <span className="mr-2">🔔</span>
-                        Alerts & Actions
-                    </h3>
-                    <div className="space-y-4">
-                        <AlertCard
-                            icon="💰"
-                            title="Outstanding Invoices"
-                            description="£1,036,800 awaiting payment"
-                            color="yellow"
-                        />
-                        <AlertCard
-                            icon="🤖"
-                            title="AI Recommendation"
-                            description="Schedule weekly project reviews to stay on track"
-                            color="blue"
-                        />
-                        <button
-                            type="button"
-                            className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
-                        >
-                            <span>➕</span>
-                            <span>New Project</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
+            {/* Dashboard Analytics */}
+            <DashboardAnalytics
+                stats={stats}
+                revenueData={revenueData}
+                projectStatusData={projectStatusData}
+                timeTrackingData={timeTrackingData}
+            />
         </div>
+    );
+};
+
+// Stat Card Component (UNUSED - kept for compatibility)
+const StatCard: React.FC<{
+    title: string;
+}> = () => null;
+
+// AI Insight Card Component (UNUSED - kept for compatibility)
+const AIInsightCard: React.FC<{
+    icon: string;
+}> = () => null;
+
+// Project Card Component (UNUSED - kept for compatibility)
+const ProjectCard: React.FC<{
+    name: string;
+}> = () => null;
+
+// Alert Card Component (UNUSED - kept for compatibility)
+const AlertCard: React.FC<{
+    icon: string;
+}> = () => null;
+
+// Old Dashboard Code Removed - Now using DashboardAnalytics
+/*
+            {/* AI Business Insights */}
+<div className="mb-8">
+    <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+        <span className="mr-2">🤖</span>
+        AI Business Insights
+    </h3>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <AIInsightCard
+            icon="⚠️"
+            title="Budget Alert"
+            description="3 projects are trending over budget. Review cost controls."
+            action="View Projects"
+            color="red"
+        />
+        <AIInsightCard
+            icon="💵"
+            title="Cash Flow Optimization"
+            description="Send invoice reminders to improve cash flow by 15%."
+            action="Send Reminders"
+            color="green"
+        />
+        <AIInsightCard
+            icon="🌤️"
+            title="Scheduling Insight"
+            description="Weather forecast shows optimal conditions for outdoor work next week."
+            action="View Schedule"
+            color="blue"
+        />
+    </div>
+</div>
+
+{/* Recent Projects and Alerts */ }
+<div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    {/* Recent Projects */}
+    <div className="lg:col-span-2">
+        <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-bold text-gray-900 flex items-center">
+                <span className="mr-2">📋</span>
+                Recent Projects
+            </h3>
+            <button type="button" className="text-blue-600 hover:text-blue-700 font-medium text-sm">
+                View All →
+            </button>
+        </div>
+        <div className="space-y-4">
+            <ProjectCard
+                name="ASasdad"
+                client="Green Valley Homes"
+                budget="£123,333"
+                status="planning"
+            />
+            <ProjectCard
+                name="Downtown Office Complex"
+                client="Metro Construction Group"
+                budget="£12,500,000"
+                status="in progress"
+                progress={45}
+            />
+            <ProjectCard
+                name="Riverside Luxury Apartments"
+                client="Green Valley Homes"
+                budget="£8,900,000"
+                status="in progress"
+                progress={28}
+            />
+            <ProjectCard
+                name="Manufacturing Facility Expansion"
+                client="Industrial Partners LLC"
+                budget="£15,000,000"
+                status="planning"
+            />
+            <ProjectCard
+                name="Riverside Apartments"
+                client="Green Valley Homes"
+                budget="£3,200,000"
+                status="in progress"
+                progress={56}
+            />
+        </div>
+    </div>
+
+    {/* Alerts & Actions */}
+    <div>
+        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+            <span className="mr-2">🔔</span>
+            Alerts & Actions
+        </h3>
+        <div className="space-y-4">
+            <AlertCard
+                icon="💰"
+                title="Outstanding Invoices"
+                description="£1,036,800 awaiting payment"
+                color="yellow"
+            />
+            <AlertCard
+                icon="🤖"
+                title="AI Recommendation"
+                description="Schedule weekly project reviews to stay on track"
+                color="blue"
+            />
+            <button
+                type="button"
+                className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
+            >
+                <span>➕</span>
+                <span>New Project</span>
+            </button>
+        </div>
+    </div>
+</div>
+        </div >
     );
 };
 
