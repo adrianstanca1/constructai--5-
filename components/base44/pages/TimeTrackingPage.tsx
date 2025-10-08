@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { CreateTimeEntryModal } from '../modals/CreateTimeEntryModal';
 
 interface TimeEntry {
     id: number;
@@ -26,6 +27,7 @@ export const TimeTrackingPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [stats, setStats] = useState({ totalHours: 0, revenue: 0, entries: 0 });
+    const [showCreateModal, setShowCreateModal] = useState(false);
 
     useEffect(() => {
         fetchTimeEntries();
@@ -81,6 +83,16 @@ export const TimeTrackingPage: React.FC = () => {
                         <p className="text-gray-600">Log and manage your work hours</p>
                     </div>
                     <div className="flex items-center space-x-4">
+                        <button
+                            type="button"
+                            onClick={() => setShowCreateModal(true)}
+                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            <span>Log Time</span>
+                        </button>
                         {/* Period Filter */}
                         <select
                             value={periodFilter}
@@ -209,6 +221,16 @@ export const TimeTrackingPage: React.FC = () => {
                     </div>
                 ))}
             </div>
+
+            {/* Create Time Entry Modal */}
+            <CreateTimeEntryModal
+                isOpen={showCreateModal}
+                onClose={() => setShowCreateModal(false)}
+                onSuccess={() => {
+                    setShowCreateModal(false);
+                    fetchTimeEntries();
+                }}
+            />
         </div>
     );
 };

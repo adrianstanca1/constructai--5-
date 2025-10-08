@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { CreatePurchaseOrderModal } from '../modals/CreatePurchaseOrderModal';
 
 interface PurchaseOrder {
     id: number;
@@ -189,6 +190,16 @@ export const PurchaseOrdersPage: React.FC = () => {
                     </div>
                 ))}
             </div>
+
+            {/* Create Purchase Order Modal */}
+            <CreatePurchaseOrderModal
+                isOpen={showCreateModal}
+                onClose={() => setShowCreateModal(false)}
+                onSuccess={() => {
+                    setShowCreateModal(false);
+                    fetchPurchaseOrders();
+                }}
+            />
         </div>
     );
 };

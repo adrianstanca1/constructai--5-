@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { CreateDocumentModal } from '../modals/CreateDocumentModal';
 
 interface Document {
     id: number;
@@ -195,6 +196,16 @@ export const DocumentsPage: React.FC = () => {
                     </div>
                 ))}
             </div>
+
+            {/* Create Document Modal */}
+            <CreateDocumentModal
+                isOpen={showUploadModal}
+                onClose={() => setShowUploadModal(false)}
+                onSuccess={() => {
+                    setShowUploadModal(false);
+                    fetchDocuments();
+                }}
+            />
         </div>
     );
 };
