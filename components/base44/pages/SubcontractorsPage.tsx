@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { CreateSubcontractorModal } from '../modals/CreateSubcontractorModal';
 
 interface Subcontractor {
     id: number;
@@ -25,6 +26,7 @@ export const SubcontractorsPage: React.FC = () => {
     const [subcontractors, setSubcontractors] = useState<Subcontractor[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [showCreateModal, setShowCreateModal] = useState(false);
 
     useEffect(() => {
         fetchSubcontractors();
@@ -146,6 +148,7 @@ export const SubcontractorsPage: React.FC = () => {
                         {/* Add Button */}
                         <button
                             type="button"
+                            onClick={() => setShowCreateModal(true)}
                             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,8 +168,8 @@ export const SubcontractorsPage: React.FC = () => {
                             type="button"
                             onClick={() => setActiveTab('directory')}
                             className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'directory'
-                                    ? 'border-blue-600 text-blue-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                ? 'border-blue-600 text-blue-600'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                 }`}
                         >
                             Directory
@@ -175,8 +178,8 @@ export const SubcontractorsPage: React.FC = () => {
                             type="button"
                             onClick={() => setActiveTab('assignments')}
                             className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'assignments'
-                                    ? 'border-blue-600 text-blue-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                ? 'border-blue-600 text-blue-600'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                 }`}
                         >
                             Assignments
@@ -283,6 +286,16 @@ export const SubcontractorsPage: React.FC = () => {
                     <p className="text-gray-600">No assignments yet. Assign subcontractors to projects from the Directory tab.</p>
                 </div>
             )}
+
+            {/* Create Subcontractor Modal */}
+            <CreateSubcontractorModal
+                isOpen={showCreateModal}
+                onClose={() => setShowCreateModal(false)}
+                onSuccess={() => {
+                    fetchSubcontractors();
+                    setShowCreateModal(false);
+                }}
+            />
         </div>
     );
 };

@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ProjectDetailPage } from './ProjectDetailPage';
+import { CreateProjectModal } from '../modals/CreateProjectModal';
 
 interface Project {
     id: number;
@@ -30,6 +31,7 @@ export const ProjectsPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [showCreateModal, setShowCreateModal] = useState(false);
 
     // Fetch projects from API
     useEffect(() => {
@@ -245,6 +247,7 @@ export const ProjectsPage: React.FC = () => {
                         {/* New Project Button */}
                         <button
                             type="button"
+                            onClick={() => setShowCreateModal(true)}
                             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -328,6 +331,16 @@ export const ProjectsPage: React.FC = () => {
                     </div>
                 ))}
             </div>
+
+            {/* Create Project Modal */}
+            <CreateProjectModal
+                isOpen={showCreateModal}
+                onClose={() => setShowCreateModal(false)}
+                onSuccess={() => {
+                    fetchProjects();
+                    setShowCreateModal(false);
+                }}
+            />
         </div>
     );
 };
