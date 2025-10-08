@@ -5,6 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import * as authService from './auth/authService';
 import { User } from './types';
+import { FullDashboard } from './components/simple/FullDashboard';
 
 // Simple Login Component
 const SimpleLogin: React.FC<{ onLoginSuccess: (user: User) => void }> = ({ onLoginSuccess }) => {
@@ -85,8 +86,10 @@ const SimpleLogin: React.FC<{ onLoginSuccess: (user: User) => void }> = ({ onLog
     );
 };
 
-// Simple Dashboard Component
+// Simple Dashboard Component with Navigation
 const SimpleDashboard: React.FC<{ user: User; onLogout: () => void }> = ({ user, onLogout }) => {
+    const [activeTab, setActiveTab] = React.useState<'dashboard' | 'projects' | 'tasks' | 'team' | 'settings'>('dashboard');
+
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Header */}
@@ -280,8 +283,8 @@ export const SimpleApp: React.FC = () => {
 
     // Simple logic: if user exists, show dashboard, else show login
     if (currentUser) {
-        console.log('✅ Rendering dashboard for:', currentUser.name);
-        return <SimpleDashboard user={currentUser} onLogout={handleLogout} />;
+        console.log('✅ Rendering full dashboard for:', currentUser.name);
+        return <FullDashboard user={currentUser} onLogout={handleLogout} />;
     }
 
     console.log('🔐 No user, rendering login');
