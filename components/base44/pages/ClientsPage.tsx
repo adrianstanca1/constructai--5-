@@ -71,9 +71,9 @@ export const ClientsPage: React.FC = () => {
     // Mock data as fallback
     const mockClients: Client[] = [
         {
-            id: '1',
+            id: 1,
             name: 'Green Valley Homes',
-            contact: 'Sarah Johnson',
+            contact_name: 'Sarah Johnson',
             email: 'sarah@greenvalley.com',
             phone: '(555) 234-5678',
             address: '',
@@ -83,9 +83,9 @@ export const ClientsPage: React.FC = () => {
             revenue: 420000
         },
         {
-            id: '2',
+            id: 2,
             name: 'Green Valley Homes',
-            contact: 'Sarah Johnson',
+            contact_name: 'Sarah Johnson',
             email: 'sarah@greenvalley.com',
             phone: '555-0456',
             address: '456 Oak Ave, Los Angeles, CA',
@@ -95,9 +95,9 @@ export const ClientsPage: React.FC = () => {
             revenue: 1800000
         },
         {
-            id: '3',
+            id: 3,
             name: 'Industrial Partners LLC',
-            contact: 'Michael Chen',
+            contact_name: 'Michael Chen',
             email: 'mchen@industrialp.com',
             phone: '555-0789',
             address: '789 Industrial Blvd, Chicago, IL',
@@ -107,9 +107,9 @@ export const ClientsPage: React.FC = () => {
             revenue: 3200000
         },
         {
-            id: '4',
+            id: 4,
             name: 'Metro City Council',
-            contact: 'David Chen',
+            contact_name: 'David Chen',
             email: 'd.chen@metrocity.gov',
             phone: '(555) 345-6789',
             address: '',
@@ -119,9 +119,9 @@ export const ClientsPage: React.FC = () => {
             revenue: 1200000
         },
         {
-            id: '5',
+            id: 5,
             name: 'Metro Construction Group',
-            contact: 'John Anderson',
+            contact_name: 'John Anderson',
             email: 'john@metroconstruction.com',
             phone: '555-0123',
             address: '123 Main St, New York, NY',
@@ -131,9 +131,9 @@ export const ClientsPage: React.FC = () => {
             revenue: 2500000
         },
         {
-            id: '6',
+            id: 6,
             name: 'Sunset Developments',
-            contact: 'John Martinez',
+            contact_name: 'John Martinez',
             email: 'john@sunsetdev.com',
             phone: '(555) 123-4567',
             address: '',
@@ -259,7 +259,7 @@ export const ClientsPage: React.FC = () => {
                                 </div>
                             </div>
                             <h3 className="text-lg font-semibold text-gray-900 mb-1">{client.name}</h3>
-                            <p className="text-sm text-gray-600">{client.contact}</p>
+                            <p className="text-sm text-gray-600">{client.contact_name}</p>
                         </div>
 
                         {/* Contact Details */}
