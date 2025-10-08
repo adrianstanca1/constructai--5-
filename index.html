@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,74 +17,113 @@
     -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
-        html { scroll-behavior: smooth; }
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f1f5f9; /* slate-100 */
+            background-color: #f1f5f9;
+            /* slate-100 */
             color: #3d3d3d;
         }
+
         .nav-active {
-            color: #2563eb; /* Blue-600 */
+            color: #2563eb;
+            /* Blue-600 */
             border-bottom: 2px solid #2563eb;
             font-weight: 600;
         }
+
         .nav-item {
             transition: color 0.3s ease, border-color 0.3s ease;
             border-bottom: 2px solid transparent;
         }
+
         .content-section {
             display: none;
         }
+
         .content-section.active {
             display: block;
             animation: fadeIn 0.5s ease-in-out;
         }
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+
         .feature-card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
         }
+
         .feature-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
+
         .feature-card .details {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
         }
+
         .feature-card.open .details {
             max-height: 500px;
             padding-top: 1rem;
         }
+
         .filter-btn.active {
             background-color: #2563eb;
             color: white;
         }
+
         #ai-hub {
             z-index: 20;
             animation: pulse-hub 3s infinite ease-in-out;
         }
+
         @keyframes pulse-hub {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(37, 99, 235, 0.3); }
-            50% { transform: scale(1.05); box-shadow: 0 0 50px rgba(37, 99, 235, 0.5); }
+
+            0%,
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 30px rgba(37, 99, 235, 0.3);
+            }
+
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 50px rgba(37, 99, 235, 0.5);
+            }
         }
+
         .ai-agent-node {
             transition: all 0.3s ease;
             cursor: pointer;
             z-index: 20;
         }
-        .ai-agent-node.active, .ai-agent-node:hover {
+
+        .ai-agent-node.active,
+        .ai-agent-node:hover {
             border-color: #2563eb;
             transform: scale(1.05) translateY(-2px);
             box-shadow: 0 4px 20px rgba(37, 99, 235, 0.25);
         }
+
         .ai-agent-node.active {
-            background-color: #eff6ff; /* blue-50 */
+            background-color: #eff6ff;
+            /* blue-50 */
         }
+
         .ai-scenario-path {
             position: absolute;
             height: 4px;
@@ -97,30 +137,52 @@
             background-size: 200% 100%;
             animation: flow 0.8s linear infinite;
         }
+
         @keyframes flow {
-            0% { background-position: 100% 0; }
-            100% { background-position: -100% 0; }
+            0% {
+                background-position: 100% 0;
+            }
+
+            100% {
+                background-position: -100% 0;
+            }
         }
+
         .ai-agent-node.highlight {
             animation: pulse-node 1.5s infinite ease-in-out;
         }
+
         @keyframes pulse-node {
-            0%, 100% { transform: scale(1.05); box-shadow: 0 0 25px currentColor; }
-            50% { transform: scale(1.15); box-shadow: 0 0 40px currentColor; }
+
+            0%,
+            100% {
+                transform: scale(1.05);
+                box-shadow: 0 0 25px currentColor;
+            }
+
+            50% {
+                transform: scale(1.15);
+                box-shadow: 0 0 40px currentColor;
+            }
         }
-        #ai-agent-title, #ai-agent-description {
+
+        #ai-agent-title,
+        #ai-agent-description {
             transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
         }
+
         .fade-out {
             opacity: 0;
             transform: translateY(15px);
         }
+
         .status-dot {
             width: 10px;
             height: 10px;
             border-radius: 50%;
             display: inline-block;
         }
+
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -131,6 +193,7 @@
             z-index: 100;
             animation: fadeIn 0.3s ease-in-out;
         }
+
         .modal-content {
             position: relative;
             max-width: 90vw;
@@ -140,13 +203,16 @@
             align-items: center;
             justify-content: center;
         }
+
         .modal-content img {
             max-width: 100%;
             max-height: 80vh;
             object-fit: contain;
             border-radius: 0.5rem;
         }
-        .modal-close-btn, .modal-nav-btn {
+
+        .modal-close-btn,
+        .modal-nav-btn {
             position: absolute;
             background-color: rgba(0, 0, 0, 0.5);
             color: white;
@@ -158,9 +224,12 @@
             justify-content: center;
             transition: background-color 0.2s ease;
         }
-        .modal-close-btn:hover, .modal-nav-btn:hover {
+
+        .modal-close-btn:hover,
+        .modal-nav-btn:hover {
             background-color: rgba(0, 0, 0, 0.8);
         }
+
         .modal-close-btn {
             top: 1rem;
             right: 1rem;
@@ -168,14 +237,22 @@
             height: 2.5rem;
             z-index: 110;
         }
+
         .modal-nav-btn {
             top: 50%;
             transform: translateY(-50%);
             width: 3rem;
             height: 3rem;
         }
-        .modal-nav-btn.prev { left: 1rem; }
-        .modal-nav-btn.next { right: 1rem; }
+
+        .modal-nav-btn.prev {
+            left: 1rem;
+        }
+
+        .modal-nav-btn.next {
+            right: 1rem;
+        }
+
         .modal-caption {
             margin-top: 0.5rem;
             color: white;
@@ -185,45 +262,55 @@
             border-radius: 0.25rem;
             max-width: 80%;
         }
+
         .scenario-btn {
             width: 100%;
             padding: 0.75rem 1rem;
-            border: 1px solid #e2e8f0; /* slate-200 */
+            border: 1px solid #e2e8f0;
+            /* slate-200 */
             border-radius: 0.5rem;
             text-align: left;
             font-size: 0.875rem;
-            color: #475569; /* slate-600 */
+            color: #475569;
+            /* slate-600 */
             background-color: white;
             transition: all 0.2s ease;
         }
+
         .scenario-btn:hover:not(:disabled) {
-            background-color: #f8fafc; /* slate-50 */
-            border-color: #94a3b8; /* slate-400 */
+            background-color: #f8fafc;
+            /* slate-50 */
+            border-color: #94a3b8;
+            /* slate-400 */
             transform: translateY(-1px);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
+
         .scenario-btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
         }
+
         .scenario-btn.active-scenario {
-            background-color: #eff6ff; /* blue-50 */
-            border-color: #3b82f6; /* blue-500 */
+            background-color: #eff6ff;
+            /* blue-50 */
+            border-color: #3b82f6;
+            /* blue-500 */
             font-weight: 600;
         }
     </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-// These would be set by your build/deployment environment.
-// In a real app, these should be secured.
-// IMPORTANT: Replace with your actual Supabase project URL and anon key.
-var __supabase_url = 'https://jkpeuejmhlccnpyorxfz.supabase.co';
-var __supabase_anon_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImprcGV1ZWptaGxjY25weW9yeGZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3NjkyNDcsImV4cCI6MjA3NTM0NTI0N30.vPLMIfL5rfWdoNealtviBQRfrPuSLq9siPs23oiV9FE';
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // These would be set by your build/deployment environment.
+        // In a real app, these should be secured.
+        // IMPORTANT: Replace with your actual Supabase project URL and anon key.
+        var __supabase_url = 'https://jkpeuejmhlccnpyorxfz.supabase.co';
+        var __supabase_anon_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImprcGV1ZWptaGxjY25weW9yeGZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3NjkyNDcsImV4cCI6MjA3NTM0NTI0N30.vPLMIfL5rfWdoNealtviBQRfrPuSLq9siPs23oiV9FE';
 
-// Firebase config for demo form - replace with your actual Firebase config
-var __firebase_config = undefined; // Set to valid Firebase config JSON string when needed
-</script>
-<script type="importmap">
+        // Firebase config for demo form - replace with your actual Firebase config
+        var __firebase_config = undefined; // Set to valid Firebase config JSON string when needed
+    </script>
+    <script type="importmap">
 {
   "imports": {
     "react-dom/client": "https://aistudiocdn.com/react-dom@19.2.0/client",
@@ -235,8 +322,9 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
+    <link rel="stylesheet" href="/index.css">
 </head>
+
 <body class="antialiased">
     <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 border-b border-gray-200">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -246,21 +334,27 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
                 </div>
                 <nav id="desktop-nav" class="hidden md:flex space-x-6">
                     <!-- Marketing Nav -->
-                    <button data-target="home" class="nav-item nav-active text-sm font-medium marketing-nav">Home</button>
-                    <button data-target="features" class="nav-item text-sm font-medium marketing-nav">Platform Features</button>
-                    <button data-target="ai-core" class="nav-item text-sm font-medium marketing-nav">The AI Core</button>
-                    <button data-target="connectivity" class="nav-item text-sm font-medium marketing-nav">Connectivity</button>
-                    <button data-target="get-started" class="nav-item text-sm font-medium marketing-nav">Get Started</button>
+                    <button data-target="home"
+                        class="nav-item nav-active text-sm font-medium marketing-nav">Home</button>
+                    <button data-target="features" class="nav-item text-sm font-medium marketing-nav">Platform
+                        Features</button>
+                    <button data-target="ai-core" class="nav-item text-sm font-medium marketing-nav">The AI
+                        Core</button>
+                    <button data-target="connectivity"
+                        class="nav-item text-sm font-medium marketing-nav">Connectivity</button>
+                    <button data-target="get-started" class="nav-item text-sm font-medium marketing-nav">Get
+                        Started</button>
                 </nav>
                 <div class="flex items-center">
-                    <button id="auth-button" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 transition-colors text-sm flex items-center"></button>
+                    <button id="auth-button"
+                        class="bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 transition-colors text-sm flex items-center"></button>
                     <div class="md:hidden ml-4">
                         <button id="mobile-menu-button" class="text-gray-600 hover:text-gray-800">
                             <span class="sr-only">Open main menu</span>
                             <div class="w-6 h-6 flex flex-col justify-around">
-                               <span class="block w-full h-0.5 bg-current"></span>
-                               <span class="block w-full h-0.5 bg-current"></span>
-                               <span class="block w-full h-0.5 bg-current"></span>
+                                <span class="block w-full h-0.5 bg-current"></span>
+                                <span class="block w-full h-0.5 bg-current"></span>
+                                <span class="block w-full h-0.5 bg-current"></span>
                             </div>
                         </button>
                     </div>
@@ -269,12 +363,20 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
         </div>
         <div id="mobile-menu" class="hidden md:hidden">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                 <!-- Marketing Nav -->
-                <button data-target="home" class="mobile-nav-item marketing-nav block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Home</button>
-                <button data-target="features" class="mobile-nav-item marketing-nav block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Platform Features</button>
-                <button data-target="ai-core" class="mobile-nav-item marketing-nav block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">The AI Core</button>
-                <button data-target="connectivity" class="mobile-nav-item marketing-nav block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Connectivity</button>
-                <button data-target="get-started" class="mobile-nav-item marketing-nav block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Get Started</button>
+                <!-- Marketing Nav -->
+                <button data-target="home"
+                    class="mobile-nav-item marketing-nav block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Home</button>
+                <button data-target="features"
+                    class="mobile-nav-item marketing-nav block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Platform
+                    Features</button>
+                <button data-target="ai-core"
+                    class="mobile-nav-item marketing-nav block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">The
+                    AI Core</button>
+                <button data-target="connectivity"
+                    class="mobile-nav-item marketing-nav block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Connectivity</button>
+                <button data-target="get-started"
+                    class="mobile-nav-item marketing-nav block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Get
+                    Started</button>
             </div>
         </div>
     </header>
@@ -282,22 +384,29 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
     <main id="marketing-container" class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <section id="home" class="content-section active text-center">
             <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-gray-900">Build Smarter, Not Harder.</h1>
-            <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">ConstructAI is the all-in-one platform that gives construction SMBs the power of a large enterprise. We unify project management and accounting with a suite of powerful AI agents to boost profitability and reduce risk.</p>
+            <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">ConstructAI is the all-in-one platform that gives
+                construction SMBs the power of a large enterprise. We unify project management and accounting with a
+                suite of powerful AI agents to boost profitability and reduce risk.</p>
             <div class="mt-8">
-                <button data-target="get-started" class="nav-item-direct bg-blue-600 text-white font-bold py-3 px-8 rounded-md hover:bg-blue-700 transition-colors">Request a Demo</button>
+                <button data-target="get-started"
+                    class="nav-item-direct bg-blue-600 text-white font-bold py-3 px-8 rounded-md hover:bg-blue-700 transition-colors">Request
+                    a Demo</button>
             </div>
             <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="bg-white p-6 rounded-lg shadow-md border border-gray-100">
                     <h3 class="text-xl font-semibold text-blue-600">Unified Workflow</h3>
-                    <p class="mt-2 text-gray-600">Replace disconnected tools with a single source of truth for project and financial data, eliminating errors and saving time.</p>
+                    <p class="mt-2 text-gray-600">Replace disconnected tools with a single source of truth for project
+                        and financial data, eliminating errors and saving time.</p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-md border border-gray-100">
                     <h3 class="text-xl font-semibold text-blue-600">Proactive Insights</h3>
-                    <p class="mt-2 text-gray-600">Our AI agents don't just report data—they analyze it to predict delays, forecast cash flow, and offer strategic advice.</p>
+                    <p class="mt-2 text-gray-600">Our AI agents don't just report data—they analyze it to predict
+                        delays, forecast cash flow, and offer strategic advice.</p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-md border border-gray-100">
                     <h3 class="text-xl font-semibold text-blue-600">Increased Profitability</h3>
-                    <p class="mt-2 text-gray-600">With real-time job costing, AI-powered estimates, and automated compliance, you can make decisions that directly improve your bottom line.</p>
+                    <p class="mt-2 text-gray-600">With real-time job costing, AI-powered estimates, and automated
+                        compliance, you can make decisions that directly improve your bottom line.</p>
                 </div>
             </div>
         </section>
@@ -305,27 +414,41 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
         <section id="features" class="content-section">
             <div class="text-center mb-12">
                 <h2 class="text-3xl font-bold">A Comprehensive Toolset for Modern Construction</h2>
-                <p class="mt-2 text-gray-600 max-w-3xl mx-auto">ConstructAI integrates every facet of your business. Explore our core features below, each enhanced with intelligent automation to streamline your operations. Click on any card to see details.</p>
+                <p class="mt-2 text-gray-600 max-w-3xl mx-auto">ConstructAI integrates every facet of your business.
+                    Explore our core features below, each enhanced with intelligent automation to streamline your
+                    operations. Click on any card to see details.</p>
             </div>
             <div class="flex justify-center space-x-1 sm:space-x-2 mb-8 bg-gray-100 p-2 rounded-lg max-w-md mx-auto">
-                <button class="filter-btn active flex-1 px-3 py-2 text-xs sm:text-sm font-medium rounded-md" data-filter="all">All</button>
-                <button class="filter-btn flex-1 px-3 py-2 text-xs sm:text-sm font-medium rounded-md" data-filter="project">Project Ops</button>
-                <button class="filter-btn flex-1 px-3 py-2 text-xs sm:text-sm font-medium rounded-md" data-filter="financial">Financial Mgt</button>
-                <button class="filter-btn flex-1 px-3 py-2 text-xs sm:text-sm font-medium rounded-md" data-filter="business">Business Dev</button>
+                <button class="filter-btn active flex-1 px-3 py-2 text-xs sm:text-sm font-medium rounded-md"
+                    data-filter="all">All</button>
+                <button class="filter-btn flex-1 px-3 py-2 text-xs sm:text-sm font-medium rounded-md"
+                    data-filter="project">Project Ops</button>
+                <button class="filter-btn flex-1 px-3 py-2 text-xs sm:text-sm font-medium rounded-md"
+                    data-filter="financial">Financial Mgt</button>
+                <button class="filter-btn flex-1 px-3 py-2 text-xs sm:text-sm font-medium rounded-md"
+                    data-filter="business">Business Dev</button>
             </div>
             <div id="features-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             </div>
         </section>
-        
+
         <section id="ai-core" class="content-section">
             <div class="text-center mb-12">
                 <h2 class="text-3xl font-bold">The AI Core: Your Digital Team of Experts</h2>
-                <p class="mt-2 text-gray-600 max-w-3xl mx-auto">Five specialized AI agents work collaboratively behind the scenes, acting as your 24/7 project manager, accountant, and business advisor. Click an agent to learn more, or run a scenario to see them in action.</p>
+                <p class="mt-2 text-gray-600 max-w-3xl mx-auto">Five specialized AI agents work collaboratively behind
+                    the scenes, acting as your 24/7 project manager, accountant, and business advisor. Click an agent to
+                    learn more, or run a scenario to see them in action.</p>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="lg:col-span-2 relative min-h-[500px] bg-slate-50 rounded-lg shadow-inner border border-gray-200 p-8 flex items-center justify-center">
-                    <div id="ai-hub" class="w-40 h-40 rounded-full bg-blue-600 text-white flex flex-col items-center justify-center text-center p-4 shadow-xl">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 mb-1"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 21v-1.5M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V8.25a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 8.25v7.5A2.25 2.25 0 006.75 18z" /></svg>
+                <div
+                    class="lg:col-span-2 relative min-h-[500px] bg-slate-50 rounded-lg shadow-inner border border-gray-200 p-8 flex items-center justify-center">
+                    <div id="ai-hub"
+                        class="w-40 h-40 rounded-full bg-blue-600 text-white flex flex-col items-center justify-center text-center p-4 shadow-xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-8 h-8 mb-1">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 21v-1.5M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V8.25a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 8.25v7.5A2.25 2.25 0 006.75 18z" />
+                        </svg>
                         <span class="font-bold text-lg leading-tight">AI Core</span>
                         <span class="text-xs opacity-80">Central Intelligence</span>
                     </div>
@@ -335,57 +458,98 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
                         <h4 class="text-lg font-semibold text-gray-800 mb-3">Run a Construction Scenario</h4>
                         <div id="scenario-buttons-container" class="space-y-2 mb-6">
                             <button class="scenario-btn group" data-scenario="safetyHazard">
-                                <span class="font-bold text-red-600 group-hover:text-red-700">Daily Log Safety Alert:</span> A field report identifies a potential hazard.
+                                <span class="font-bold text-red-600 group-hover:text-red-700">Daily Log Safety
+                                    Alert:</span> A field report identifies a potential hazard.
                             </button>
                             <button class="scenario-btn group" data-scenario="weatherDelay">
-                                <span class="font-bold text-blue-600 group-hover:text-blue-700">Weather Delay Prediction:</span> AI proactively identifies a schedule conflict.
+                                <span class="font-bold text-blue-600 group-hover:text-blue-700">Weather Delay
+                                    Prediction:</span> AI proactively identifies a schedule conflict.
                             </button>
                             <button class="scenario-btn group" data-scenario="smartRFI">
-                                <span class="font-bold text-green-600 group-hover:text-green-700">Smart RFI Resolution:</span> An operative gets an instant answer from project docs.
+                                <span class="font-bold text-green-600 group-hover:text-green-700">Smart RFI
+                                    Resolution:</span> An operative gets an instant answer from project docs.
                             </button>
                         </div>
                     </div>
                     <div class="border-t border-gray-200 pt-4 flex-grow flex flex-col">
-                        <h3 id="ai-agent-title" class="text-2xl font-semibold text-blue-600 mb-2 min-h-[3rem]">User Assistant</h3>
-                        <p id="ai-agent-description" class="text-gray-600 flex-grow">The user-facing chatbot or voice assistant. Users can ask questions in natural language (“What were our profits last quarter?”) and get instant answers, making the complex system incredibly user-friendly.</p>
+                        <h3 id="ai-agent-title" class="text-2xl font-semibold text-blue-600 mb-2 min-h-[3rem]">User
+                            Assistant</h3>
+                        <p id="ai-agent-description" class="text-gray-600 flex-grow">The user-facing chatbot or voice
+                            assistant. Users can ask questions in natural language (“What were our profits last
+                            quarter?”) and get instant answers, making the complex system incredibly user-friendly.</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <section id="connectivity" class="content-section">
-             <div class="text-center mb-12">
+            <div class="text-center mb-12">
                 <h2 class="text-3xl font-bold">Connectivity, Security, and Vision</h2>
-                <p class="mt-2 text-gray-600 max-w-3xl mx-auto">Our platform is built to integrate seamlessly into your existing ecosystem while providing enterprise-grade security and a clear roadmap for future growth.</p>
+                <p class="mt-2 text-gray-600 max-w-3xl mx-auto">Our platform is built to integrate seamlessly into your
+                    existing ecosystem while providing enterprise-grade security and a clear roadmap for future growth.
+                </p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="bg-white p-6 rounded-lg shadow-md border border-gray-100">
                     <h3 class="text-2xl font-semibold mb-4">Integrations & Scalability</h3>
                     <ul class="space-y-4 text-gray-600">
-                        <li class="flex items-start"><span class="text-blue-500 mr-3 mt-1 font-bold">✓</span><span><strong>Government Integration:</strong> Connects with tax authorities like HMRC (UK) or the IRS (US) for direct digital filings.</span></li>
-                        <li class="flex items-start"><span class="text-blue-500 mr-3 mt-1 font-bold">✓</span><span><strong>Open Banking:</strong> Uses open banking APIs to integrate with banks globally for live, automated transaction feeds.</span></li>
-                        <li class="flex items-start"><span class="text-blue-500 mr-3 mt-1 font-bold">✓</span><span><strong>Third-Party Plugins:</strong> Offers connectors to popular tools like Xero, QuickBooks, and Microsoft 365 to avoid data silos.</span></li>
-                        <li class="flex items-start"><span class="text-blue-500 mr-3 mt-1 font-bold">✓</span><span><strong>Cloud Infrastructure:</strong> Being cloud-based, the application scales with your business’s growth, with data stored securely.</span></li>
+                        <li class="flex items-start"><span
+                                class="text-blue-500 mr-3 mt-1 font-bold">✓</span><span><strong>Government
+                                    Integration:</strong> Connects with tax authorities like HMRC (UK) or the IRS (US)
+                                for direct digital filings.</span></li>
+                        <li class="flex items-start"><span
+                                class="text-blue-500 mr-3 mt-1 font-bold">✓</span><span><strong>Open Banking:</strong>
+                                Uses open banking APIs to integrate with banks globally for live, automated transaction
+                                feeds.</span></li>
+                        <li class="flex items-start"><span
+                                class="text-blue-500 mr-3 mt-1 font-bold">✓</span><span><strong>Third-Party
+                                    Plugins:</strong> Offers connectors to popular tools like Xero, QuickBooks, and
+                                Microsoft 365 to avoid data silos.</span></li>
+                        <li class="flex items-start"><span
+                                class="text-blue-500 mr-3 mt-1 font-bold">✓</span><span><strong>Cloud
+                                    Infrastructure:</strong> Being cloud-based, the application scales with your
+                                business’s growth, with data stored securely.</span></li>
                     </ul>
                 </div>
-                 <div class="bg-white p-6 rounded-lg shadow-md border border-gray-100">
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-100">
                     <h3 class="text-2xl font-semibold mb-4">Addressing Key Challenges</h3>
                     <ul class="space-y-4 text-gray-600">
-                        <li class="flex items-start"><span class="text-blue-500 mr-3 mt-1 font-bold">✓</span><span><strong>Data Security:</strong> Enterprise-grade cloud infrastructure employing end-to-end encryption and multi-factor authentication.</span></li>
-                        <li class="flex items-start"><span class="text-blue-500 mr-3 mt-1 font-bold">✓</span><span><strong>AI Accuracy:</strong> We implement a "human-in-the-loop" system. AI suggestions are always presented for user review and final approval.</span></li>
-                        <li class="flex items-start"><span class="text-blue-500 mr-3 mt-1 font-bold">✓</span><span><strong>User Adoption:</strong> Our design philosophy is "powerful, yet simple," led by the conversational AI assistant to lower the learning curve for all users.</span></li>
+                        <li class="flex items-start"><span
+                                class="text-blue-500 mr-3 mt-1 font-bold">✓</span><span><strong>Data Security:</strong>
+                                Enterprise-grade cloud infrastructure employing end-to-end encryption and multi-factor
+                                authentication.</span></li>
+                        <li class="flex items-start"><span
+                                class="text-blue-500 mr-3 mt-1 font-bold">✓</span><span><strong>AI Accuracy:</strong> We
+                                implement a "human-in-the-loop" system. AI suggestions are always presented for user
+                                review and final approval.</span></li>
+                        <li class="flex items-start"><span
+                                class="text-blue-500 mr-3 mt-1 font-bold">✓</span><span><strong>User Adoption:</strong>
+                                Our design philosophy is "powerful, yet simple," led by the conversational AI assistant
+                                to lower the learning curve for all users.</span></li>
                     </ul>
                 </div>
             </div>
-             <div class="mt-12 bg-white p-8 rounded-lg shadow-md border border-gray-100">
+            <div class="mt-12 bg-white p-8 rounded-lg shadow-md border border-gray-100">
                 <h3 class="text-2xl font-bold mb-4 text-center">The Vision Forward</h3>
                 <div class="relative mt-4">
                     <div class="absolute left-1/2 w-0.5 h-full bg-blue-200 -translate-x-1/2"></div>
                     <div class="space-y-8">
-                        <div class="flex items-center" data-step="1"><div class="w-4 h-4 bg-blue-500 rounded-full z-10"></div><p class="ml-4 font-semibold">Platform Launch & Beta Program</p></div>
-                        <div class="flex items-center" data-step="2"><div class="w-4 h-4 bg-blue-500 rounded-full z-10"></div><p class="ml-4 font-semibold">Supply Chain Optimization AI Module</p></div>
-                        <div class="flex items-center" data-step="3"><div class="w-4 h-4 bg-blue-500 rounded-full z-10"></div><p class="ml-4 font-semibold">Predictive Safety & Risk Analysis</p></div>
-                        <div class="flex items-center" data-step="4"><div class="w-4 h-4 bg-blue-500 rounded-full z-10"></div><p class="ml-4 font-semibold">International Market Expansion</p></div>
+                        <div class="flex items-center" data-step="1">
+                            <div class="w-4 h-4 bg-blue-500 rounded-full z-10"></div>
+                            <p class="ml-4 font-semibold">Platform Launch & Beta Program</p>
+                        </div>
+                        <div class="flex items-center" data-step="2">
+                            <div class="w-4 h-4 bg-blue-500 rounded-full z-10"></div>
+                            <p class="ml-4 font-semibold">Supply Chain Optimization AI Module</p>
+                        </div>
+                        <div class="flex items-center" data-step="3">
+                            <div class="w-4 h-4 bg-blue-500 rounded-full z-10"></div>
+                            <p class="ml-4 font-semibold">Predictive Safety & Risk Analysis</p>
+                        </div>
+                        <div class="flex items-center" data-step="4">
+                            <div class="w-4 h-4 bg-blue-500 rounded-full z-10"></div>
+                            <p class="ml-4 font-semibold">International Market Expansion</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -394,32 +558,43 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
         <section id="get-started" class="content-section">
             <div class="text-center mb-12">
                 <h2 class="text-3xl font-bold">Ready to Build a Better Business?</h2>
-                <p class="mt-2 text-gray-600 max-w-3xl mx-auto">Choose a plan that fits your needs or contact us for a personalized demo to see how ConstructAI can transform your operations.</p>
+                <p class="mt-2 text-gray-600 max-w-3xl mx-auto">Choose a plan that fits your needs or contact us for a
+                    personalized demo to see how ConstructAI can transform your operations.</p>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
                 <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
                     <div class="bg-white p-8 rounded-lg shadow-md border border-gray-100 flex flex-col">
                         <h3 class="text-2xl font-bold text-center">Starter</h3>
                         <p class="mt-2 text-gray-500 text-center">For small teams and freelancers.</p>
-                        <p class="my-8 text-center"><span class="text-5xl font-bold">£99</span><span class="text-gray-500">/mo</span></p>
+                        <p class="my-8 text-center"><span class="text-5xl font-bold">£99</span><span
+                                class="text-gray-500">/mo</span></p>
                         <ul class="space-y-3 text-gray-600 mb-8 flex-grow">
-                            <li class="flex items-center"><span class="text-blue-500 mr-2">✓</span> Up to 5 Projects</li>
-                            <li class="flex items-center"><span class="text-blue-500 mr-2">✓</span> Core Project Management</li>
-                            <li class="flex items-center"><span class="text-blue-500 mr-2">✓</span> Basic Accounting & Invoicing</li>
+                            <li class="flex items-center"><span class="text-blue-500 mr-2">✓</span> Up to 5 Projects
+                            </li>
+                            <li class="flex items-center"><span class="text-blue-500 mr-2">✓</span> Core Project
+                                Management</li>
+                            <li class="flex items-center"><span class="text-blue-500 mr-2">✓</span> Basic Accounting &
+                                Invoicing</li>
                         </ul>
-                        <button class="w-full bg-blue-100 text-blue-700 font-bold py-3 px-4 rounded-md hover:bg-blue-200 transition-colors">Choose Plan</button>
+                        <button
+                            class="w-full bg-blue-100 text-blue-700 font-bold py-3 px-4 rounded-md hover:bg-blue-200 transition-colors">Choose
+                            Plan</button>
                     </div>
-                    <div class="bg-blue-600 text-white p-8 rounded-lg shadow-xl border border-blue-700 flex flex-col ring-4 ring-blue-200">
+                    <div
+                        class="bg-blue-600 text-white p-8 rounded-lg shadow-xl border border-blue-700 flex flex-col ring-4 ring-blue-200">
                         <h3 class="text-2xl font-bold text-center">Professional</h3>
                         <p class="mt-2 text-blue-200 text-center">For growing businesses.</p>
-                        <p class="my-8 text-center"><span class="text-5xl font-bold">£249</span><span class="text-blue-200">/mo</span></p>
+                        <p class="my-8 text-center"><span class="text-5xl font-bold">£249</span><span
+                                class="text-blue-200">/mo</span></p>
                         <ul class="space-y-3 text-blue-100 mb-8 flex-grow">
                             <li class="flex items-center"><span class="mr-2">✓</span> Unlimited Projects</li>
                             <li class="flex items-center"><span class="mr-2">✓</span> All Starter Features</li>
                             <li class="flex items-center"><span class="mr-2">✓</span> Full AI Agent Suite</li>
                             <li class="flex items-center"><span class="mr-2">✓</span> Third-Party Integrations</li>
                         </ul>
-                        <button class="w-full bg-white text-blue-700 font-bold py-3 px-4 rounded-md hover:bg-gray-100 transition-colors">Choose Plan</button>
+                        <button
+                            class="w-full bg-white text-blue-700 font-bold py-3 px-4 rounded-md hover:bg-gray-100 transition-colors">Choose
+                            Plan</button>
                     </div>
                 </div>
                 <div class="lg:col-span-2 bg-white p-8 rounded-lg shadow-md border border-gray-100">
@@ -428,18 +603,24 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
                         <div class="space-y-4">
                             <div>
                                 <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
-                                <input type="text" id="name" name="name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                <input type="text" id="name" name="name" required
+                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                             </div>
                             <div>
                                 <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
-                                <input type="email" id="email" name="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                            </div>
-                             <div>
-                                <label for="company" class="block text-sm font-medium text-gray-700">Company Name</label>
-                                <input type="text" id="company" name="company" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                <input type="email" id="email" name="email" required
+                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                             </div>
                             <div>
-                                <button type="submit" id="demo-submit-btn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Submit Request</button>
+                                <label for="company" class="block text-sm font-medium text-gray-700">Company
+                                    Name</label>
+                                <input type="text" id="company" name="company"
+                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div>
+                                <button type="submit" id="demo-submit-btn"
+                                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Submit
+                                    Request</button>
                             </div>
                         </div>
                         <p id="form-feedback" class="text-sm text-center mt-4"></p>
@@ -455,43 +636,97 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
 
     <script type="module" src="/index.tsx"></script>
     <script type="module">
-                import { createClient } from "@supabase/supabase-js";
-    
-                let supabaseClient;
-    
-                async function initializeSupabase() {
-                    try {
-                        // Check if a Supabase client already exists to avoid multiple instances
-                        if (window.supabaseClient) {
-                            supabaseClient = window.supabaseClient;
-                            console.log('Using existing Supabase client for demo form');
-                            return;
-                        }
-    
-                        if (typeof __supabase_url === 'undefined' || !__supabase_url || __supabase_url === 'YOUR_SUPABASE_URL' ||
-                            typeof __supabase_anon_key === 'undefined' || !__supabase_anon_key || __supabase_anon_key === 'YOUR_SUPABASE_ANON_KEY') {
-                            console.warn('Supabase not configured. Demo form submissions will not work.');
-                            return;
-                        }
-                        supabaseClient = createClient(__supabase_url, __supabase_anon_key);
-                        window.supabaseClient = supabaseClient; // Store globally to avoid duplicates
-                        console.log('Supabase client initialized for demo form');
-                    } catch (error) {
-                        console.error("Supabase initialization failed:", error);
-                    }
+        import { createClient } from "@supabase/supabase-js";
+
+        let supabaseClient;
+
+        async function initializeSupabase() {
+            try {
+                // Check if a Supabase client already exists to avoid multiple instances
+                if (window.supabaseClient) {
+                    supabaseClient = window.supabaseClient;
+                    console.log('Using existing Supabase client for demo form');
+                    return;
                 }
 
+                if (typeof __supabase_url === 'undefined' || !__supabase_url || __supabase_url === 'YOUR_SUPABASE_URL' ||
+                    typeof __supabase_anon_key === 'undefined' || !__supabase_anon_key || __supabase_anon_key === 'YOUR_SUPABASE_ANON_KEY') {
+                    console.warn('Supabase not configured. Demo form submissions will not work.');
+                    return;
+                }
+                supabaseClient = createClient(__supabase_url, __supabase_anon_key);
+                window.supabaseClient = supabaseClient; // Store globally to avoid duplicates
+                console.log('Supabase client initialized for demo form');
+            } catch (error) {
+                console.error("Supabase initialization failed:", error);
+            }
+        }
+
         const featuresData = [
-            { name: 'Document Management', category: 'project', icon: '🗂️', description: 'Centralized repository for all project documents with version control and real-time collaboration.', improvement: 'AI-driven tagging and search to automatically categorize files and flag compliance issues.' },
-            { name: 'Estimating & Budgeting', category: 'project', icon: '🧮', description: 'Go beyond traditional estimating. Build project estimates with reusable templates, backed by a regularly updated cost database.', improvement: 'Our AI estimator supercharges your bids by analyzing your company\'s historical project data and current market trends. It identifies cost patterns and predicts expenses with greater accuracy, giving you a competitive edge.' },
-            { name: 'Change Order Management', category: 'project', icon: '🔄', description: 'Systematic way to track changes in project scope, route them for approval, and update budgets.', improvement: 'Automation prompts users to create change orders when it detects alterations in plans or budgets.' },
-            { name: 'Purchase Order Management', category: 'project', icon: '🛒', description: 'Manage procurement, track deliveries, and monitor supplier performance with approval workflows.', improvement: 'AI can optimize procurement by suggesting order timing to get bulk discounts or avoid shortages.' },
-            { name: 'Scheduling & Time Tracking', category: 'project', icon: '🗓️', description: 'Robust scheduling with Gantt charts, resource allocation, and time sheet management for job costing.', improvement: 'AI scheduling assistant analyzes plans to optimize resource usage and dynamically adjust for delays.' },
-            { name: 'Field Collaboration Tools', category: 'project', icon: '📱', description: 'Mobile app for daily logs, RFIs, and punch lists with real-time messaging and notifications.', improvement: 'Conversational AI allows field workers to log updates via voice or chat.' },
-            { name: 'Invoicing & Billing', category: 'financial', icon: '🧾', description: 'Generate various client invoices, manage retainers, and automate creation from project data.', improvement: 'AI sends automated payment reminders and can forecast cash flow based on billing schedules.' },
-            { name: 'Reporting & Analytics', category: 'financial', icon: '📊', description: 'Customizable dashboards and reports for project status, budget vs. actual, and resource utilization.', improvement: 'Our AI goes beyond simple reporting. It continuously analyzes project data—schedules, costs, and field logs—to identify subtle patterns and produce predictive insights, flagging projects at risk of budget overruns or schedule delays before they become critical issues.' },
-            { name: 'Integrated Accounting', category: 'financial', icon: '🏦', description: 'A full premium accounting service built-in, from bookkeeping to tax filing.', improvement: 'AI bookkeeper helps categorize transactions from automated bank feeds, and the system connects to tax authorities.' },
-            { name: 'CRM & Contact Management', category: 'business', icon: '👥', description: 'Built-in CRM to track leads, clients, contracts, and manage all communications.', improvement: 'AI can perform sentiment analysis on messages to identify unhappy clients or prospects needing follow-up.' }
+            // Core Platform Features
+            { name: 'Project Management', category: 'project', icon: '🏗️', status: 'active', description: 'Complete project lifecycle management with task tracking, milestones, and team collaboration.', improvement: 'AI-powered project insights predict delays and suggest optimizations.' },
+            { name: 'Task Tracking', category: 'project', icon: '✓', status: 'active', description: 'Comprehensive task management with assignments, priorities, and progress tracking.', improvement: 'Smart task prioritization based on project dependencies and deadlines.' },
+            { name: 'Daily Logs', category: 'project', icon: '📝', status: 'active', description: 'Digital daily logs for field activities, weather, and progress notes.', improvement: 'AI extracts key information and flags safety concerns automatically.' },
+            { name: 'Photo Gallery', category: 'project', icon: '📸', status: 'active', description: 'Organized photo documentation with tagging and timeline view.', improvement: 'AI-powered image recognition for automatic categorization and progress tracking.' },
+            { name: 'Document Management', category: 'project', icon: '🗂️', status: 'active', description: 'Centralized repository for all project documents with version control.', improvement: 'AI-driven tagging and search to automatically categorize files and flag compliance issues.' },
+            { name: 'Team Collaboration', category: 'project', icon: '👥', status: 'active', description: 'Real-time messaging, notifications, and team coordination tools.', improvement: 'AI suggests relevant team members for tasks based on skills and availability.' },
+
+            // RFI Management
+            { name: 'RFI Management', category: 'project', icon: '📋', status: 'active', description: 'Request for Information system with tracking and response management.', improvement: 'AI searches project documents to suggest answers and auto-routes to experts.' },
+            { name: 'RFI Tracking', category: 'project', icon: '🔍', status: 'active', description: 'Track RFI status, responses, and resolution timelines.', improvement: 'Predictive analytics identify potential RFI bottlenecks.' },
+
+            // Punch List
+            { name: 'Punch List', category: 'project', icon: '✓', status: 'active', description: 'Quality control and defect tracking with photo documentation.', improvement: 'AI categorizes issues and suggests similar past resolutions.' },
+            { name: 'Quality Control', category: 'project', icon: '🎯', status: 'active', description: 'Systematic quality checks and inspection workflows.', improvement: 'ML models predict quality issues based on historical data.' },
+
+            // Drawings & Plans
+            { name: 'Drawings & Plans', category: 'project', icon: '📐', status: 'active', description: 'Blueprint management with version control and markup tools.', improvement: 'AI detects changes between versions and highlights conflicts.' },
+            { name: 'Drawing Comparison', category: 'project', icon: '🔄', status: 'active', description: 'Side-by-side comparison of drawing versions.', improvement: 'Automated change detection and impact analysis.' },
+
+            // Daywork Sheets
+            { name: 'Daywork Sheets', category: 'project', icon: '📊', status: 'active', description: 'Daily work tracking with labor, equipment, and materials.', improvement: 'AI validates entries and suggests cost optimizations.' },
+            { name: 'Labor Tracking', category: 'project', icon: '⏱️', status: 'active', description: 'Track worker hours and productivity metrics.', improvement: 'Predictive scheduling based on historical productivity data.' },
+
+            // Financial Management
+            { name: 'Invoicing & Billing', category: 'financial', icon: '🧾', status: 'active', description: 'Generate invoices, manage retainers, and track payments.', improvement: 'AI sends automated payment reminders and forecasts cash flow.' },
+            { name: 'Budget Tracking', category: 'financial', icon: '💰', status: 'active', description: 'Real-time budget monitoring and variance analysis.', improvement: 'Predictive budget alerts before overruns occur.' },
+            { name: 'Cost Analysis', category: 'financial', icon: '📈', status: 'active', description: 'Detailed cost breakdowns and profitability analysis.', improvement: 'AI identifies cost-saving opportunities across projects.' },
+            { name: 'Payment Tracking', category: 'financial', icon: '💳', status: 'active', description: 'Track payments, receivables, and payment schedules.', improvement: 'Smart payment reminders and cash flow optimization.' },
+            { name: 'Financial Reports', category: 'financial', icon: '📊', status: 'active', description: 'Comprehensive financial reporting and analytics.', improvement: 'AI generates insights and recommendations from financial data.' },
+            { name: 'Integrated Accounting', category: 'financial', icon: '🏦', status: 'active', description: 'Full accounting service from bookkeeping to tax filing.', improvement: 'AI bookkeeper categorizes transactions from automated bank feeds.' },
+
+            // Subcontractor Management
+            { name: 'Subcontractor Management', category: 'project', icon: '👷', status: 'active', description: 'Manage subcontractors, contracts, and performance.', improvement: 'AI rates subcontractor performance and suggests best matches for new projects.' },
+            { name: 'Contract Management', category: 'project', icon: '📄', status: 'active', description: 'Track contracts, compliance, and insurance.', improvement: 'Automated compliance checks and renewal reminders.' },
+
+            // Time Tracking
+            { name: 'Time Tracking', category: 'project', icon: '⏱️', status: 'active', description: 'Employee time tracking and timesheet management.', improvement: 'AI detects anomalies and optimizes resource allocation.' },
+            { name: 'Payroll Integration', category: 'financial', icon: '💵', status: 'active', description: 'Seamless integration with payroll systems.', improvement: 'Automated payroll calculations and tax compliance.' },
+
+            // AI Tools
+            { name: 'AI Chatbot Assistant', category: 'business', icon: '🤖', status: 'in-progress', description: 'Conversational AI assistant for platform navigation and insights.', improvement: 'Natural language interface for all platform features.' },
+            { name: 'Document Analysis', category: 'business', icon: '📄', status: 'in-progress', description: 'AI-powered document parsing and information extraction.', improvement: 'Automatic extraction of key data from contracts and plans.' },
+            { name: 'Predictive Analytics', category: 'business', icon: '🔮', status: 'in-progress', description: 'ML models for project outcome prediction.', improvement: 'Forecast project success and identify risks early.' },
+            { name: 'Smart Scheduling', category: 'project', icon: '🗓️', status: 'in-progress', description: 'AI-optimized resource scheduling and allocation.', improvement: 'Dynamic schedule optimization based on constraints.' },
+            { name: 'Risk Assessment', category: 'business', icon: '⚠️', status: 'in-progress', description: 'Automated risk identification and mitigation.', improvement: 'Proactive risk alerts with suggested actions.' },
+            { name: 'Cost Estimation', category: 'financial', icon: '🧮', status: 'in-progress', description: 'AI-powered project cost estimation.', improvement: 'Historical data analysis for accurate estimates.' },
+
+            // ML & Analytics
+            { name: 'Performance Metrics', category: 'business', icon: '📊', status: 'in-progress', description: 'Comprehensive KPI tracking and visualization.', improvement: 'Real-time dashboards with predictive insights.' },
+            { name: 'Trend Analysis', category: 'business', icon: '📈', status: 'in-progress', description: 'Identify patterns and trends across projects.', improvement: 'ML-powered trend detection and forecasting.' },
+            { name: 'Custom Dashboards', category: 'business', icon: '📱', status: 'in-progress', description: 'Personalized dashboards for different roles.', improvement: 'AI suggests relevant metrics for each user.' },
+
+            // Business Development
+            { name: 'Lead Management', category: 'business', icon: '🎯', status: 'planned', description: 'Track and nurture sales leads.', improvement: 'AI scores leads and suggests follow-up actions.' },
+            { name: 'Proposal Generation', category: 'business', icon: '📝', status: 'planned', description: 'Automated proposal creation from templates.', improvement: 'AI customizes proposals based on client data.' },
+            { name: 'Client Portal', category: 'business', icon: '🌐', status: 'planned', description: 'Self-service portal for clients.', improvement: 'AI-powered client insights and recommendations.' },
+            { name: 'Bid Management', category: 'business', icon: '💼', status: 'planned', description: 'Manage bids and tender processes.', improvement: 'AI analyzes win probability and suggests pricing.' },
+            { name: 'CRM Integration', category: 'business', icon: '👥', status: 'planned', description: 'Customer relationship management.', improvement: 'Sentiment analysis and client health scoring.' },
+
+            // AI Agents Marketplace
+            { name: 'Agent Library', category: 'business', icon: '🛒', status: 'planned', description: 'Browse and install custom AI agents.', improvement: 'Marketplace for specialized construction AI tools.' },
+            { name: 'Custom Workflows', category: 'business', icon: '⚙️', status: 'planned', description: 'Build custom automation workflows.', improvement: 'No-code workflow builder with AI suggestions.' },
+            { name: 'API Marketplace', category: 'business', icon: '🔌', status: 'planned', description: 'Third-party integrations and APIs.', improvement: 'AI recommends relevant integrations.' }
         ];
 
         const aiAgentsData = [
@@ -501,7 +736,7 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
             { id: 'agent-acc', name: 'Accounting Agent', description: 'Handles the heavy lifting of bookkeeping, classifies transactions, and ensures alignment with accounting standards. It stays up-to-date on tax rules and can produce complex financial documents automatically.', icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 7.756a4.5 4.5 0 010 8.488M7.5 10.5h5.25m-5.25 3h5.25M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>' },
             { id: 'agent-user', name: 'User Assistant', description: 'The user-facing chatbot or voice assistant. Users can ask questions in natural language (“What were our profits last quarter?”) and get instant answers, making the complex system incredibly user-friendly.', icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" /></svg>' }
         ];
-        
+
         const navButtons = document.querySelectorAll('.nav-item');
         const mobileNavButtons = document.querySelectorAll('.mobile-nav-item');
         const directNavLinks = document.querySelectorAll('.nav-item-direct');
@@ -510,7 +745,7 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
         const filterButtons = document.querySelectorAll('.filter-btn');
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
-        
+
         const authButton = document.getElementById('auth-button');
         const marketingContainer = document.getElementById('marketing-container');
         const appContainer = document.getElementById('app-container');
@@ -519,7 +754,7 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
             loggedIn: false,
             currentView: 'home',
         };
-        
+
         function showAppForLogin() {
             marketingContainer.style.display = 'none';
             appContainer.style.display = 'block';
@@ -532,7 +767,7 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
             marketingContainer.style.display = 'block';
             appContainer.style.display = 'none';
             document.querySelectorAll('.marketing-nav').forEach(el => el.style.display = 'flex');
-             navigateTo('home');
+            navigateTo('home');
         }
 
         window.addEventListener('userLoggedIn', () => {
@@ -546,7 +781,7 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
 
         authButton.addEventListener('click', () => {
             if (state.loggedIn) {
-                 window.dispatchEvent(new CustomEvent('userLoggedOutTrigger'));
+                window.dispatchEvent(new CustomEvent('userLoggedOutTrigger'));
             } else {
                 showAppForLogin();
             }
@@ -558,21 +793,21 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
 
             // Update active state in desktop header
             const currentActiveButton = document.querySelector('.nav-item.nav-active');
-            if(currentActiveButton) currentActiveButton.classList.remove('nav-active');
-            
+            if (currentActiveButton) currentActiveButton.classList.remove('nav-active');
+
             const newActiveButton = document.querySelector(`.nav-item[data-target="${targetId}"]`);
             if (newActiveButton) newActiveButton.classList.add('nav-active');
-           
+
             // Show correct main content section
             contentSections.forEach(section => {
                 section.classList.toggle('active', section.id === targetId);
                 section.classList.toggle('hidden', section.id !== targetId);
             });
-            
+
             mobileMenu.classList.add('hidden');
             window.scrollTo(0, 0);
         }
-        
+
         const allNavItems = [...navButtons, ...mobileNavButtons, ...directNavLinks];
         allNavItems.forEach(button => {
             button.addEventListener('click', (e) => {
@@ -583,7 +818,7 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
                 }
             });
         });
-        
+
         mobileMenuButton.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
         });
@@ -595,10 +830,22 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
             filteredData.forEach(feature => {
                 const card = document.createElement('div');
                 card.className = `feature-card bg-white p-6 rounded-lg shadow-md border border-gray-100 feature-category-${feature.category}`;
+
+                // Status badge
+                const statusBadges = {
+                    'active': '<span class="status-dot bg-green-500"></span> <span class="text-xs text-green-700 font-medium">Active</span>',
+                    'in-progress': '<span class="status-dot bg-yellow-500"></span> <span class="text-xs text-yellow-700 font-medium">In Progress</span>',
+                    'planned': '<span class="status-dot bg-gray-400"></span> <span class="text-xs text-gray-600 font-medium">Planned</span>'
+                };
+                const statusBadge = feature.status ? statusBadges[feature.status] || '' : '';
+
                 card.innerHTML = `
-                    <div class="flex items-center">
-                        <span class="text-3xl mr-4">${feature.icon}</span>
-                        <h3 class="text-xl font-semibold text-gray-800">${feature.name}</h3>
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <span class="text-3xl mr-3">${feature.icon}</span>
+                            <h3 class="text-xl font-semibold text-gray-800">${feature.name}</h3>
+                        </div>
+                        ${statusBadge ? `<div class="flex items-center gap-1">${statusBadge}</div>` : ''}
                     </div>
                     <div class="details">
                         <p class="text-gray-600 mt-2 text-sm">${feature.description}</p>
@@ -611,7 +858,7 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
                 featuresGrid.appendChild(card);
             });
         }
-        
+
         filterButtons.forEach(button => {
             button.addEventListener('click', () => {
                 filterButtons.forEach(btn => btn.classList.remove('active'));
@@ -654,8 +901,8 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
                 });
                 container.appendChild(node);
             });
-            
-            const defaultNode = document.querySelector('#agent-user'); 
+
+            const defaultNode = document.querySelector('#agent-user');
             if (defaultNode) {
                 defaultNode.click();
             }
@@ -663,9 +910,9 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
 
         function createPath(startNode, endNode, container, id, color) {
             if (document.getElementById(id)) {
-                 const path = document.getElementById(id);
-                 path.style.color = color;
-                 return path;
+                const path = document.getElementById(id);
+                path.style.color = color;
+                return path;
             }
 
             const startRect = {
@@ -692,7 +939,7 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
             container.appendChild(path);
             return path;
         }
-        
+
         function runScenario(scenarioId) {
             const scenarioBtns = document.querySelectorAll('.scenario-btn');
             const isRunning = Array.from(scenarioBtns).some(btn => btn.disabled);
@@ -702,7 +949,7 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
                 btn.disabled = true;
                 btn.classList.remove('active-scenario');
             });
-            
+
             const clickedBtn = document.querySelector(`[data-scenario="${scenarioId}"]`);
             if (clickedBtn) clickedBtn.classList.add('active-scenario');
 
@@ -713,7 +960,7 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
                 doc: document.getElementById('agent-doc'),
                 acc: document.getElementById('agent-acc'),
             };
-            
+
             for (const key in nodes) {
                 if (!nodes[key]) {
                     console.error(`Scenario node '${key}' not found!`);
@@ -721,7 +968,7 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
                     return;
                 }
             }
-            
+
             const container = nodes.pm.parentElement;
 
             const pathColors = {
@@ -729,7 +976,7 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
                 weatherDelay: '#3b82f6', // blue-500
                 smartRFI: '#22c55e', // green-500
             };
-            
+
             const color = pathColors[scenarioId];
 
             const paths = {
@@ -767,7 +1014,7 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
 
             const allNodes = document.querySelectorAll('.ai-agent-node');
             const allPaths = document.querySelectorAll('.ai-scenario-path');
-            
+
             let previousPath = null;
 
             const resetState = () => {
@@ -780,7 +1027,7 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
                     btn.disabled = false;
                     btn.classList.remove('active-scenario');
                 });
-                
+
                 if (nodes.user) {
                     const agentTitle = document.getElementById('ai-agent-title');
                     const agentDesc = document.getElementById('ai-agent-description');
@@ -797,14 +1044,14 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
 
             function nextStep() {
                 allNodes.forEach(n => n.classList.remove('highlight'));
-                
+
                 if (previousPath) {
                     previousPath.style.opacity = '0.2';
                 }
 
                 if (currentIndex >= sequence.length) {
                     setTimeout(() => {
-                         if (previousPath) previousPath.style.opacity = '0';
+                        if (previousPath) previousPath.style.opacity = '0';
                         setTimeout(resetState, 500);
                     }, 2000);
                     return;
@@ -812,17 +1059,17 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
                 const step = sequence[currentIndex];
                 const agentTitle = document.getElementById('ai-agent-title');
                 const agentDesc = document.getElementById('ai-agent-description');
-                
+
                 if (step.node) {
                     allNodes.forEach(n => n.classList.remove('active'));
                     step.node.classList.add('highlight', 'active');
                     step.node.style.color = color;
-                    
+
                     const agentData = aiAgentsData.find(a => a.id === step.node.id);
-                    
+
                     agentTitle.classList.add('fade-out');
                     agentDesc.classList.add('fade-out');
-                    
+
                     setTimeout(() => {
                         if (agentData) {
                             agentTitle.textContent = agentData.name;
@@ -832,7 +1079,7 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
                         agentDesc.classList.remove('fade-out');
                     }, 400);
                 }
-                
+
                 if (step.path) {
                     step.path.style.opacity = '1';
                     step.path.style.width = `${step.path.dataset.length}px`;
@@ -840,11 +1087,11 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
                 } else {
                     previousPath = null;
                 }
-                
+
                 currentIndex++;
                 setTimeout(nextStep, step.duration);
             }
-            
+
             allPaths.forEach(p => {
                 p.style.width = '0px';
                 p.style.opacity = '0';
@@ -853,10 +1100,10 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
                 n.classList.remove('highlight', 'active');
                 n.style.color = '';
             });
-            
+
             setTimeout(nextStep, 100);
         }
-        
+
         async function handleDemoSubmit(e) {
             e.preventDefault();
             const form = e.target;
@@ -907,9 +1154,9 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
                 }
             });
         });
-        
+
         renderFeatures();
-        
+
         const aiCoreSection = document.getElementById('ai-core');
         const observer = new ResizeObserver(() => {
             const container = document.querySelector('#ai-hub')?.parentElement;
@@ -928,4 +1175,5 @@ var __firebase_config = undefined; // Set to valid Firebase config JSON string w
         handleLogoutUI(); // Ensure initial state is logged out
     </script>
 </body>
+
 </html>
