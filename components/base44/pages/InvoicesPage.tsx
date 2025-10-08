@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { InvoiceBuilder } from '../components/InvoiceBuilder';
 
 interface Invoice {
     id: number;
@@ -26,6 +27,7 @@ export const InvoicesPage: React.FC = () => {
     const [invoices, setInvoices] = useState<Invoice[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [showInvoiceBuilder, setShowInvoiceBuilder] = useState(false);
 
     useEffect(() => {
         fetchInvoices();
@@ -190,6 +192,7 @@ export const InvoicesPage: React.FC = () => {
                         {/* New Invoice Button */}
                         <button
                             type="button"
+                            onClick={() => setShowInvoiceBuilder(true)}
                             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -254,6 +257,44 @@ export const InvoicesPage: React.FC = () => {
                     </div>
                 ))}
             </div>
+
+            {/* Invoice Builder Modal */}
+            {showInvoiceBuilder && (
+                <InvoiceBuilder
+                    onClose={() => setShowInvoiceBuilder(false)}
+                    onSave={async (invoiceData) => {
+                        try {
+                            // Get company_id from localStorage
+                            const userStr = localStorage.getItem('user');
+                            const user = userStr ? JSON.parse(userStr) : null;
+                            const company_id = user?.company_id || 'company-1';
+
+                            // Save invoice to API
+                            const response = await fetch('/api/invoices', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    company_id,
+                                    invoice_number: invoiceData.invoiceNumber,
+                                    client_name: invoiceData.clientName,
+                                    description: invoiceData.items.map(i => i.description).join(', '),
+                                    total: invoiceData.total,
+                                    status: 'draft',
+                                    issue_date: invoiceData.invoiceDate,
+                                    due_date: invoiceData.dueDate
+                                })
+                            });
+
+                            if (response.ok) {
+                                setShowInvoiceBuilder(false);
+                                fetchInvoices(); // Refresh list
+                            }
+                        } catch (err) {
+                            console.error('Failed to save invoice:', err);
+                        }
+                    }}
+                />
+            )}
         </div>
     );
 };
