@@ -50,15 +50,15 @@ export class GeminiChatbot {
         }
 
         this.genAI = new GoogleGenerativeAI(apiKey);
-        
-        // Use Gemini 1.5 Pro for advanced capabilities
+
+        // Use Gemini 2.5 Flash for fast and reliable responses
         this.model = this.genAI.getGenerativeModel({
-            model: 'gemini-1.5-pro',
+            model: 'gemini-2.5-flash',
             generationConfig: {
                 temperature: 0.7,
-                topK: 40,
+                topK: 64,
                 topP: 0.95,
-                maxOutputTokens: 2048,
+                maxOutputTokens: 8192,
             },
         });
     }

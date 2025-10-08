@@ -9,6 +9,8 @@ import dotenv from 'dotenv';
 import { initDatabase } from './database';
 import * as auth from './auth';
 
+// Load environment variables from .env.local first, then .env
+dotenv.config({ path: '.env.local' });
 dotenv.config();
 
 const app = express();
