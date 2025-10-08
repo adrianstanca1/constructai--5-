@@ -6,8 +6,22 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import Database from 'better-sqlite3';
 import { initDatabase } from './database';
 import * as auth from './auth';
+
+// Import API route creators
+import { createClientsRouter } from './routes/clients';
+import { createProjectsRouter } from './routes/projects';
+import { createRFIsRouter } from './routes/rfis';
+import { createInvoicesRouter } from './routes/invoices';
+import { createTimeEntriesRouter } from './routes/time-entries';
+import { createSubcontractorsRouter } from './routes/subcontractors';
+import { createPurchaseOrdersRouter } from './routes/purchase-orders';
+import { createTasksRouter } from './routes/tasks';
+import { createMilestonesRouter } from './routes/milestones';
+import { createDocumentsRouter } from './routes/documents';
+import { createModulesRouter } from './routes/modules';
 
 // Load environment variables from .env.local first, then .env
 dotenv.config({ path: '.env.local' });
@@ -258,6 +272,26 @@ const startServer = async () => {
         // Initialize database
         await initDatabase();
 
+        // Connect to database for API routes
+        const db = new Database('cortexbuild.db');
+        db.pragma('journal_mode = WAL');
+        db.pragma('foreign_keys = ON');
+
+        // Register API routes
+        app.use('/api/clients', createClientsRouter(db));
+        app.use('/api/projects', createProjectsRouter(db));
+        app.use('/api/rfis', createRFIsRouter(db));
+        app.use('/api/invoices', createInvoicesRouter(db));
+        app.use('/api/time-entries', createTimeEntriesRouter(db));
+        app.use('/api/subcontractors', createSubcontractorsRouter(db));
+        app.use('/api/purchase-orders', createPurchaseOrdersRouter(db));
+        app.use('/api/tasks', createTasksRouter(db));
+        app.use('/api/milestones', createMilestonesRouter(db));
+        app.use('/api/documents', createDocumentsRouter(db));
+        app.use('/api/modules', createModulesRouter(db));
+
+        console.log('✅ All API routes registered');
+
         // Clean up expired sessions every hour
         setInterval(() => {
             auth.cleanupExpiredSessions();
@@ -274,15 +308,28 @@ const startServer = async () => {
             console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
             console.log('');
             console.log('Available endpoints:');
+            console.log('');
+            console.log('🔐 Auth:');
             console.log(`  POST   http://localhost:${PORT}/api/auth/login`);
             console.log(`  POST   http://localhost:${PORT}/api/auth/register`);
             console.log(`  POST   http://localhost:${PORT}/api/auth/logout`);
             console.log(`  GET    http://localhost:${PORT}/api/auth/me`);
-            console.log(`  POST   http://localhost:${PORT}/api/auth/refresh`);
-            console.log(`  POST   http://localhost:${PORT}/api/chat/message`);
-            console.log(`  GET    http://localhost:${PORT}/api/health`);
+            console.log('');
+            console.log('📊 API Routes (64 endpoints):');
+            console.log(`  /api/clients - 5 endpoints`);
+            console.log(`  /api/projects - 5 endpoints`);
+            console.log(`  /api/rfis - 6 endpoints`);
+            console.log(`  /api/invoices - 7 endpoints`);
+            console.log(`  /api/time-entries - 6 endpoints`);
+            console.log(`  /api/subcontractors - 5 endpoints`);
+            console.log(`  /api/purchase-orders - 6 endpoints`);
+            console.log(`  /api/tasks - 6 endpoints`);
+            console.log(`  /api/milestones - 5 endpoints`);
+            console.log(`  /api/documents - 5 endpoints`);
+            console.log(`  /api/modules - 9 endpoints`);
             console.log('');
             console.log('🤖 AI Chatbot Ready!');
+            console.log(`  POST   http://localhost:${PORT}/api/chat/message`);
         });
     } catch (error) {
         console.error('❌ Failed to start server:', error);
