@@ -63,10 +63,18 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    ...formData,
+                    name: formData.name,
+                    description: formData.description,
+                    location: formData.location,
+                    status: formData.status,
+                    priority: formData.priority,
+                    type: formData.type,
+                    start_date: formData.start_date || null,
+                    end_date: formData.end_date || null,
+                    budget: parseFloat(formData.budget) || 0,
                     company_id,
                     client_id: formData.client_id || null, // Optional - can be null
-                    budget: parseFloat(formData.budget) || 0
+                    project_manager_id: null // Don't send - will cause FOREIGN KEY error
                 })
             });
 
