@@ -1842,27 +1842,44 @@
         }
 
         function handleLoginUI() {
+            console.log('🔐 handleLoginUI called');
             state.loggedIn = true;
+
             // Hide entire marketing header after login
             const marketingHeader = document.getElementById('marketing-header');
+            console.log('📍 Marketing header element:', marketingHeader);
             if (marketingHeader) {
                 marketingHeader.classList.add('hidden');
+                marketingHeader.style.display = 'none'; // Force hide with inline style too
+                console.log('✅ Marketing header hidden');
+            } else {
+                console.error('❌ Marketing header not found!');
             }
+
             // Hide marketing container
             if (marketingContainer) {
                 marketingContainer.classList.add('hidden');
+                marketingContainer.style.display = 'none';
+                console.log('✅ Marketing container hidden');
             }
+
             // Show app container
             if (appContainer) {
                 appContainer.classList.remove('hidden');
+                appContainer.style.display = 'block';
+                console.log('✅ App container shown');
             }
+
+            console.log('✅ handleLoginUI complete - header should be hidden');
         }
 
         window.addEventListener('userLoggedIn', () => {
+            console.log('🔐 userLoggedIn event received - hiding marketing header');
             handleLoginUI();
         });
 
         window.addEventListener('userLoggedOut', () => {
+            console.log('🚪 userLoggedOut event received - showing marketing header');
             handleLogoutUI();
         });
 
