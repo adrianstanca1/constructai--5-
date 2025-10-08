@@ -1856,9 +1856,19 @@
         };
 
         function showAppForLogin() {
-            marketingContainer.style.display = 'none';
-            appContainer.style.display = 'block';
-            document.querySelectorAll('.marketing-nav').forEach(el => el.style.display = 'none');
+            console.log('🔐 showAppForLogin called - hiding marketing site');
+            // Hide ENTIRE marketing site
+            const marketingSite = document.getElementById('marketing-site');
+            if (marketingSite) {
+                marketingSite.style.display = 'none';
+                console.log('✅ Marketing site hidden');
+            }
+            // Show app container
+            if (appContainer) {
+                appContainer.classList.remove('hidden');
+                appContainer.style.display = 'block';
+                console.log('✅ App container shown');
+            }
         }
 
         function handleLogoutUI() {
