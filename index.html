@@ -407,31 +407,189 @@
     </header>
 
     <main id="marketing-container" class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <section id="home" class="content-section active text-center">
-            <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-gray-900">Build Smarter, Not Harder.</h1>
-            <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">ConstructAI is the all-in-one platform that gives
-                construction SMBs the power of a large enterprise. We unify project management and accounting with a
-                suite of powerful AI agents to boost profitability and reduce risk.</p>
-            <div class="mt-8">
-                <button data-target="get-started"
-                    class="nav-item-direct bg-blue-600 text-white font-bold py-3 px-8 rounded-md hover:bg-blue-700 transition-colors">Request
-                    a Demo</button>
+        <section id="home" class="content-section active">
+            <!-- Hero Section with Visual -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
+                <!-- Left: Hero Content -->
+                <div class="text-left">
+                    <div class="inline-block px-4 py-2 bg-blue-50 rounded-full mb-6">
+                        <span class="text-blue-600 font-semibold text-sm">🚀 The Future of Construction
+                            Intelligence</span>
+                    </div>
+                    <h1 class="text-5xl md:text-6xl font-bold tracking-tight text-gray-900 mb-6">
+                        Build Smarter,<br />
+                        <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Not
+                            Harder</span>
+                    </h1>
+                    <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+                        ConstructAI is the all-in-one platform that gives construction SMBs the power of a large
+                        enterprise.
+                        We unify project management and accounting with a suite of powerful AI agents to boost
+                        profitability and reduce risk.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button data-target="get-started"
+                            class="nav-item-direct bg-blue-600 text-white font-bold py-4 px-8 rounded-lg hover:bg-blue-700 transition-all hover:scale-105 shadow-lg">
+                            Request a Demo
+                        </button>
+                        <button data-target="features"
+                            class="nav-item-direct bg-white text-blue-600 font-bold py-4 px-8 rounded-lg hover:bg-gray-50 transition-all border-2 border-blue-600">
+                            Explore Features
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right: Visual Representation -->
+                <div class="relative">
+                    <!-- Animated Background -->
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100 rounded-3xl opacity-50 blur-3xl">
+                    </div>
+
+                    <!-- Main Visual Card -->
+                    <div class="relative bg-white rounded-3xl shadow-2xl p-8 border border-gray-200">
+                        <!-- AI Brain Visualization -->
+                        <div class="text-center mb-6">
+                            <div class="inline-block relative">
+                                <div
+                                    class="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-6xl animate-pulse">
+                                    🧠
+                                </div>
+                                <!-- Orbiting Icons -->
+                                <div class="absolute top-0 left-0 w-full h-full">
+                                    <div
+                                        class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-2xl shadow-lg animate-bounce">
+                                        🏗️
+                                    </div>
+                                    <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-2xl shadow-lg animate-bounce"
+                                        style="animation-delay: 0.2s;">
+                                        💰
+                                    </div>
+                                    <div class="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-2xl shadow-lg animate-bounce"
+                                        style="animation-delay: 0.4s;">
+                                        📊
+                                    </div>
+                                    <div class="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-2xl shadow-lg animate-bounce"
+                                        style="animation-delay: 0.6s;">
+                                        🤖
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3
+                            class="text-2xl font-bold text-center mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            AI-Powered Construction Intelligence
+                        </h3>
+                        <p class="text-gray-600 text-center mb-6">
+                            Integrating artificial intelligence into every aspect of construction management
+                        </p>
+
+                        <!-- Stats Grid -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div
+                                class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl text-center border border-blue-200">
+                                <div class="text-3xl font-bold text-blue-600">100+</div>
+                                <div class="text-xs text-blue-700 mt-1">AI Features</div>
+                            </div>
+                            <div
+                                class="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl text-center border border-green-200">
+                                <div class="text-3xl font-bold text-green-600">24/7</div>
+                                <div class="text-xs text-green-700 mt-1">Automation</div>
+                            </div>
+                            <div
+                                class="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl text-center border border-purple-200">
+                                <div class="text-3xl font-bold text-purple-600">Real-time</div>
+                                <div class="text-xs text-purple-700 mt-1">Insights</div>
+                            </div>
+                            <div
+                                class="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl text-center border border-orange-200">
+                                <div class="text-3xl font-bold text-orange-600">Smart</div>
+                                <div class="text-xs text-orange-700 mt-1">Decisions</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-100">
-                    <h3 class="text-xl font-semibold text-blue-600">Unified Workflow</h3>
-                    <p class="mt-2 text-gray-600">Replace disconnected tools with a single source of truth for project
-                        and financial data, eliminating errors and saving time.</p>
+
+            <!-- Vision & Mission Section -->
+            <div class="mb-20">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Our Vision & Mission</h2>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                        Transforming the construction industry through intelligent automation and data-driven insights
+                    </p>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-100">
-                    <h3 class="text-xl font-semibold text-blue-600">Proactive Insights</h3>
-                    <p class="mt-2 text-gray-600">Our AI agents don't just report data—they analyze it to predict
-                        delays, forecast cash flow, and offer strategic advice.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                    <!-- Vision Card -->
+                    <div
+                        class="bg-gradient-to-br from-blue-500 to-purple-600 p-8 rounded-3xl shadow-2xl text-white relative overflow-hidden">
+                        <div
+                            class="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -translate-y-1/2 translate-x-1/2">
+                        </div>
+                        <div class="relative z-10">
+                            <div class="text-6xl mb-6">🎯</div>
+                            <h3 class="text-3xl font-bold mb-4">Our Vision</h3>
+                            <p class="text-lg leading-relaxed opacity-90">
+                                To revolutionize the construction industry by making enterprise-level AI technology
+                                accessible to every construction business,
+                                regardless of size. We envision a future where every project is optimized, every
+                                decision is data-driven,
+                                and every construction professional is empowered with intelligent tools.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Mission Card -->
+                    <div
+                        class="bg-gradient-to-br from-green-500 to-teal-600 p-8 rounded-3xl shadow-2xl text-white relative overflow-hidden">
+                        <div
+                            class="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -translate-y-1/2 translate-x-1/2">
+                        </div>
+                        <div class="relative z-10">
+                            <div class="text-6xl mb-6">🚀</div>
+                            <h3 class="text-3xl font-bold mb-4">Our Mission</h3>
+                            <p class="text-lg leading-relaxed opacity-90">
+                                To empower construction SMBs with a unified, AI-powered platform that eliminates
+                                inefficiencies,
+                                reduces risks, and maximizes profitability. We're committed to delivering intelligent
+                                automation
+                                that learns from your business and continuously improves your operations.
+                            </p>
+                        </div>
+                    </div>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-100">
-                    <h3 class="text-xl font-semibold text-blue-600">Increased Profitability</h3>
-                    <p class="mt-2 text-gray-600">With real-time job costing, AI-powered estimates, and automated
-                        compliance, you can make decisions that directly improve your bottom line.</p>
+            </div>
+
+            <!-- Core Values -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div
+                    class="bg-white p-8 rounded-2xl shadow-lg border-2 border-blue-100 hover:border-blue-500 transition-all hover:scale-105">
+                    <div class="text-5xl mb-4">🔄</div>
+                    <h3 class="text-2xl font-bold text-blue-600 mb-3">Unified Workflow</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Replace disconnected tools with a single source of truth for project and financial data,
+                        eliminating errors and saving time.
+                    </p>
+                </div>
+                <div
+                    class="bg-white p-8 rounded-2xl shadow-lg border-2 border-purple-100 hover:border-purple-500 transition-all hover:scale-105">
+                    <div class="text-5xl mb-4">🔮</div>
+                    <h3 class="text-2xl font-bold text-purple-600 mb-3">Proactive Insights</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Our AI agents don't just report data—they analyze it to predict delays,
+                        forecast cash flow, and offer strategic advice.
+                    </p>
+                </div>
+                <div
+                    class="bg-white p-8 rounded-2xl shadow-lg border-2 border-green-100 hover:border-green-500 transition-all hover:scale-105">
+                    <div class="text-5xl mb-4">📈</div>
+                    <h3 class="text-2xl font-bold text-green-600 mb-3">Increased Profitability</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        With real-time job costing, AI-powered estimates, and automated compliance,
+                        you can make decisions that directly improve your bottom line.
+                    </p>
                 </div>
             </div>
         </section>
@@ -1202,8 +1360,9 @@
 
         function handleLoginUI() {
             state.loggedIn = true;
+            // Hide both login and logout buttons from header after login
             authButton.classList.add('hidden');
-            logoutButton.classList.remove('hidden');
+            logoutButton.classList.add('hidden');
         }
 
         window.addEventListener('userLoggedIn', () => {
