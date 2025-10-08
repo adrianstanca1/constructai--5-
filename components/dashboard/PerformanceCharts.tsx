@@ -9,21 +9,22 @@ interface ChartData {
   label: string;
   value: number;
   color: string;
+  strokeColor: string;
 }
 
 export const PerformanceCharts: React.FC = () => {
   // Project completion data
   const projectData: ChartData[] = [
-    { label: 'Completed', value: 65, color: 'bg-green-500' },
-    { label: 'In Progress', value: 25, color: 'bg-blue-500' },
-    { label: 'Pending', value: 10, color: 'bg-yellow-500' }
+    { label: 'Completed', value: 65, color: 'bg-green-500', strokeColor: '#22c55e' },
+    { label: 'In Progress', value: 25, color: 'bg-blue-500', strokeColor: '#3b82f6' },
+    { label: 'Pending', value: 10, color: 'bg-yellow-500', strokeColor: '#eab308' }
   ];
 
   // Task status data
   const taskData: ChartData[] = [
-    { label: 'Done', value: 142, color: 'bg-green-500' },
-    { label: 'Active', value: 47, color: 'bg-blue-500' },
-    { label: 'Blocked', value: 8, color: 'bg-red-500' }
+    { label: 'Done', value: 142, color: 'bg-green-500', strokeColor: '#22c55e' },
+    { label: 'Active', value: 47, color: 'bg-blue-500', strokeColor: '#3b82f6' },
+    { label: 'Blocked', value: 8, color: 'bg-red-500', strokeColor: '#ef4444' }
   ];
 
   // Weekly progress data
@@ -56,7 +57,7 @@ export const PerformanceCharts: React.FC = () => {
         {/* Project Status Pie Chart */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h4 className="text-sm font-semibold text-gray-700 mb-4">Project Status</h4>
-          
+
           {/* Donut Chart */}
           <div className="flex items-center justify-center mb-4">
             <div className="relative w-48 h-48">
@@ -69,7 +70,7 @@ export const PerformanceCharts: React.FC = () => {
                   const offset = projectData.slice(0, index).reduce((sum, d) => {
                     return sum + ((d.value / total) * circumference);
                   }, 0);
-                  
+
                   return (
                     <circle
                       key={item.label}
@@ -77,16 +78,15 @@ export const PerformanceCharts: React.FC = () => {
                       cy="96"
                       r="70"
                       fill="none"
-                      stroke={item.color.replace('bg-', '#')}
+                      stroke={item.strokeColor}
                       strokeWidth="24"
                       strokeDasharray={`${(percentage / 100) * circumference} ${circumference}`}
                       strokeDashoffset={-offset}
-                      className={item.color.replace('bg-', 'stroke-')}
                     />
                   );
                 })}
               </svg>
-              
+
               {/* Center text */}
               <div className="absolute inset-0 flex items-center justify-center flex-col">
                 <span className="text-3xl font-bold text-gray-900">
@@ -114,12 +114,12 @@ export const PerformanceCharts: React.FC = () => {
         {/* Task Distribution Bar Chart */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h4 className="text-sm font-semibold text-gray-700 mb-4">Task Distribution</h4>
-          
+
           <div className="space-y-4">
             {taskData.map((item) => {
               const total = taskData.reduce((sum, d) => sum + d.value, 0);
               const percentage = (item.value / total) * 100;
-              
+
               return (
                 <div key={item.label}>
                   <div className="flex items-center justify-between mb-1">
@@ -152,11 +152,11 @@ export const PerformanceCharts: React.FC = () => {
         {/* Weekly Activity Chart */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 lg:col-span-2">
           <h4 className="text-sm font-semibold text-gray-700 mb-4">Weekly Activity</h4>
-          
+
           <div className="flex items-end justify-between gap-2 h-48">
             {weeklyData.map((day) => {
               const heightPercentage = (day.tasks / maxTasks) * 100;
-              
+
               return (
                 <div key={day.day} className="flex-1 flex flex-col items-center gap-2">
                   {/* Bar */}
@@ -168,7 +168,7 @@ export const PerformanceCharts: React.FC = () => {
                           {day.tasks} tasks • {day.hours}h
                         </div>
                       </div>
-                      
+
                       {/* Bar */}
                       <div
                         className="w-full bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-lg transition-all duration-300 hover:from-blue-600 hover:to-blue-500 cursor-pointer"
@@ -176,7 +176,7 @@ export const PerformanceCharts: React.FC = () => {
                       ></div>
                     </div>
                   </div>
-                  
+
                   {/* Label */}
                   <span className="text-xs font-medium text-gray-600">{day.day}</span>
                 </div>
