@@ -1,4 +1,4 @@
--- ConstructAI Platform - Complete Database Schema
+-- CortexBuild Platform - Complete Database Schema
 -- Version: 1.0.0 GOLDEN
 -- Last Updated: 2025-10-08
 

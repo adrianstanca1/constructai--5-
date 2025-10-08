@@ -1,4 +1,4 @@
-// ConstructAI Platform - Database Initialization
+// CortexBuild Platform - Database Initialization
 // Version: 1.0.0 GOLDEN
 // Last Updated: 2025-10-08
 
@@ -7,11 +7,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as bcrypt from 'bcryptjs';
 
-const DB_PATH = path.join(__dirname, 'constructai.db');
+const DB_PATH = path.join(__dirname, 'cortexbuild.db');
 const SCHEMA_PATH = path.join(__dirname, 'schema.sql');
 
 export async function initializeDatabase(): Promise<Database.Database> {
-  console.log('🔧 Initializing ConstructAI database...');
+  console.log('🔧 Initializing CortexBuild database...');
   
   // Create database connection
   const db = new Database(DB_PATH);
@@ -48,7 +48,7 @@ export async function seedDatabase(db: Database.Database): Promise<void> {
     `);
     
     const companies = [
-      ['ConstructAI Demo Corp', 'Construction', '51-200', '123 Main St', 'San Francisco', 'CA', '94102', 'US', '415-555-0100', 'https://constructai.com'],
+      ['CortexBuild Demo Corp', 'Construction', '51-200', '123 Main St', 'San Francisco', 'CA', '94102', 'US', '415-555-0100', 'https://cortexbuild.com'],
       ['BuildTech Solutions', 'Construction', '11-50', '456 Oak Ave', 'Austin', 'TX', '78701', 'US', '512-555-0200', 'https://buildtech.com'],
       ['Premier Builders Inc', 'Construction', '201-500', '789 Pine Rd', 'New York', 'NY', '10001', 'US', '212-555-0300', 'https://premierbuilders.com']
     ];
@@ -64,10 +64,10 @@ export async function seedDatabase(db: Database.Database): Promise<void> {
     `);
     
     const users = [
-      ['admin@constructai.com', hashedPassword, 'Admin', 'User', '415-555-0001', 'admin', 1, 1, 1],
-      ['john.doe@constructai.com', hashedPassword, 'John', 'Doe', '415-555-0002', 'manager', 1, 1, 1],
-      ['jane.smith@constructai.com', hashedPassword, 'Jane', 'Smith', '415-555-0003', 'user', 1, 1, 1],
-      ['developer@constructai.com', hashedPassword, 'Dev', 'User', '415-555-0004', 'developer', 1, 1, 1],
+      ['admin@cortexbuild.com', hashedPassword, 'Admin', 'User', '415-555-0001', 'admin', 1, 1, 1],
+      ['john.doe@cortexbuild.com', hashedPassword, 'John', 'Doe', '415-555-0002', 'manager', 1, 1, 1],
+      ['jane.smith@cortexbuild.com', hashedPassword, 'Jane', 'Smith', '415-555-0003', 'user', 1, 1, 1],
+      ['developer@cortexbuild.com', hashedPassword, 'Dev', 'User', '415-555-0004', 'developer', 1, 1, 1],
       ['bob.wilson@buildtech.com', hashedPassword, 'Bob', 'Wilson', '512-555-0001', 'manager', 2, 1, 1]
     ];
     

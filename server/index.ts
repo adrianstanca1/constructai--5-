@@ -266,7 +266,7 @@ const startServer = async () => {
         // Start listening
         app.listen(PORT, () => {
             console.log('');
-            console.log('🚀 ConstructAI Auth Server');
+            console.log('🚀 CortexBuild AI Platform Server');
             console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
             console.log(`✅ Server running on http://localhost:${PORT}`);
             console.log(`✅ Database initialized`);

@@ -7,7 +7,7 @@ import sqlite3 from 'sqlite3';
 import { promisify } from 'util';
 import bcrypt from 'bcryptjs';
 
-const db = new sqlite3.Database('./constructai.db');
+const db = new sqlite3.Database('./cortexbuild.db');
 
 // Promisify database methods
 const dbRun = promisify(db.run.bind(db));

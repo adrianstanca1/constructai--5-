@@ -1,4 +1,4 @@
-// ConstructAI Platform - TypeScript Type Definitions
+// CortexBuild Platform - TypeScript Type Definitions
 // Version: 1.0.0 GOLDEN
 // Last Updated: 2025-10-08
 

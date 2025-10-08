@@ -1,4 +1,4 @@
-// ConstructAI Platform - Projects API Routes
+// CortexBuild Platform - Projects API Routes
 // Version: 1.0.0 GOLDEN
 // Last Updated: 2025-10-08
 
