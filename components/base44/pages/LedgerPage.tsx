@@ -44,7 +44,8 @@ export const LedgerPage: React.FC = () => {
         }
     ];
 
-    const formatCurrency = (amount: number) => {
+    const formatCurrency = (amount?: number) => {
+        if (amount === undefined || amount === null) return '£0.00';
         return `£${amount.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     };
 

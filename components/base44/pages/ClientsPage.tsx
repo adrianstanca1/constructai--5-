@@ -144,7 +144,8 @@ export const ClientsPage: React.FC = () => {
         }
     ];
 
-    const formatCurrency = (amount: number) => {
+    const formatCurrency = (amount?: number) => {
+        if (amount === undefined || amount === null) return '£0';
         return `£${amount.toLocaleString()}`;
     };
 
