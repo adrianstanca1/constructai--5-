@@ -202,6 +202,13 @@ export function createProjectsRouter(db: Database.Database): Router {
         });
       }
 
+      // Debug logging
+      console.log('Creating project with:', {
+        company_id, name, description, project_number, status, priority,
+        start_date, end_date, budget, address, city, state, zip_code,
+        client_id, project_manager_id
+      });
+
       const result = db.prepare(`
         INSERT INTO projects (
           company_id, name, description, project_number, status, priority,
@@ -210,8 +217,8 @@ export function createProjectsRouter(db: Database.Database): Router {
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).run(
         company_id, name, description, project_number, status, priority,
-        start_date, end_date, budget, address, city, state, zip_code,
-        client_id, project_manager_id
+        start_date || null, end_date || null, budget || null, address || null, city || null, state || null, zip_code || null,
+        client_id || null, project_manager_id || null
       );
 
       const project = db.prepare('SELECT * FROM projects WHERE id = ?').get(result.lastInsertRowid);

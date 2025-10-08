@@ -6,56 +6,39 @@
 -- CORE TABLES
 -- ============================================
 
--- Users Table (Enhanced)
-CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    email TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL,
-    first_name TEXT NOT NULL,
-    last_name TEXT NOT NULL,
-    phone TEXT,
-    role TEXT DEFAULT 'user' CHECK(role IN ('admin', 'manager', 'user', 'developer')),
-    company_id INTEGER,
-    avatar_url TEXT,
-    is_active BOOLEAN DEFAULT 1,
-    email_verified BOOLEAN DEFAULT 0,
-    last_login DATETIME,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE SET NULL
-);
+-- Users Table (Compatible with database.ts)
+-- NOTE: This table is created by database.ts, schema kept for reference
+-- CREATE TABLE IF NOT EXISTS users (
+--     id TEXT PRIMARY KEY,
+--     email TEXT UNIQUE NOT NULL,
+--     password_hash TEXT NOT NULL,
+--     name TEXT NOT NULL,
+--     role TEXT NOT NULL,
+--     avatar TEXT,
+--     company_id TEXT NOT NULL,
+--     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+--     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+-- );
 
--- Companies Table (Enhanced)
-CREATE TABLE IF NOT EXISTS companies (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    industry TEXT,
-    size TEXT CHECK(size IN ('1-10', '11-50', '51-200', '201-500', '500+')),
-    address TEXT,
-    city TEXT,
-    state TEXT,
-    zip_code TEXT,
-    country TEXT DEFAULT 'US',
-    phone TEXT,
-    website TEXT,
-    logo_url TEXT,
-    tax_id TEXT,
-    is_active BOOLEAN DEFAULT 1,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+-- Companies Table (Compatible with database.ts)
+-- NOTE: This table is created by database.ts, schema kept for reference
+-- CREATE TABLE IF NOT EXISTS companies (
+--     id TEXT PRIMARY KEY,
+--     name TEXT UNIQUE NOT NULL,
+--     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+--     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+-- );
 
--- Sessions Table
-CREATE TABLE IF NOT EXISTS sessions (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
-    token TEXT UNIQUE NOT NULL,
-    ip_address TEXT,
-    user_agent TEXT,
-    expires_at DATETIME NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
+-- Sessions Table (Compatible with database.ts)
+-- NOTE: This table is created by database.ts, schema kept for reference
+-- CREATE TABLE IF NOT EXISTS sessions (
+--     id TEXT PRIMARY KEY,
+--     user_id TEXT NOT NULL,
+--     token TEXT UNIQUE NOT NULL,
+--     expires_at DATETIME NOT NULL,
+--     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+--     FOREIGN KEY (user_id) REFERENCES users(id)
+-- );
 
 -- ============================================
 -- PROJECT MANAGEMENT
@@ -64,7 +47,7 @@ CREATE TABLE IF NOT EXISTS sessions (
 -- Projects Table
 CREATE TABLE IF NOT EXISTS projects (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    company_id INTEGER NOT NULL,
+    company_id TEXT NOT NULL,
     name TEXT NOT NULL,
     description TEXT,
     project_number TEXT UNIQUE,
@@ -79,7 +62,7 @@ CREATE TABLE IF NOT EXISTS projects (
     state TEXT,
     zip_code TEXT,
     client_id INTEGER,
-    project_manager_id INTEGER,
+    project_manager_id TEXT,
     progress INTEGER DEFAULT 0 CHECK(progress >= 0 AND progress <= 100),
     is_archived BOOLEAN DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -133,7 +116,7 @@ CREATE TABLE IF NOT EXISTS milestones (
 CREATE TABLE IF NOT EXISTS project_team (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     project_id INTEGER NOT NULL,
-    user_id INTEGER NOT NULL,
+    user_id TEXT NOT NULL,
     role TEXT NOT NULL,
     hourly_rate DECIMAL(10, 2),
     joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -150,7 +133,7 @@ CREATE TABLE IF NOT EXISTS project_team (
 -- Clients Table
 CREATE TABLE IF NOT EXISTS clients (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    company_id INTEGER NOT NULL,
+    company_id TEXT NOT NULL,
     name TEXT NOT NULL,
     contact_name TEXT,
     email TEXT,
@@ -204,7 +187,7 @@ CREATE TABLE IF NOT EXISTS rfis (
 -- Invoices Table
 CREATE TABLE IF NOT EXISTS invoices (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    company_id INTEGER NOT NULL,
+    company_id TEXT NOT NULL,
     project_id INTEGER,
     client_id INTEGER NOT NULL,
     invoice_number TEXT UNIQUE NOT NULL,
@@ -246,7 +229,7 @@ CREATE TABLE IF NOT EXISTS invoice_items (
 -- Time Entries Table
 CREATE TABLE IF NOT EXISTS time_entries (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
+    user_id TEXT NOT NULL,
     project_id INTEGER NOT NULL,
     task_id INTEGER,
     description TEXT,
@@ -270,7 +253,7 @@ CREATE TABLE IF NOT EXISTS time_entries (
 -- Subcontractors Table
 CREATE TABLE IF NOT EXISTS subcontractors (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    company_id INTEGER NOT NULL,
+    company_id TEXT NOT NULL,
     name TEXT NOT NULL,
     contact_name TEXT,
     email TEXT,
@@ -312,7 +295,7 @@ CREATE TABLE IF NOT EXISTS project_subcontractors (
 -- Purchase Orders Table
 CREATE TABLE IF NOT EXISTS purchase_orders (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    company_id INTEGER NOT NULL,
+    company_id TEXT NOT NULL,
     project_id INTEGER,
     vendor_id INTEGER,
     po_number TEXT UNIQUE NOT NULL,
@@ -354,7 +337,7 @@ CREATE TABLE IF NOT EXISTS purchase_order_items (
 -- Documents Table
 CREATE TABLE IF NOT EXISTS documents (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    company_id INTEGER NOT NULL,
+    company_id TEXT NOT NULL,
     project_id INTEGER,
     name TEXT NOT NULL,
     description TEXT,
@@ -381,7 +364,7 @@ CREATE TABLE IF NOT EXISTS documents (
 -- Activities Table
 CREATE TABLE IF NOT EXISTS activities (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
+    user_id TEXT NOT NULL,
     project_id INTEGER,
     entity_type TEXT NOT NULL,
     entity_id INTEGER NOT NULL,
@@ -425,7 +408,7 @@ CREATE TABLE IF NOT EXISTS modules (
 CREATE TABLE IF NOT EXISTS module_reviews (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     module_id INTEGER NOT NULL,
-    user_id INTEGER NOT NULL,
+    user_id TEXT NOT NULL,
     rating INTEGER NOT NULL CHECK(rating >= 1 AND rating <= 5),
     review TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -438,7 +421,7 @@ CREATE TABLE IF NOT EXISTS module_reviews (
 -- API Keys Table
 CREATE TABLE IF NOT EXISTS api_keys (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
+    user_id TEXT NOT NULL,
     name TEXT NOT NULL,
     key_hash TEXT UNIQUE NOT NULL,
     key_prefix TEXT NOT NULL,
@@ -453,7 +436,7 @@ CREATE TABLE IF NOT EXISTS api_keys (
 -- Webhooks Table
 CREATE TABLE IF NOT EXISTS webhooks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
+    user_id TEXT NOT NULL,
     url TEXT NOT NULL,
     events TEXT NOT NULL,
     secret TEXT NOT NULL,
