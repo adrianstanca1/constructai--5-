@@ -17,6 +17,7 @@ import { ReportsPage } from './pages/ReportsPage';
 import { LedgerPage } from './pages/LedgerPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { ChatbotWidget } from '../chat/ChatbotWidget';
+import { ModernSidebar } from './components/ModernSidebar';
 
 interface Base44CloneProps {
     user: User;
@@ -31,11 +32,11 @@ export const Base44Clone: React.FC<Base44CloneProps> = ({ user, onLogout }) => {
 
     return (
         <div className="flex h-screen bg-gray-50">
-            {/* Sidebar */}
-            <Sidebar currentPage={currentPage} onNavigate={setCurrentPage} user={user} onLogout={onLogout} />
+            {/* Modern Sidebar */}
+            <ModernSidebar currentPage={currentPage} onNavigate={setCurrentPage} user={user} onLogout={onLogout} />
 
-            {/* Main Content */}
-            <main className="flex-1 overflow-y-auto">
+            {/* Main Content - Adjusted for sidebar width */}
+            <main className="flex-1 overflow-y-auto ml-64">
                 {currentPage === 'dashboard' && <DashboardPage />}
                 {currentPage === 'projects' && <ProjectsPage />}
                 {currentPage === 'clients' && <ClientsPage />}
