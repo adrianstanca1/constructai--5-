@@ -187,24 +187,11 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 });
 
 /**
- * Start server
+ * Chat Routes (AI Chatbot)
  */
-const startServer = async () => {
-    try {
-        // Initialize database
-        await initDatabase();
 
-        // Clean up expired sessions every hour
-        setInterval(() => {
-            auth.cleanupExpiredSessions();
-        }, 60 * 60 * 1000);
-
-        /**
-         * Chat Routes (AI Chatbot)
-         */
-
-        // POST /api/chat/message
-        app.post('/api/chat/message', auth.authenticateToken, async (req, res) => {
+// POST /api/chat/message
+app.post('/api/chat/message', auth.authenticateToken, async (req, res) => {
             try {
                 const { message, sessionId, currentPage } = req.body;
                 const userId = (req as any).user.id;
@@ -245,6 +232,19 @@ const startServer = async () => {
                 res.status(500).json({ error: error.message || 'Chat failed' });
             }
         });
+
+/**
+ * Start server
+ */
+const startServer = async () => {
+    try {
+        // Initialize database
+        await initDatabase();
+
+        // Clean up expired sessions every hour
+        setInterval(() => {
+            auth.cleanupExpiredSessions();
+        }, 60 * 60 * 1000);
 
         // Start listening
         app.listen(PORT, () => {

@@ -243,3 +243,23 @@ export const cleanupExpiredSessions = async () => {
     console.log('🧹 [Auth] Expired sessions cleaned up');
 };
 
+/**
+ * Express middleware to authenticate requests
+ */
+export const authenticateToken = async (req: any, res: any, next: any) => {
+    try {
+        const authHeader = req.headers['authorization'];
+        const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+
+        if (!token) {
+            return res.status(401).json({ error: 'No token provided' });
+        }
+
+        const user = await verifyToken(token);
+        req.user = user;
+        next();
+    } catch (error) {
+        return res.status(403).json({ error: 'Invalid or expired token' });
+    }
+};
+
