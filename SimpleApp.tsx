@@ -5,7 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import * as authService from './auth/authService';
 import { User } from './types';
-import { FullDashboard } from './components/simple/FullDashboard';
+import { Base44Clone } from './components/base44/Base44Clone';
 
 // Simple Login Component
 const SimpleLogin: React.FC<{ onLoginSuccess: (user: User) => void }> = ({ onLoginSuccess }) => {
@@ -283,8 +283,8 @@ export const SimpleApp: React.FC = () => {
 
     // Simple logic: if user exists, show dashboard, else show login
     if (currentUser) {
-        console.log('✅ Rendering full dashboard for:', currentUser.name);
-        return <FullDashboard user={currentUser} onLogout={handleLogout} />;
+        console.log('✅ Rendering Base44 clone for:', currentUser.name);
+        return <Base44Clone user={currentUser} onLogout={handleLogout} />;
     }
 
     console.log('🔐 No user, rendering login');
