@@ -71,12 +71,6 @@ export const TimeTrackingPage: React.FC = () => {
         }
     ];
 
-    const stats = {
-        totalHours: 16.0,
-        revenue: 0,
-        entries: 1
-    };
-
     return (
         <div className="p-8">
             {/* Header */}
