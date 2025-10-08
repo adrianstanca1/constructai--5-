@@ -102,6 +102,7 @@ export const EnhancedDashboard: React.FC = () => {
     onClick: () => void;
   }> = ({ title, description, icon, onClick }) => (
     <button
+      type="button"
       onClick={onClick}
       className="flex items-start p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all text-left w-full"
     >
@@ -129,9 +130,9 @@ export const EnhancedDashboard: React.FC = () => {
       <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg shadow-lg p-6 text-white">
         <h1 className="text-3xl font-bold">Welcome back, {currentUser?.name || 'User'}!</h1>
         <p className="mt-2 text-blue-100">
-          {currentUser?.role === 'super_admin' ? 'Platform Administrator' : 
-           currentUser?.role === 'company_admin' ? 'Company Administrator' : 
-           'Team Member'}
+          {currentUser?.role === 'super_admin' ? 'Platform Administrator' :
+            currentUser?.role === 'company_admin' ? 'Company Administrator' :
+              'Team Member'}
         </p>
         <div className="mt-4 flex items-center space-x-4 text-sm">
           <div className="flex items-center">
@@ -157,11 +158,10 @@ export const EnhancedDashboard: React.FC = () => {
         <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">System Health</h2>
-            <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-              healthStatus.api === 'healthy' && healthStatus.database === 'healthy'
+            <span className={`px-3 py-1 rounded-full text-sm font-medium ${healthStatus.api === 'healthy' && healthStatus.database === 'healthy'
                 ? 'bg-green-100 text-green-800'
                 : 'bg-red-100 text-red-800'
-            }`}>
+              }`}>
               {healthStatus.api === 'healthy' && healthStatus.database === 'healthy' ? 'All Systems Operational' : 'Issues Detected'}
             </span>
           </div>

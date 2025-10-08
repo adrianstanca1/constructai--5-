@@ -204,25 +204,3 @@ export const getHealthStatus = async (): Promise<any> => {
     }
 };
 
-/**
- * Logout user
- */
-export const logout = async (): Promise<void> => {
-    console.log('🚪 [AuthService] Logging out');
-
-    try {
-        await api.post('/auth/logout');
-        console.log('✅ [AuthService] Logout successful');
-    } catch (error) {
-        console.error('❌ [AuthService] Logout error:', error);
-    } finally {
-        localStorage.removeItem(TOKEN_KEY);
-    }
-};
-
-/**
- * Check if user is authenticated
- */
-export const isAuthenticated = (): boolean => {
-    return !!localStorage.getItem(TOKEN_KEY);
-};

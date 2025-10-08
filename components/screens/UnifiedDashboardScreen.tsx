@@ -32,6 +32,7 @@ const UnifiedDashboardScreen: React.FC<UnifiedDashboardScreenProps> = (props) =>
                     <div>
                         <div className="mb-4 flex justify-end">
                             <button
+                                type="button"
                                 onClick={() => setShowEnhancedDashboard(false)}
                                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                             >
@@ -46,6 +47,7 @@ const UnifiedDashboardScreen: React.FC<UnifiedDashboardScreenProps> = (props) =>
                 <div>
                     <div className="mb-4 flex justify-end">
                         <button
+                            type="button"
                             onClick={() => setShowEnhancedDashboard(true)}
                             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                         >
