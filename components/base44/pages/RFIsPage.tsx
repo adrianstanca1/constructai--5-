@@ -1,15 +1,62 @@
 /**
- * RFIs Page - Complete implementation from Base44
+ * RFIs Page - Connected to CortexBuild API
  * Request for Information management
+ * Version: 1.1.0 GOLDEN
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+interface RFI {
+    id: number;
+    rfi_number?: string;
+    title: string;
+    description?: string;
+    project_name?: string;
+    status: string;
+    priority?: string;
+    category?: string;
+    submitted_to?: string;
+    due_date?: string;
+    response?: string;
+    responded_by?: string;
+    response_date?: string;
+}
 
 export const RFIsPage: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [rfis, setRfis] = useState<RFI[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    const rfis = [
+    useEffect(() => {
+        fetchRFIs();
+    }, [searchQuery, statusFilter]);
+
+    const fetchRFIs = async () => {
+        try {
+            setLoading(true);
+            const params = new URLSearchParams({ page: '1', limit: '50' });
+            if (searchQuery) params.append('search', searchQuery);
+            if (statusFilter !== 'all') params.append('status', statusFilter);
+
+            const response = await fetch(`/api/rfis?${params}`);
+            const data = await response.json();
+
+            if (data.success) {
+                setRfis(data.data);
+            } else {
+                setError(data.error);
+            }
+        } catch (err: any) {
+            setError(err.message);
+            setRfis(mockRfis);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const mockRfis: RFI[] = [
         {
             id: 'RFI-2024-001',
             title: 'Clarification on HVAC Duct Sizing',

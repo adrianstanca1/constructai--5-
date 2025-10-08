@@ -1,15 +1,62 @@
 /**
- * Time Tracking Page - Complete implementation from Base44
+ * Time Tracking Page - Connected to CortexBuild API
+ * Version: 1.1.0 GOLDEN
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+interface TimeEntry {
+    id: number;
+    project_name?: string;
+    description?: string;
+    date?: string;
+    hours?: number;
+    rate?: number;
+    amount?: number;
+    billable?: boolean;
+    category?: string;
+    user_name?: string;
+}
 
 export const TimeTrackingPage: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [periodFilter, setPeriodFilter] = useState('this-week');
     const [projectFilter, setProjectFilter] = useState('all');
+    const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [stats, setStats] = useState({ totalHours: 0, revenue: 0, entries: 0 });
 
-    const timeEntries = [
+    useEffect(() => {
+        fetchTimeEntries();
+    }, [searchQuery, periodFilter, projectFilter]);
+
+    const fetchTimeEntries = async () => {
+        try {
+            setLoading(true);
+            const params = new URLSearchParams({ page: '1', limit: '100' });
+            if (projectFilter !== 'all') params.append('project_id', projectFilter);
+
+            const response = await fetch(`/api/time-entries?${params}`);
+            const data = await response.json();
+
+            if (data.success) {
+                setTimeEntries(data.data);
+                const total = data.data.reduce((sum: number, e: TimeEntry) => sum + (e.hours || 0), 0);
+                const rev = data.data.reduce((sum: number, e: TimeEntry) => sum + (e.amount || 0), 0);
+                setStats({ totalHours: total, revenue: rev, entries: data.data.length });
+            } else {
+                setError(data.error);
+            }
+        } catch (err: any) {
+            setError(err.message);
+            setTimeEntries(mockTimeEntries);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const mockTimeEntries: TimeEntry[] = [
         {
             id: '1',
             project: 'Manufacturing Facility Expansion',

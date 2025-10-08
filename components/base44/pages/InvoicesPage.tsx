@@ -1,14 +1,60 @@
 /**
- * Invoices Page - Complete implementation from Base44
+ * Invoices Page - Connected to CortexBuild API
+ * Version: 1.1.0 GOLDEN
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+interface Invoice {
+    id: number;
+    invoice_number?: string;
+    client_name?: string;
+    project_name?: string;
+    description?: string;
+    total?: number;
+    status: string;
+    type?: string;
+    issue_date?: string;
+    due_date?: string;
+    paid_amount?: number;
+    paid_date?: string;
+}
 
 export const InvoicesPage: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [invoices, setInvoices] = useState<Invoice[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    const invoices = [
+    useEffect(() => {
+        fetchInvoices();
+    }, [searchQuery, statusFilter]);
+
+    const fetchInvoices = async () => {
+        try {
+            setLoading(true);
+            const params = new URLSearchParams({ page: '1', limit: '50' });
+            if (searchQuery) params.append('search', searchQuery);
+            if (statusFilter !== 'all') params.append('status', statusFilter);
+
+            const response = await fetch(`/api/invoices?${params}`);
+            const data = await response.json();
+
+            if (data.success) {
+                setInvoices(data.data);
+            } else {
+                setError(data.error);
+            }
+        } catch (err: any) {
+            setError(err.message);
+            setInvoices(mockInvoices);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const mockInvoices: Invoice[] = [
         {
             id: 'INV-2024-001',
             client: 'Metro Construction Group',

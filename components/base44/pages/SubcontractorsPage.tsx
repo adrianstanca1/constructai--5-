@@ -1,15 +1,59 @@
 /**
- * Subcontractors Page - Complete implementation from Base44
+ * Subcontractors Page - Connected to CortexBuild API
+ * Version: 1.1.0 GOLDEN
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+interface Subcontractor {
+    id: number;
+    name: string;
+    trade?: string;
+    contact_name?: string;
+    email?: string;
+    phone?: string;
+    license_number?: string;
+    status: string;
+    rating?: number;
+    projects?: number;
+}
 
 export const SubcontractorsPage: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [tradeFilter, setTradeFilter] = useState('all');
     const [activeTab, setActiveTab] = useState<'directory' | 'assignments'>('directory');
+    const [subcontractors, setSubcontractors] = useState<Subcontractor[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    const subcontractors = [
+    useEffect(() => {
+        fetchSubcontractors();
+    }, [searchQuery, tradeFilter]);
+
+    const fetchSubcontractors = async () => {
+        try {
+            setLoading(true);
+            const params = new URLSearchParams({ page: '1', limit: '50' });
+            if (searchQuery) params.append('search', searchQuery);
+            if (tradeFilter !== 'all') params.append('trade', tradeFilter);
+
+            const response = await fetch(`/api/subcontractors?${params}`);
+            const data = await response.json();
+
+            if (data.success) {
+                setSubcontractors(data.data);
+            } else {
+                setError(data.error);
+            }
+        } catch (err: any) {
+            setError(err.message);
+            setSubcontractors(mockSubcontractors);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const mockSubcontractors: Subcontractor[] = [
         {
             id: '1',
             name: 'Elite Electrical Services',
@@ -120,22 +164,20 @@ export const SubcontractorsPage: React.FC = () => {
                         <button
                             type="button"
                             onClick={() => setActiveTab('directory')}
-                            className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                                activeTab === 'directory'
+                            className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'directory'
                                     ? 'border-blue-600 text-blue-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`}
+                                }`}
                         >
                             Directory
                         </button>
                         <button
                             type="button"
                             onClick={() => setActiveTab('assignments')}
-                            className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                                activeTab === 'assignments'
+                            className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'assignments'
                                     ? 'border-blue-600 text-blue-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`}
+                                }`}
                         >
                             Assignments
                         </button>
