@@ -3,11 +3,18 @@
  */
 
 import React, { useState } from 'react';
+import { ProjectDetailPage } from './ProjectDetailPage';
 
 export const ProjectsPage: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [typeFilter, setTypeFilter] = useState('all');
+    const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+
+    // If a project is selected, show the detail page
+    if (selectedProjectId) {
+        return <ProjectDetailPage projectId={selectedProjectId} onBack={() => setSelectedProjectId(null)} />;
+    }
 
     const projects = [
         {
@@ -193,7 +200,11 @@ export const ProjectsPage: React.FC = () => {
             {/* Projects Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {projects.map((project) => (
-                    <div key={project.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                    <div
+                        key={project.id}
+                        onClick={() => setSelectedProjectId(project.id)}
+                        className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all cursor-pointer hover:scale-105"
+                    >
                         {/* Header */}
                         <div className="mb-4">
                             <div className="flex items-start justify-between mb-2">
@@ -213,7 +224,7 @@ export const ProjectsPage: React.FC = () => {
                         {/* Details */}
                         <div className="space-y-2 mb-4">
                             <p className="text-sm text-gray-600">{project.location}</p>
-                            
+
                             <div className="flex items-center justify-between text-sm">
                                 <span className="text-gray-600">Budget:</span>
                                 <span className="font-semibold text-gray-900">{formatCurrency(project.budget)}</span>
