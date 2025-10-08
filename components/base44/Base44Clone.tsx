@@ -227,26 +227,6 @@ const DashboardPage: React.FC = () => {
     );
 };
 
-// Stat Card Component (UNUSED - kept for compatibility)
-const StatCard: React.FC<{
-    title: string;
-}> = () => null;
-
-// AI Insight Card Component (UNUSED - kept for compatibility)
-const AIInsightCard: React.FC<{
-    icon: string;
-}> = () => null;
-
-// Project Card Component (UNUSED - kept for compatibility)
-const ProjectCard: React.FC<{
-    name: string;
-}> = () => null;
-
-// Alert Card Component (UNUSED - kept for compatibility)
-const AlertCard: React.FC<{
-    icon: string;
-}> = () => null;
-
 // Stat Card Component
 const StatCard: React.FC<{
     title: string;
