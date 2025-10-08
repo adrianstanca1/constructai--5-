@@ -9,6 +9,13 @@ import { ProjectsPage } from './pages/ProjectsPage';
 import { ClientsPage } from './pages/ClientsPage';
 import { RFIsPage } from './pages/RFIsPage';
 import { InvoicesPage } from './pages/InvoicesPage';
+import { TimeTrackingPage } from './pages/TimeTrackingPage';
+import { SubcontractorsPage } from './pages/SubcontractorsPage';
+import { PurchaseOrdersPage } from './pages/PurchaseOrdersPage';
+import { DocumentsPage } from './pages/DocumentsPage';
+import { ReportsPage } from './pages/ReportsPage';
+import { LedgerPage } from './pages/LedgerPage';
+import { SettingsPage } from './pages/SettingsPage';
 
 interface Base44CloneProps {
     user: User;
@@ -446,12 +453,5 @@ const AlertCard: React.FC<{
     );
 };
 
-// Placeholder pages (will be implemented)
-const SubcontractorsPage: React.FC = () => <div className="p-8"><h1 className="text-2xl font-bold">Subcontractors Page - Coming Soon</h1></div>;
-const TimeTrackingPage: React.FC = () => <div className="p-8"><h1 className="text-2xl font-bold">Time Tracking Page - Coming Soon</h1></div>;
-const PurchaseOrdersPage: React.FC = () => <div className="p-8"><h1 className="text-2xl font-bold">Purchase Orders Page - Coming Soon</h1></div>;
-const DocumentsPage: React.FC = () => <div className="p-8"><h1 className="text-2xl font-bold">Documents Page - Coming Soon</h1></div>;
-const ReportsPage: React.FC = () => <div className="p-8"><h1 className="text-2xl font-bold">Reports Page - Coming Soon</h1></div>;
-const LedgerPage: React.FC = () => <div className="p-8"><h1 className="text-2xl font-bold">Ledger Page - Coming Soon</h1></div>;
-const SettingsPage: React.FC<{ user: User }> = ({ user }) => <div className="p-8"><h1 className="text-2xl font-bold">Settings Page - Coming Soon</h1></div>;
+// All pages are now imported from separate files
 
