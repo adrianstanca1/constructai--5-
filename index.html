@@ -418,6 +418,31 @@
                     Explore our core features below, each enhanced with intelligent automation to streamline your
                     operations. Click on any card to see details.</p>
             </div>
+
+            <!-- Platform Statistics -->
+            <div id="platform-stats" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 max-w-4xl mx-auto">
+                <div
+                    class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg text-center border border-blue-200">
+                    <div class="text-3xl font-bold text-blue-600" id="total-features">0</div>
+                    <div class="text-sm text-blue-700 mt-1">Total Features</div>
+                </div>
+                <div
+                    class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-lg text-center border border-green-200">
+                    <div class="text-3xl font-bold text-green-600" id="active-features">0</div>
+                    <div class="text-sm text-green-700 mt-1">Active</div>
+                </div>
+                <div
+                    class="bg-gradient-to-br from-yellow-50 to-yellow-100 p-6 rounded-lg text-center border border-yellow-200">
+                    <div class="text-3xl font-bold text-yellow-600" id="inprogress-features">0</div>
+                    <div class="text-sm text-yellow-700 mt-1">In Progress</div>
+                </div>
+                <div
+                    class="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-lg text-center border border-gray-200">
+                    <div class="text-3xl font-bold text-gray-600" id="planned-features">0</div>
+                    <div class="text-sm text-gray-700 mt-1">Planned</div>
+                </div>
+            </div>
+
             <div class="flex justify-center space-x-1 sm:space-x-2 mb-8 bg-gray-100 p-2 rounded-lg max-w-md mx-auto">
                 <button class="filter-btn active flex-1 px-3 py-2 text-xs sm:text-sm font-medium rounded-md"
                     data-filter="all">All</button>
@@ -726,7 +751,67 @@
             // AI Agents Marketplace
             { name: 'Agent Library', category: 'business', icon: '🛒', status: 'planned', description: 'Browse and install custom AI agents.', improvement: 'Marketplace for specialized construction AI tools.' },
             { name: 'Custom Workflows', category: 'business', icon: '⚙️', status: 'planned', description: 'Build custom automation workflows.', improvement: 'No-code workflow builder with AI suggestions.' },
-            { name: 'API Marketplace', category: 'business', icon: '🔌', status: 'planned', description: 'Third-party integrations and APIs.', improvement: 'AI recommends relevant integrations.' }
+            { name: 'API Marketplace', category: 'business', icon: '🔌', status: 'planned', description: 'Third-party integrations and APIs.', improvement: 'AI recommends relevant integrations.' },
+
+            // Advanced AI & Automation
+            { name: 'Voice Commands', category: 'business', icon: '🎤', status: 'planned', description: 'Control platform with voice commands in the field.', improvement: 'Hands-free operation for field workers with safety gear.' },
+            { name: 'AR/VR Integration', category: 'project', icon: '🥽', status: 'planned', description: 'Augmented reality for on-site plan visualization.', improvement: 'Overlay digital plans on physical construction sites.' },
+            { name: 'Drone Integration', category: 'project', icon: '🚁', status: 'planned', description: 'Automated drone surveys and progress tracking.', improvement: 'AI analyzes drone footage for progress and safety issues.' },
+            { name: 'IoT Sensors', category: 'project', icon: '📡', status: 'planned', description: 'Real-time monitoring from construction site sensors.', improvement: 'Predictive maintenance and safety alerts from sensor data.' },
+            { name: 'BIM Integration', category: 'project', icon: '🏢', status: 'planned', description: 'Building Information Modeling integration.', improvement: 'AI detects clashes and suggests optimizations in 3D models.' },
+            { name: 'Digital Twin', category: 'project', icon: '👯', status: 'planned', description: 'Create digital replicas of construction projects.', improvement: 'Real-time simulation and what-if scenario analysis.' },
+
+            // Smart Safety & Compliance
+            { name: 'Safety AI Monitor', category: 'project', icon: '🦺', status: 'planned', description: 'Computer vision for real-time safety monitoring.', improvement: 'Detect PPE violations and unsafe conditions automatically.' },
+            { name: 'Compliance Automation', category: 'project', icon: '📜', status: 'planned', description: 'Automated regulatory compliance tracking.', improvement: 'AI keeps up with changing regulations and ensures compliance.' },
+            { name: 'Environmental Monitoring', category: 'project', icon: '🌍', status: 'planned', description: 'Track environmental impact and sustainability.', improvement: 'Carbon footprint tracking and green building recommendations.' },
+            { name: 'Incident Prediction', category: 'project', icon: '⚡', status: 'planned', description: 'Predict and prevent safety incidents.', improvement: 'ML models identify high-risk situations before they occur.' },
+
+            // Advanced Financial Tools
+            { name: 'Dynamic Pricing', category: 'financial', icon: '💎', status: 'planned', description: 'AI-optimized pricing for bids and quotes.', improvement: 'Real-time market analysis for competitive pricing.' },
+            { name: 'Cash Flow Forecasting', category: 'financial', icon: '💸', status: 'planned', description: 'Predictive cash flow modeling.', improvement: 'AI predicts cash flow 6-12 months ahead with high accuracy.' },
+            { name: 'Fraud Detection', category: 'financial', icon: '🔍', status: 'planned', description: 'Automated fraud and anomaly detection.', improvement: 'ML identifies suspicious transactions and billing patterns.' },
+            { name: 'Tax Optimization', category: 'financial', icon: '🧾', status: 'planned', description: 'AI-powered tax planning and optimization.', improvement: 'Maximize deductions and minimize tax liability legally.' },
+            { name: 'Investment Analysis', category: 'financial', icon: '📊', status: 'planned', description: 'ROI analysis for equipment and projects.', improvement: 'AI recommends best investment opportunities.' },
+
+            // Supply Chain & Logistics
+            { name: 'Smart Procurement', category: 'project', icon: '🛍️', status: 'planned', description: 'AI-optimized material procurement.', improvement: 'Predict material needs and optimize ordering timing.' },
+            { name: 'Supplier Network', category: 'project', icon: '🌐', status: 'planned', description: 'Intelligent supplier matching and management.', improvement: 'AI rates suppliers and suggests best matches for each job.' },
+            { name: 'Logistics Optimization', category: 'project', icon: '🚚', status: 'planned', description: 'Optimize delivery routes and schedules.', improvement: 'Reduce transportation costs and delivery delays.' },
+            { name: 'Inventory Prediction', category: 'project', icon: '📦', status: 'planned', description: 'Predictive inventory management.', improvement: 'AI forecasts material usage and prevents shortages.' },
+            { name: 'Waste Reduction', category: 'project', icon: '♻️', status: 'planned', description: 'Minimize material waste through optimization.', improvement: 'AI suggests material reuse and waste reduction strategies.' },
+
+            // Workforce Management
+            { name: 'Skills Matching', category: 'project', icon: '🎯', status: 'planned', description: 'Match workers to tasks based on skills.', improvement: 'AI optimizes team composition for each project phase.' },
+            { name: 'Training Recommendations', category: 'business', icon: '📚', status: 'planned', description: 'Personalized training and upskilling paths.', improvement: 'AI identifies skill gaps and suggests training programs.' },
+            { name: 'Performance Analytics', category: 'business', icon: '📈', status: 'planned', description: 'Detailed workforce performance metrics.', improvement: 'Identify top performers and areas for improvement.' },
+            { name: 'Shift Optimization', category: 'project', icon: '🕐', status: 'planned', description: 'AI-optimized shift scheduling.', improvement: 'Balance workload, skills, and labor costs automatically.' },
+            { name: 'Wellness Monitoring', category: 'project', icon: '💪', status: 'planned', description: 'Worker health and wellness tracking.', improvement: 'Prevent burnout and optimize work-life balance.' },
+
+            // Client Experience
+            { name: 'Client Mobile App', category: 'business', icon: '📱', status: 'planned', description: 'Dedicated mobile app for clients.', improvement: 'Real-time project updates and communication.' },
+            { name: 'Virtual Tours', category: 'business', icon: '🎥', status: 'planned', description: '360° virtual tours of project progress.', improvement: 'AI-generated progress videos and walkthroughs.' },
+            { name: 'Client Sentiment Analysis', category: 'business', icon: '😊', status: 'planned', description: 'Monitor client satisfaction in real-time.', improvement: 'AI detects dissatisfaction early and suggests interventions.' },
+            { name: 'Automated Reporting', category: 'business', icon: '📄', status: 'planned', description: 'Auto-generated client progress reports.', improvement: 'AI creates beautiful, personalized reports automatically.' },
+
+            // Innovation & Future Tech
+            { name: '3D Printing Integration', category: 'project', icon: '🖨️', status: 'planned', description: 'Manage 3D printing for construction components.', improvement: 'AI optimizes print parameters and material usage.' },
+            { name: 'Robotics Coordination', category: 'project', icon: '🤖', status: 'planned', description: 'Coordinate construction robots and automation.', improvement: 'AI schedules and optimizes robotic tasks.' },
+            { name: 'Blockchain Contracts', category: 'business', icon: '⛓️', status: 'planned', description: 'Smart contracts on blockchain for transparency.', improvement: 'Automated, tamper-proof contract execution.' },
+            { name: 'Quantum Computing', category: 'business', icon: '⚛️', status: 'planned', description: 'Quantum algorithms for complex optimization.', improvement: 'Solve previously impossible scheduling and routing problems.' },
+            { name: 'Neural Architecture Search', category: 'business', icon: '🧠', status: 'planned', description: 'Self-improving AI models.', improvement: 'AI that automatically improves its own algorithms.' },
+
+            // Collaboration & Communication
+            { name: 'Real-time Translation', category: 'business', icon: '🌍', status: 'planned', description: 'Instant translation for international teams.', improvement: 'AI translates conversations and documents in real-time.' },
+            { name: 'Meeting Intelligence', category: 'business', icon: '🎙️', status: 'planned', description: 'AI meeting assistant and note-taker.', improvement: 'Automatic transcription, summaries, and action items.' },
+            { name: 'Knowledge Base', category: 'business', icon: '📚', status: 'planned', description: 'Searchable company knowledge repository.', improvement: 'AI suggests relevant past solutions and best practices.' },
+            { name: 'Expert Network', category: 'business', icon: '👨‍🏫', status: 'planned', description: 'Connect with industry experts on-demand.', improvement: 'AI matches problems with the right experts instantly.' },
+
+            // Analytics & Insights
+            { name: 'Predictive Maintenance', category: 'project', icon: '🔧', status: 'planned', description: 'Predict equipment failures before they happen.', improvement: 'Reduce downtime and maintenance costs.' },
+            { name: 'Market Intelligence', category: 'business', icon: '📊', status: 'planned', description: 'Real-time construction market analysis.', improvement: 'AI tracks market trends and competitor activity.' },
+            { name: 'Benchmarking', category: 'business', icon: '📏', status: 'planned', description: 'Compare performance against industry standards.', improvement: 'AI identifies areas where you outperform or lag behind.' },
+            { name: 'Scenario Planning', category: 'business', icon: '🎲', status: 'planned', description: 'What-if analysis for strategic decisions.', improvement: 'AI simulates outcomes of different business strategies.' }
         ];
 
         const aiAgentsData = [
@@ -823,6 +908,23 @@
             mobileMenu.classList.toggle('hidden');
         });
 
+        function updatePlatformStats() {
+            const totalFeatures = featuresData.length;
+            const activeFeatures = featuresData.filter(f => f.status === 'active').length;
+            const inProgressFeatures = featuresData.filter(f => f.status === 'in-progress').length;
+            const plannedFeatures = featuresData.filter(f => f.status === 'planned').length;
+
+            const totalEl = document.getElementById('total-features');
+            const activeEl = document.getElementById('active-features');
+            const inProgressEl = document.getElementById('inprogress-features');
+            const plannedEl = document.getElementById('planned-features');
+
+            if (totalEl) totalEl.textContent = totalFeatures;
+            if (activeEl) activeEl.textContent = activeFeatures;
+            if (inProgressEl) inProgressEl.textContent = inProgressFeatures;
+            if (plannedEl) plannedEl.textContent = plannedFeatures;
+        }
+
         function renderFeatures(filter = 'all') {
             if (!featuresGrid) return;
             featuresGrid.innerHTML = '';
@@ -857,6 +959,9 @@
                 });
                 featuresGrid.appendChild(card);
             });
+
+            // Update stats after rendering
+            updatePlatformStats();
         }
 
         filterButtons.forEach(button => {
