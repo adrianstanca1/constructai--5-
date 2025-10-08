@@ -164,3 +164,65 @@ export const loginWithOAuth = async (provider: 'google' | 'github'): Promise<Use
     throw new Error('OAuth not implemented yet. Please use email/password login.');
 };
 
+/**
+ * Refresh authentication token
+ */
+export const refreshToken = async (): Promise<string> => {
+    console.log('🔄 [AuthService] Refreshing token');
+
+    try {
+        const response = await api.post('/auth/refresh');
+
+        if (response.data.success) {
+            const newToken = response.data.token;
+            localStorage.setItem(TOKEN_KEY, newToken);
+            console.log('✅ [AuthService] Token refreshed successfully');
+            return newToken;
+        } else {
+            throw new Error(response.data.error || 'Token refresh failed');
+        }
+    } catch (error: any) {
+        console.error('❌ [AuthService] Token refresh failed:', error.message);
+        localStorage.removeItem(TOKEN_KEY);
+        throw error;
+    }
+};
+
+/**
+ * Get system health status
+ */
+export const getHealthStatus = async (): Promise<any> => {
+    console.log('🏥 [AuthService] Checking system health');
+
+    try {
+        const response = await api.get('/health');
+        console.log('✅ [AuthService] Health check successful');
+        return response.data;
+    } catch (error: any) {
+        console.error('❌ [AuthService] Health check failed:', error.message);
+        throw error;
+    }
+};
+
+/**
+ * Logout user
+ */
+export const logout = async (): Promise<void> => {
+    console.log('🚪 [AuthService] Logging out');
+
+    try {
+        await api.post('/auth/logout');
+        console.log('✅ [AuthService] Logout successful');
+    } catch (error) {
+        console.error('❌ [AuthService] Logout error:', error);
+    } finally {
+        localStorage.removeItem(TOKEN_KEY);
+    }
+};
+
+/**
+ * Check if user is authenticated
+ */
+export const isAuthenticated = (): boolean => {
+    return !!localStorage.getItem(TOKEN_KEY);
+};

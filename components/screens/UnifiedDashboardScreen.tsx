@@ -5,6 +5,7 @@ import CompanyAdminDashboard from './dashboards/CompanyAdminDashboard.tsx';
 import CompanyAdminDashboardNew from './dashboards/CompanyAdminDashboardNew.tsx';
 import SupervisorDashboard from './dashboards/SupervisorDashboard.tsx';
 import OperativeDashboard from './dashboards/OperativeDashboard.tsx';
+import { EnhancedDashboard } from '../../components/dashboard/EnhancedDashboard.tsx';
 
 
 interface UnifiedDashboardScreenProps {
@@ -20,18 +21,46 @@ interface UnifiedDashboardScreenProps {
 
 const UnifiedDashboardScreen: React.FC<UnifiedDashboardScreenProps> = (props) => {
     const { currentUser } = props;
+    const [showEnhancedDashboard, setShowEnhancedDashboard] = React.useState(true);
 
     // Route to the correct dashboard based on the user's role
     switch (currentUser.role) {
         case 'super_admin':
-            // Super admins get the full platform administration dashboard
-            return <PlatformAdminScreen {...props} />;
+            // Super admins can toggle between enhanced dashboard and platform admin
+            if (showEnhancedDashboard) {
+                return (
+                    <div>
+                        <div className="mb-4 flex justify-end">
+                            <button
+                                onClick={() => setShowEnhancedDashboard(false)}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                            >
+                                Switch to Platform Admin
+                            </button>
+                        </div>
+                        <EnhancedDashboard />
+                    </div>
+                );
+            }
+            return (
+                <div>
+                    <div className="mb-4 flex justify-end">
+                        <button
+                            onClick={() => setShowEnhancedDashboard(true)}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                            Switch to Enhanced Dashboard
+                        </button>
+                    </div>
+                    <PlatformAdminScreen {...props} />
+                </div>
+            );
 
         case 'company_admin':
         case 'Project Manager':
         case 'Accounting Clerk':
-            // These roles get a more comprehensive, company-wide view with new Base44 design
-            return <CompanyAdminDashboardNew {...props} />;
+            // These roles get the enhanced dashboard with company-wide view
+            return <EnhancedDashboard />;
 
         case 'Foreman':
         case 'Safety Officer':
@@ -43,8 +72,8 @@ const UnifiedDashboardScreen: React.FC<UnifiedDashboardScreenProps> = (props) =>
             return <OperativeDashboard {...props} />;
 
         default:
-            // Fallback for any other roles, providing a safe default with new design
-            return <CompanyAdminDashboardNew {...props} />;
+            // Fallback for any other roles, providing enhanced dashboard
+            return <EnhancedDashboard />;
     }
 };
 
