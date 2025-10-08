@@ -10,6 +10,9 @@
 
 import React, { useState, useEffect } from 'react';
 import * as authService from '../../auth/authService';
+import { RealtimeStats } from './RealtimeStats';
+import { RecentActivity } from './RecentActivity';
+import { NotificationCenter } from './NotificationCenter';
 
 interface DashboardStats {
   totalProjects: number;
@@ -159,8 +162,8 @@ export const EnhancedDashboard: React.FC = () => {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">System Health</h2>
             <span className={`px-3 py-1 rounded-full text-sm font-medium ${healthStatus.api === 'healthy' && healthStatus.database === 'healthy'
-                ? 'bg-green-100 text-green-800'
-                : 'bg-red-100 text-red-800'
+              ? 'bg-green-100 text-green-800'
+              : 'bg-red-100 text-red-800'
               }`}>
               {healthStatus.api === 'healthy' && healthStatus.database === 'healthy' ? 'All Systems Operational' : 'Issues Detected'}
             </span>
@@ -313,6 +316,18 @@ export const EnhancedDashboard: React.FC = () => {
             onClick={() => console.log('View Reports')}
           />
         </div>
+      </div>
+
+      {/* Real-time Statistics */}
+      <RealtimeStats />
+
+      {/* Two Column Layout for Activity and Notifications */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Activity */}
+        <RecentActivity />
+
+        {/* Notification Center */}
+        <NotificationCenter />
       </div>
     </div>
   );
