@@ -396,7 +396,7 @@
 </head>
 
 <body class="antialiased">
-    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 border-b border-gray-200">
+    <header id="marketing-header" class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 border-b border-gray-200">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center gap-3">
@@ -1822,7 +1822,7 @@
             state.loggedIn = false;
             authButton.textContent = 'Login';
             // Show marketing header again
-            const marketingHeader = document.querySelector('header');
+            const marketingHeader = document.getElementById('marketing-header');
             if (marketingHeader) {
                 marketingHeader.classList.remove('hidden');
             }
@@ -1844,7 +1844,7 @@
         function handleLoginUI() {
             state.loggedIn = true;
             // Hide entire marketing header after login
-            const marketingHeader = document.querySelector('header');
+            const marketingHeader = document.getElementById('marketing-header');
             if (marketingHeader) {
                 marketingHeader.classList.add('hidden');
             }
