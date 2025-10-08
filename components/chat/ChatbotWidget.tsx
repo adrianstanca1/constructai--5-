@@ -24,6 +24,12 @@ export const ChatbotWidget: React.FC = () => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
+    // Debug: Log when component mounts
+    useEffect(() => {
+        console.log('🤖 ChatbotWidget mounted!');
+        return () => console.log('🤖 ChatbotWidget unmounted!');
+    }, []);
+
     // Auto-scroll to bottom when new messages arrive
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
