@@ -13,6 +13,7 @@ import * as authService from '../../auth/authService';
 import { RealtimeStats } from './RealtimeStats';
 import { RecentActivity } from './RecentActivity';
 import { NotificationCenter } from './NotificationCenter';
+import { PerformanceCharts } from './PerformanceCharts';
 
 interface DashboardStats {
   totalProjects: number;
@@ -320,6 +321,9 @@ export const EnhancedDashboard: React.FC = () => {
 
       {/* Real-time Statistics */}
       <RealtimeStats />
+
+      {/* Performance Charts */}
+      <PerformanceCharts />
 
       {/* Two Column Layout for Activity and Notifications */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
