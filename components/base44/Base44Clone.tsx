@@ -5,14 +5,16 @@
 
 import React, { useState } from 'react';
 import { User } from '../../types';
+import { ProjectsPage } from './pages/ProjectsPage';
+import { ClientsPage } from './pages/ClientsPage';
 
 interface Base44CloneProps {
     user: User;
     onLogout: () => void;
 }
 
-type PageType = 'dashboard' | 'projects' | 'clients' | 'rfis' | 'subcontractors' | 
-                'invoices' | 'timetracking' | 'purchaseorders' | 'documents' | 'reports' | 'ledger' | 'settings';
+type PageType = 'dashboard' | 'projects' | 'clients' | 'rfis' | 'subcontractors' |
+    'invoices' | 'timetracking' | 'purchaseorders' | 'documents' | 'reports' | 'ledger' | 'settings';
 
 export const Base44Clone: React.FC<Base44CloneProps> = ({ user, onLogout }) => {
     const [currentPage, setCurrentPage] = useState<PageType>('dashboard');
@@ -21,7 +23,7 @@ export const Base44Clone: React.FC<Base44CloneProps> = ({ user, onLogout }) => {
         <div className="flex h-screen bg-gray-50">
             {/* Sidebar */}
             <Sidebar currentPage={currentPage} onNavigate={setCurrentPage} user={user} onLogout={onLogout} />
-            
+
             {/* Main Content */}
             <main className="flex-1 overflow-y-auto">
                 {currentPage === 'dashboard' && <DashboardPage />}
@@ -86,11 +88,10 @@ const Sidebar: React.FC<{
                             <button
                                 type="button"
                                 onClick={() => onNavigate(item.id)}
-                                className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
-                                    currentPage === item.id
-                                        ? 'bg-blue-50 text-blue-600'
-                                        : 'text-gray-700 hover:bg-gray-50'
-                                }`}
+                                className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${currentPage === item.id
+                                    ? 'bg-blue-50 text-blue-600'
+                                    : 'text-gray-700 hover:bg-gray-50'
+                                    }`}
                             >
                                 <span className="text-xl">{item.icon}</span>
                                 <span className="font-medium">{item.label}</span>
@@ -105,11 +106,10 @@ const Sidebar: React.FC<{
                         <button
                             type="button"
                             onClick={() => onNavigate('settings')}
-                            className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
-                                currentPage === 'settings'
-                                    ? 'bg-blue-50 text-blue-600'
-                                    : 'text-gray-700 hover:bg-gray-50'
-                            }`}
+                            className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${currentPage === 'settings'
+                                ? 'bg-blue-50 text-blue-600'
+                                : 'text-gray-700 hover:bg-gray-50'
+                                }`}
                         >
                             <span className="text-xl">⚙️</span>
                             <span className="font-medium">Settings</span>
@@ -445,8 +445,6 @@ const AlertCard: React.FC<{
 };
 
 // Placeholder pages (will be implemented)
-const ProjectsPage: React.FC = () => <div className="p-8"><h1 className="text-2xl font-bold">Projects Page - Coming Soon</h1></div>;
-const ClientsPage: React.FC = () => <div className="p-8"><h1 className="text-2xl font-bold">Clients Page - Coming Soon</h1></div>;
 const RFIsPage: React.FC = () => <div className="p-8"><h1 className="text-2xl font-bold">RFIs Page - Coming Soon</h1></div>;
 const SubcontractorsPage: React.FC = () => <div className="p-8"><h1 className="text-2xl font-bold">Subcontractors Page - Coming Soon</h1></div>;
 const InvoicesPage: React.FC = () => <div className="p-8"><h1 className="text-2xl font-bold">Invoices Page - Coming Soon</h1></div>;
