@@ -7,6 +7,8 @@ import React, { useState } from 'react';
 import { User } from '../../types';
 import { ProjectsPage } from './pages/ProjectsPage';
 import { ClientsPage } from './pages/ClientsPage';
+import { RFIsPage } from './pages/RFIsPage';
+import { InvoicesPage } from './pages/InvoicesPage';
 
 interface Base44CloneProps {
     user: User;
@@ -445,9 +447,7 @@ const AlertCard: React.FC<{
 };
 
 // Placeholder pages (will be implemented)
-const RFIsPage: React.FC = () => <div className="p-8"><h1 className="text-2xl font-bold">RFIs Page - Coming Soon</h1></div>;
 const SubcontractorsPage: React.FC = () => <div className="p-8"><h1 className="text-2xl font-bold">Subcontractors Page - Coming Soon</h1></div>;
-const InvoicesPage: React.FC = () => <div className="p-8"><h1 className="text-2xl font-bold">Invoices Page - Coming Soon</h1></div>;
 const TimeTrackingPage: React.FC = () => <div className="p-8"><h1 className="text-2xl font-bold">Time Tracking Page - Coming Soon</h1></div>;
 const PurchaseOrdersPage: React.FC = () => <div className="p-8"><h1 className="text-2xl font-bold">Purchase Orders Page - Coming Soon</h1></div>;
 const DocumentsPage: React.FC = () => <div className="p-8"><h1 className="text-2xl font-bold">Documents Page - Coming Soon</h1></div>;
