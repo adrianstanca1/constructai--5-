@@ -12,6 +12,29 @@ interface DashboardAnalyticsProps {
     timeTrackingData: { week: string; hours: number }[];
 }
 
+interface AIInsight {
+    icon: string;
+    title: string;
+    description: string;
+    action: string;
+    color: 'red' | 'green' | 'blue' | 'yellow';
+}
+
+interface RecentProject {
+    name: string;
+    client: string;
+    budget: string;
+    status: 'planning' | 'in progress' | 'on hold' | 'completed';
+    progress?: number;
+}
+
+interface Alert {
+    icon: string;
+    title: string;
+    description: string;
+    color: 'yellow' | 'blue' | 'red' | 'green';
+}
+
 export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
     stats,
     revenueData,
@@ -125,12 +148,12 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
                                 style={{
                                     background: `conic-gradient(
                                         ${projectStatusData.map((item, index) => {
-                                            const prevPercentage = projectStatusData
-                                                .slice(0, index)
-                                                .reduce((sum, d) => sum + (d.count / totalProjects) * 100, 0);
-                                            const currentPercentage = (item.count / totalProjects) * 100;
-                                            return `${item.color} ${prevPercentage}% ${prevPercentage + currentPercentage}%`;
-                                        }).join(', ')}
+                                        const prevPercentage = projectStatusData
+                                            .slice(0, index)
+                                            .reduce((sum, d) => sum + (d.count / totalProjects) * 100, 0);
+                                        const currentPercentage = (item.count / totalProjects) * 100;
+                                        return `${item.color} ${prevPercentage}% ${prevPercentage + currentPercentage}%`;
+                                    }).join(', ')}
                                     )`
                                 }}
                             />
@@ -172,6 +195,199 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
                             <span className="text-xs font-medium text-gray-600">{item.week}</span>
                         </div>
                     ))}
+                </div>
+            </div>
+
+            {/* AI Business Insights */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <span className="mr-2">🤖</span>
+                    AI Business Insights
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <AIInsightCard
+                        icon="⚠️"
+                        title="Budget Alert"
+                        description="3 projects are trending over budget. Review cost controls."
+                        action="View Projects"
+                        color="red"
+                    />
+                    <AIInsightCard
+                        icon="💵"
+                        title="Cash Flow Optimization"
+                        description="Send invoice reminders to improve cash flow by 15%."
+                        action="Send Reminders"
+                        color="green"
+                    />
+                    <AIInsightCard
+                        icon="🌤️"
+                        title="Scheduling Insight"
+                        description="Weather forecast shows optimal conditions for outdoor work next week."
+                        action="View Schedule"
+                        color="blue"
+                    />
+                </div>
+            </div>
+
+            {/* Recent Projects and Alerts */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Recent Projects */}
+                <div className="lg:col-span-2">
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                                <span className="mr-2">📋</span>
+                                Recent Projects
+                            </h3>
+                            <button type="button" className="text-blue-600 hover:text-blue-700 font-medium text-sm">
+                                View All →
+                            </button>
+                        </div>
+                        <div className="space-y-3">
+                            <ProjectCard
+                                name="Downtown Office Complex"
+                                client="Metro Construction Group"
+                                budget="$12,500,000"
+                                status="in progress"
+                                progress={45}
+                            />
+                            <ProjectCard
+                                name="Riverside Luxury Apartments"
+                                client="Green Valley Homes"
+                                budget="$8,900,000"
+                                status="in progress"
+                                progress={28}
+                            />
+                            <ProjectCard
+                                name="Manufacturing Facility Expansion"
+                                client="Industrial Partners LLC"
+                                budget="$15,000,000"
+                                status="planning"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Alerts & Actions */}
+                <div>
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                            <span className="mr-2">🔔</span>
+                            Alerts & Actions
+                        </h3>
+                        <div className="space-y-3">
+                            <AlertCard
+                                icon="💰"
+                                title="Outstanding Invoices"
+                                description="$1,036,800 awaiting payment"
+                                color="yellow"
+                            />
+                            <AlertCard
+                                icon="🤖"
+                                title="AI Recommendation"
+                                description="Schedule weekly project reviews to stay on track"
+                                color="blue"
+                            />
+                            <button
+                                type="button"
+                                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all flex items-center justify-center space-x-2 shadow-lg"
+                            >
+                                <span>➕</span>
+                                <span>New Project</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// AI Insight Card Component
+const AIInsightCard: React.FC<AIInsight> = ({ icon, title, description, action, color }) => {
+    const colorClasses = {
+        red: 'bg-red-50 border-red-200 text-red-800',
+        green: 'bg-green-50 border-green-200 text-green-800',
+        blue: 'bg-blue-50 border-blue-200 text-blue-800',
+        yellow: 'bg-yellow-50 border-yellow-200 text-yellow-800'
+    };
+
+    const buttonColors = {
+        red: 'bg-red-600 hover:bg-red-700',
+        green: 'bg-green-600 hover:bg-green-700',
+        blue: 'bg-blue-600 hover:bg-blue-700',
+        yellow: 'bg-yellow-600 hover:bg-yellow-700'
+    };
+
+    return (
+        <div className={`${colorClasses[color]} border rounded-lg p-4`}>
+            <div className="text-3xl mb-2">{icon}</div>
+            <h4 className="font-semibold mb-1">{title}</h4>
+            <p className="text-sm mb-3 opacity-90">{description}</p>
+            <button
+                type="button"
+                className={`${buttonColors[color]} text-white px-3 py-1.5 rounded text-sm font-medium transition-colors`}
+            >
+                {action}
+            </button>
+        </div>
+    );
+};
+
+// Project Card Component
+const ProjectCard: React.FC<RecentProject> = ({ name, client, budget, status, progress }) => {
+    const statusColors = {
+        'planning': 'bg-yellow-100 text-yellow-800',
+        'in progress': 'bg-blue-100 text-blue-800',
+        'on hold': 'bg-gray-100 text-gray-800',
+        'completed': 'bg-green-100 text-green-800'
+    };
+
+    return (
+        <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            <div className="flex items-start justify-between mb-2">
+                <div className="flex-1">
+                    <h4 className="font-semibold text-gray-900">{name}</h4>
+                    <p className="text-sm text-gray-600">{client}</p>
+                </div>
+                <span className={`px-2 py-1 rounded text-xs font-medium ${statusColors[status]}`}>
+                    {status}
+                </span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">{budget}</span>
+                {progress !== undefined && (
+                    <span className="text-blue-600 font-medium">{progress}% complete</span>
+                )}
+            </div>
+            {progress !== undefined && (
+                <div className="mt-2 bg-gray-200 rounded-full h-2">
+                    <div
+                        className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all"
+                        style={{ width: `${progress}%` }}
+                    />
+                </div>
+            )}
+        </div>
+    );
+};
+
+// Alert Card Component
+const AlertCard: React.FC<Alert> = ({ icon, title, description, color }) => {
+    const colorClasses = {
+        yellow: 'bg-yellow-50 border-yellow-200',
+        blue: 'bg-blue-50 border-blue-200',
+        red: 'bg-red-50 border-red-200',
+        green: 'bg-green-50 border-green-200'
+    };
+
+    return (
+        <div className={`${colorClasses[color]} border rounded-lg p-4`}>
+            <div className="flex items-start space-x-3">
+                <span className="text-2xl">{icon}</span>
+                <div className="flex-1">
+                    <h4 className="font-semibold text-gray-900 mb-1">{title}</h4>
+                    <p className="text-sm text-gray-700">{description}</p>
                 </div>
             </div>
         </div>

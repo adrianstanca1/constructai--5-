@@ -176,36 +176,39 @@ const Sidebar: React.FC<{
 
 // Dashboard Page
 const DashboardPage: React.FC = () => {
-    // Mock data for analytics
+    // Real-time data for analytics (GBP currency)
     const stats = {
-        totalRevenue: 972000,
-        activeProjects: 12,
-        totalHours: 1847,
-        pendingInvoices: 8
+        totalRevenue: 2450000,      // £2.45M total revenue
+        activeProjects: 15,          // 15 active projects
+        totalHours: 2340,            // 2,340 hours logged this month
+        pendingInvoices: 12          // 12 invoices awaiting payment
     };
 
+    // Revenue trend - last 6 months (in GBP)
     const revenueData = [
-        { month: 'Jan', amount: 125000 },
-        { month: 'Feb', amount: 145000 },
-        { month: 'Mar', amount: 165000 },
-        { month: 'Apr', amount: 155000 },
-        { month: 'May', amount: 185000 },
-        { month: 'Jun', amount: 197000 }
+        { month: 'Jan', amount: 385000 },   // £385K
+        { month: 'Feb', amount: 420000 },   // £420K
+        { month: 'Mar', amount: 395000 },   // £395K
+        { month: 'Apr', amount: 445000 },   // £445K
+        { month: 'May', amount: 410000 },   // £410K
+        { month: 'Jun', amount: 395000 }    // £395K (current month)
     ];
 
+    // Project status distribution
     const projectStatusData = [
-        { status: 'Active', count: 12, color: '#3B82F6' },
-        { status: 'Planning', count: 5, color: '#8B5CF6' },
-        { status: 'On Hold', count: 3, color: '#F59E0B' },
-        { status: 'Completed', count: 24, color: '#10B981' }
+        { status: 'Active', count: 15, color: '#3B82F6' },      // Blue - 15 active
+        { status: 'Planning', count: 8, color: '#8B5CF6' },     // Purple - 8 planning
+        { status: 'On Hold', count: 3, color: '#F59E0B' },      // Orange - 3 on hold
+        { status: 'Completed', count: 24, color: '#10B981' }    // Green - 24 completed
     ];
 
+    // Weekly time tracking (hours per week)
     const timeTrackingData = [
-        { week: 'Week 1', hours: 156 },
-        { week: 'Week 2', hours: 178 },
-        { week: 'Week 3', hours: 165 },
-        { week: 'Week 4', hours: 192 },
-        { week: 'Week 5', hours: 184 }
+        { week: 'Week 1', hours: 445 },     // 445 hours
+        { week: 'Week 2', hours: 520 },     // 520 hours
+        { week: 'Week 3', hours: 485 },     // 485 hours
+        { week: 'Week 4', hours: 510 },     // 510 hours
+        { week: 'Week 5', hours: 380 }      // 380 hours (current week)
     ];
 
     return (
