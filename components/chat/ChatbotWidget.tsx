@@ -24,12 +24,6 @@ export const ChatbotWidget: React.FC = () => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    // Debug: Log when component mounts
-    useEffect(() => {
-        console.log('🤖 ChatbotWidget mounted!');
-        return () => console.log('🤖 ChatbotWidget unmounted!');
-    }, []);
-
     // Auto-scroll to bottom when new messages arrive
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -162,6 +156,7 @@ export const ChatbotWidget: React.FC = () => {
             {/* Floating Button */}
             {!isOpen && (
                 <button
+                    type="button"
                     onClick={() => setIsOpen(true)}
                     className="fixed bottom-6 right-6 w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center z-50 group"
                     aria-label="Open AI Assistant"
@@ -189,6 +184,7 @@ export const ChatbotWidget: React.FC = () => {
                         </div>
                         <div className="flex items-center gap-2">
                             <button
+                                type="button"
                                 onClick={clearChat}
                                 className="p-2 hover:bg-white/20 rounded-lg transition-colors"
                                 title="Șterge conversația"
@@ -196,6 +192,7 @@ export const ChatbotWidget: React.FC = () => {
                                 🗑️
                             </button>
                             <button
+                                type="button"
                                 onClick={() => setIsOpen(false)}
                                 className="p-2 hover:bg-white/20 rounded-lg transition-colors"
                                 title="Închide"
@@ -270,6 +267,7 @@ export const ChatbotWidget: React.FC = () => {
                                 disabled={isLoading}
                             />
                             <button
+                                type="button"
                                 onClick={sendMessage}
                                 disabled={!inputValue.trim() || isLoading}
                                 className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
