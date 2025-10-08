@@ -469,48 +469,160 @@
                     automation.
                 </p>
             </div>
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div
-                    class="lg:col-span-2 relative min-h-[500px] bg-slate-50 rounded-lg shadow-inner border border-gray-200 p-8 flex items-center justify-center">
-                    <div id="ai-hub"
-                        class="w-40 h-40 rounded-full bg-blue-600 text-white flex flex-col items-center justify-center text-center p-4 shadow-xl">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="w-8 h-8 mb-1">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 21v-1.5M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V8.25a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 8.25v7.5A2.25 2.25 0 006.75 18z" />
-                        </svg>
-                        <span class="font-bold text-lg leading-tight">AI Core</span>
-                        <span class="text-xs opacity-80">Central Intelligence</span>
-                    </div>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-100 flex flex-col">
-                    <div id="ai-controls">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-3">Run a Construction Scenario</h4>
-                        <div id="scenario-buttons-container" class="space-y-2 mb-6">
-                            <button class="scenario-btn group" data-scenario="safetyHazard">
-                                <span class="font-bold text-red-600 group-hover:text-red-700">Daily Log Safety
-                                    Alert:</span> A field report identifies a potential hazard.
-                            </button>
-                            <button class="scenario-btn group" data-scenario="weatherDelay">
-                                <span class="font-bold text-blue-600 group-hover:text-blue-700">Weather Delay
-                                    Prediction:</span> AI proactively identifies a schedule conflict.
-                            </button>
-                            <button class="scenario-btn group" data-scenario="smartRFI">
-                                <span class="font-bold text-green-600 group-hover:text-green-700">Smart RFI
-                                    Resolution:</span> An operative gets an instant answer from project docs.
-                            </button>
+
+            <!-- AI Agents Grid - Modern Design -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                <!-- Agent 1: Project Intelligence -->
+                <div class="ai-agent-card group cursor-pointer bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                    <div class="flex items-center mb-4">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-2xl shadow-lg group-hover:scale-110 transition-transform">
+                            🏗️
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-xl font-bold text-gray-800">Project Intelligence</h3>
+                            <p class="text-sm text-blue-600">AI Project Manager</p>
                         </div>
                     </div>
-                    <div class="border-t border-gray-200 pt-4 flex-grow flex flex-col">
-                        <h3 id="ai-agent-title" class="text-2xl font-semibold text-blue-600 mb-2 min-h-[3rem]">User
-                            Assistant</h3>
-                        <p id="ai-agent-description" class="text-gray-600 flex-grow">The user-facing chatbot or voice
-                            assistant. Users can ask questions in natural language (“What were our profits last
-                            quarter?”) and get instant answers, making the complex system incredibly user-friendly.</p>
+                    <p class="text-gray-600 text-sm mb-4">
+                        Monitors project health, predicts delays, optimizes schedules, and identifies risks before they become critical issues.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">Schedule Optimization</span>
+                        <span class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">Risk Detection</span>
+                        <span class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">Resource Planning</span>
+                    </div>
+                </div>
+
+                <!-- Agent 2: Financial Advisor -->
+                <div class="ai-agent-card group cursor-pointer bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                    <div class="flex items-center mb-4">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white text-2xl shadow-lg group-hover:scale-110 transition-transform">
+                            💰
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-xl font-bold text-gray-800">Financial Advisor</h3>
+                            <p class="text-sm text-green-600">AI Accountant</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">
+                        Analyzes cash flow, forecasts budgets, detects anomalies, and provides real-time financial insights for better decision-making.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-medium">Cash Flow Analysis</span>
+                        <span class="px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-medium">Budget Forecasting</span>
+                        <span class="px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-medium">Cost Optimization</span>
+                    </div>
+                </div>
+
+                <!-- Agent 3: Document Intelligence -->
+                <div class="ai-agent-card group cursor-pointer bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                    <div class="flex items-center mb-4">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white text-2xl shadow-lg group-hover:scale-110 transition-transform">
+                            📄
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-xl font-bold text-gray-800">Document Intelligence</h3>
+                            <p class="text-sm text-purple-600">AI Document Analyst</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">
+                        Extracts data from contracts, drawings, and RFIs. Answers questions instantly by searching through your entire document library.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-medium">Smart Search</span>
+                        <span class="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-medium">Data Extraction</span>
+                        <span class="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-medium">Auto-Tagging</span>
+                    </div>
+                </div>
+
+                <!-- Agent 4: Safety Monitor -->
+                <div class="ai-agent-card group cursor-pointer bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                    <div class="flex items-center mb-4">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white text-2xl shadow-lg group-hover:scale-110 transition-transform">
+                            🦺
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-xl font-bold text-gray-800">Safety Monitor</h3>
+                            <p class="text-sm text-red-600">AI Safety Officer</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">
+                        Uses computer vision and ML to detect safety violations, predict incidents, and ensure compliance with regulations.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-red-50 text-red-700 rounded-full text-xs font-medium">Hazard Detection</span>
+                        <span class="px-3 py-1 bg-red-50 text-red-700 rounded-full text-xs font-medium">Compliance Checks</span>
+                        <span class="px-3 py-1 bg-red-50 text-red-700 rounded-full text-xs font-medium">Incident Prevention</span>
+                    </div>
+                </div>
+
+                <!-- Agent 5: Business Strategist -->
+                <div class="ai-agent-card group cursor-pointer bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                    <div class="flex items-center mb-4">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white text-2xl shadow-lg group-hover:scale-110 transition-transform">
+                            📊
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-xl font-bold text-gray-800">Business Strategist</h3>
+                            <p class="text-sm text-orange-600">AI Business Advisor</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">
+                        Analyzes market trends, identifies opportunities, scores leads, and provides strategic recommendations for growth.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-xs font-medium">Market Analysis</span>
+                        <span class="px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-xs font-medium">Lead Scoring</span>
+                        <span class="px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-xs font-medium">Growth Strategy</span>
+                    </div>
+                </div>
+
+                <!-- Agent 6: Conversational Assistant -->
+                <div class="ai-agent-card group cursor-pointer bg-white p-6 rounded-2xl shadow-lg border border-gray-100 hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                    <div class="flex items-center mb-4">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center text-white text-2xl shadow-lg group-hover:scale-110 transition-transform">
+                            🤖
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-xl font-bold text-gray-800">Conversational Assistant</h3>
+                            <p class="text-sm text-indigo-600">AI Chat Interface</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">
+                        Your natural language interface to the entire platform. Ask questions, get insights, and execute tasks through simple conversation.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-medium">Natural Language</span>
+                        <span class="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-medium">Voice Commands</span>
+                        <span class="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-medium">24/7 Support</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Capabilities Showcase -->
+            <div class="bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl p-8 border border-gray-200">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">How Our AI Agents Collaborate</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-xl p-6 shadow-sm">
+                        <div class="text-3xl mb-3">🔄</div>
+                        <h4 class="font-bold text-gray-800 mb-2">Real-Time Sync</h4>
+                        <p class="text-sm text-gray-600">All agents share a unified knowledge base, ensuring consistent insights across your entire operation.</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-6 shadow-sm">
+                        <div class="text-3xl mb-3">⚡</div>
+                        <h4 class="font-bold text-gray-800 mb-2">Instant Insights</h4>
+                        <p class="text-sm text-gray-600">Get answers in seconds, not hours. Our AI processes millions of data points to deliver actionable intelligence.</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-6 shadow-sm">
+                        <div class="text-3xl mb-3">🎯</div>
+                        <h4 class="font-bold text-gray-800 mb-2">Proactive Alerts</h4>
+                        <p class="text-sm text-gray-600">Don't wait for problems. Our AI predicts issues and notifies you before they impact your projects.</p>
                     </div>
                 </div>
             </div>
         </section>
+
+        
 
         <section id="connectivity" class="content-section">
             <div class="text-center mb-12">
