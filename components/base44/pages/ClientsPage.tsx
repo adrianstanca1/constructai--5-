@@ -1,15 +1,73 @@
 /**
- * Clients Page - Complete implementation from Base44
+ * Clients Page - Connected to CortexBuild API
+ * Version: 1.1.0 GOLDEN
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+interface Client {
+    id: number;
+    name: string;
+    contact_name?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    status: string;
+    type?: string;
+    projects?: number;
+    revenue?: number;
+}
 
 export const ClientsPage: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [typeFilter, setTypeFilter] = useState('all');
+    const [clients, setClients] = useState<Client[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
-    const clients = [
+    // Fetch clients from API
+    useEffect(() => {
+        fetchClients();
+    }, [searchQuery, statusFilter, page]);
+
+    const fetchClients = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const params = new URLSearchParams({
+                page: page.toString(),
+                limit: '20'
+            });
+
+            if (searchQuery) params.append('search', searchQuery);
+            if (statusFilter !== 'all') params.append('status', statusFilter);
+
+            const response = await fetch(`/api/clients?${params}`);
+            const data = await response.json();
+
+            if (data.success) {
+                setClients(data.data);
+                setTotalPages(data.pagination?.totalPages || 1);
+            } else {
+                setError(data.error || 'Failed to fetch clients');
+            }
+        } catch (err: any) {
+            setError(err.message || 'Failed to fetch clients');
+            // Fallback to mock data on error
+            setClients(mockClients);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Mock data as fallback
+    const mockClients: Client[] = [
         {
             id: '1',
             name: 'Green Valley Homes',
@@ -115,6 +173,17 @@ export const ClientsPage: React.FC = () => {
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">Clients</h1>
                         <p className="text-gray-600">Manage your client relationships</p>
+                        {loading && (
+                            <p className="text-sm text-blue-600 mt-1">
+                                <span className="inline-block animate-spin mr-2">⏳</span>
+                                Loading clients...
+                            </p>
+                        )}
+                        {error && (
+                            <p className="text-sm text-red-600 mt-1">
+                                ⚠️ {error}
+                            </p>
+                        )}
                     </div>
                     <div className="flex items-center space-x-4">
                         {/* Search */}

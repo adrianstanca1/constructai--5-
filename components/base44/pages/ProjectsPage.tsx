@@ -1,22 +1,81 @@
 /**
- * Projects Page - Complete implementation from Base44
+ * Projects Page - Connected to CortexBuild API
+ * Version: 1.1.0 GOLDEN
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ProjectDetailPage } from './ProjectDetailPage';
+
+interface Project {
+    id: number;
+    name: string;
+    client_name?: string;
+    location?: string;
+    budget?: number;
+    spent?: number;
+    progress?: number;
+    status: string;
+    priority?: string;
+    start_date?: string;
+    end_date?: string;
+}
 
 export const ProjectsPage: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [typeFilter, setTypeFilter] = useState('all');
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+    const [projects, setProjects] = useState<Project[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+
+    // Fetch projects from API
+    useEffect(() => {
+        if (!selectedProjectId) {
+            fetchProjects();
+        }
+    }, [searchQuery, statusFilter, page, selectedProjectId]);
+
+    const fetchProjects = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const params = new URLSearchParams({
+                page: page.toString(),
+                limit: '20'
+            });
+
+            if (searchQuery) params.append('search', searchQuery);
+            if (statusFilter !== 'all') params.append('status', statusFilter);
+
+            const response = await fetch(`/api/projects?${params}`);
+            const data = await response.json();
+
+            if (data.success) {
+                setProjects(data.data);
+                setTotalPages(data.pagination?.totalPages || 1);
+            } else {
+                setError(data.error || 'Failed to fetch projects');
+            }
+        } catch (err: any) {
+            setError(err.message || 'Failed to fetch projects');
+            // Fallback to mock data
+            setProjects(mockProjects);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     // If a project is selected, show the detail page
     if (selectedProjectId) {
         return <ProjectDetailPage projectId={selectedProjectId} onBack={() => setSelectedProjectId(null)} />;
     }
 
-    const projects = [
+    // Mock data as fallback
+    const mockProjects: Project[] = [
         {
             id: '1',
             name: 'ASasdad',
